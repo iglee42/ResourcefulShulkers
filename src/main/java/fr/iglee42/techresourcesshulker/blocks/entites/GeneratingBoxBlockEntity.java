@@ -3,6 +3,7 @@ package fr.iglee42.techresourcesshulker.blocks.entites;
 import fr.iglee42.igleelib.api.blockentities.SecondBlockEntity;
 import fr.iglee42.techresourcesshulker.ModContent;
 import fr.iglee42.techresourcesshulker.blocks.GeneratingBoxBlock;
+import fr.iglee42.techresourcesshulker.item.UpgradeItem;
 import fr.iglee42.techresourcesshulker.menu.GeneratingBoxMenu;
 import fr.iglee42.techresourcesshulker.network.ModMessages;
 import fr.iglee42.techresourcesshulker.network.packets.GeneratingTickSyncS2CPacket;
@@ -80,7 +81,17 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
             }
         }
     };
+
+
+    private ItemStackHandler upgrades = new ItemStackHandler(4){
+        @NotNull
+        @Override
+        public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+            return stack.getItem() instanceof UpgradeItem ? super.insertItem(slot, stack, simulate) : stack;
+        }
+    };
     private LazyOptional<ItemStackHandler> optionalInventory = LazyOptional.empty();
+    private LazyOptional<ItemStackHandler> optionalUpgrades = LazyOptional.empty();
     private int remainingDurability = MAX_DURABILITY;
     private int generatingTick;
     private boolean explosing;
@@ -98,7 +109,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     public static void tick(Level level, BlockPos blockPos, BlockState blockState,GeneratingBoxBlockEntity entity){
         SecondBlockEntity.tick(level,blockPos,blockState,entity);
         entity.updateAnimation(level,blockPos,blockState);
-        if (level.getBlockEntity(blockPos.above()) instanceof SignBlockEntity s){
+        if (level.getBlockEntity(blockPos.west()) instanceof SignBlockEntity s){
             s.setMessage(0,new TextComponent(entity.generatingTick + ""));
             s.setMessage(1,new TextComponent(entity.inventory.getStackInSlot(1).getCount() + ""));
             s.setMessage(2,new TextComponent(entity.getRemainingDurability() + "/"+ MAX_DURABILITY));
@@ -107,12 +118,12 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
             ModMessages.sendToClients(new GeneratingTickSyncS2CPacket(entity.generatingTick, blockPos));
             ModMessages.sendToClients(new GeneratorDurabilitySyncS2CPacket(entity.remainingDurability, blockPos));
             if (entity.remainingDurability > 0 && !entity.isInventoryFull()){
-                entity.generatingTick++;
+                entity.generatingTick += 1;
             }
             if (entity.generatingTick / 20 == 5 && !entity.isInventoryFull()){
                 entity.addItems();
                 entity.generatingTick = 0;
-                if (level.random.nextInt(10) < 4 && entity.remainingDurability > 0){
+                if (level.random.nextInt(5) < 4 && entity.remainingDurability > 0){
                     entity.remainingDurability--;
                 }
             }
@@ -179,7 +190,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     @NotNull
     @Override
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        return cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? optionalInventory.cast() : super.getCapability(cap,side);
+        return cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? (side != Direction.UP ? optionalInventory.cast() : optionalUpgrades.cast()) : super.getCapability(cap,side);
     }
 
     @Override
@@ -197,18 +208,21 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     public void invalidateCaps() {
         super.invalidateCaps();
         optionalInventory.invalidate();
+        optionalUpgrades.invalidate();
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
         optionalInventory = LazyOptional.of(()->inventory);
+        optionalUpgrades = LazyOptional.of(()->upgrades);
     }
 
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
         inventory.deserializeNBT(tag.getCompound("inventory"));
+        upgrades.deserializeNBT(tag.getCompound("upgrades"));
         id = tag.getInt("resourceId");
         remainingDurability = tag.getInt("remainingDurability");
         generatingTick = tag.getInt("generatingTick");
@@ -221,6 +235,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
         tag.put("inventory", inventory.serializeNBT());
+        tag.put("upgrades", upgrades.serializeNBT());
         tag.putInt("resourceId",id);
         tag.putInt("remainingDurability",remainingDurability);
         tag.putInt("generatingTick", generatingTick);

@@ -3,6 +3,8 @@ package fr.iglee42.techresourcesshulker.menu;
 import fr.iglee42.techresourcesshulker.ModContent;
 import fr.iglee42.techresourcesshulker.blocks.entites.GeneratingBoxBlockEntity;
 import fr.iglee42.techresourcesshulker.menu.slot.BoxShellSlot;
+import fr.iglee42.techresourcesshulker.menu.slot.BoxUpgradeSlot;
+import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -28,12 +30,18 @@ public class GeneratingBoxMenu extends AbstractContainerMenu {
         this.blockEntity = (GeneratingBoxBlockEntity) entity;
         this.level = playerInv.player.level;
         blockEntity.startOpen(playerInv.player);
+        blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP).ifPresent(h->{
+            for (int u = 0; u < 4; ++u){
+                this.addSlot(new BoxUpgradeSlot(h,u,8+u*18,18*3));
+            }
+        });
         blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h->{
             this.addSlot(new BoxShellSlot(h,0,8+8*18,18*3,blockEntity.getResourceGenerated().id()));
             for(int l = 0; l < 9; ++l) {
                 this.addSlot(new SlotItemHandler(h, l + 1, 8 + l * 18, 18));
             }
         });
+
         for(int i1 = 0; i1 < 3; ++i1) {
             for(int k1 = 0; k1 < 9; ++k1) {
                 this.addSlot(new Slot(playerInv, k1 + i1 * 9 + 9, 8 + k1 * 18, 84 + i1 * 18));
@@ -48,8 +56,8 @@ public class GeneratingBoxMenu extends AbstractContainerMenu {
 
     private static final int TE_INVENTORY_FIRST_SLOT_INDEX = 0;
 
-    private static final int TE_INSERTABLE_INVENTORY_SLOT_COUNT = 1;
-    private static final int TE_EXTRACTABLE_INVENTORY_SLOT_COUNT = 10;
+    private static final int TE_INSERTABLE_INVENTORY_SLOT_COUNT = 5;
+    private static final int TE_EXTRACTABLE_INVENTORY_SLOT_COUNT = 14;
     private static final int HOTBAR_SLOT_COUNT = 9;
     private static final int PLAYER_INVENTORY_ROW_COUNT = 3;
     private static final int PLAYER_INVENTORY_COLUMN_COUNT = 9;

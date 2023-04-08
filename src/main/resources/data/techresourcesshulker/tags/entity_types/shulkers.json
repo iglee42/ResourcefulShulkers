@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "techresourcesshulker:overworld_shulker",
+    "techresourcesshulker:sky_shulker",
+    "techresourcesshulker:nether_shulker",
+    "techresourcesshulker:end_shulker"
+  ]
+}

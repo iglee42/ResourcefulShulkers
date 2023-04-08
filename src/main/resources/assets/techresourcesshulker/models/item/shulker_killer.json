@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "techresourcesshulker:item/shulker_killer"
+  }
+}

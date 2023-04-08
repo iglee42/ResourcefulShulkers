@@ -2,6 +2,7 @@ package fr.iglee42.techresourcesshulker;
 
 import fr.iglee42.techresourcesshulker.customize.Types;
 import fr.iglee42.techresourcesshulker.network.ModMessages;
+import fr.iglee42.techresourcesshulker.recipes.ModRecipes;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -37,6 +38,8 @@ public class TechResourcesShulker {
 
         ModContent.register(bus);
         ModMessages.register();
+        ModRecipes.SERIALIZER.register(bus);
+
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 

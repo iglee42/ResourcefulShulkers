@@ -1,6 +1,7 @@
 {
   "itemGroup.techresourcesshulker": "TechResources - Shulker",
 
+  "item.techresourcesshulker.shulker_killer": "Shulker Killer",
   "item.techresourcesshulker.shulker_item": "Shulker",
   "item.techresourcesshulker.overworld_essence": "Overworld Essence",
   "item.techresourcesshulker.sky_essence": "Sky Essence",
@@ -9,5 +10,10 @@
   "item.techresourcesshulker.overworld_shulker": "Overworld Shulker",
   "item.techresourcesshulker.sky_shulker": "Sky Shulker",
   "item.techresourcesshulker.nether_shulker": "Nether Shulker",
-  "item.techresourcesshulker.end_shulker": "End Shulker"
+  "item.techresourcesshulker.end_shulker": "End Shulker",
+
+  "entity.techresourcesshulker.overworld_shulker": "Overworld Shulker",
+  "entity.techresourcesshulker.sky_shulker": "Sky Shulker",
+  "entity.techresourcesshulker.nether_shulker": "Nether Shulker",
+  "entity.techresourcesshulker.end_shulker": "End Shulker"
 }

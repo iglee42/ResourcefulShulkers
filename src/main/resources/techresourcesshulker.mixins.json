@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "techresourcesshulker.refmap.json",
   "mixins": [
+    "LevelMixin",
     "SheetsMixin"
   ],
   "client": [
