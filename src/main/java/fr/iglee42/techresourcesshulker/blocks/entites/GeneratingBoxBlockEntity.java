@@ -10,6 +10,7 @@ import fr.iglee42.techresourcesshulker.network.packets.GeneratingTickSyncS2CPack
 import fr.iglee42.techresourcesshulker.network.packets.GeneratorDurabilitySyncS2CPacket;
 import fr.iglee42.techresourcesshulker.network.packets.ItemStackSyncS2CPacket;
 import fr.iglee42.techresourcesshulker.utils.Resource;
+import fr.iglee42.techresourcesshulker.utils.Upgrade;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -59,7 +60,7 @@ import java.util.TimerTask;
 public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuProvider {
 
     public static final int MAX_DURABILITY = 256;
-    public static final int SHELL_DURABILITY_ADDED = 8;
+    public static final int SHELL_DURABILITY_ADDED = 4;
     private int openCount;
     private ShulkerBoxBlockEntity.AnimationStatus animationStatus = ShulkerBoxBlockEntity.AnimationStatus.CLOSED;
     private float progress;
@@ -87,7 +88,24 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
         @NotNull
         @Override
         public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+            if (stack.getItem() instanceof UpgradeItem upg) {
+                if (Upgrade.inventoryContainsUpgrade(this,upg.getUpgrade())) return stack;
+                if (stack.getCount() > Upgrade.MAX) {
+                    ItemStack copy = stack.copy();
+                    copy.setCount(Upgrade.MAX);
+                    super.insertItem(slot, copy, simulate);
+
+                    ItemStack out = stack.copy();
+                    out.setCount(stack.getCount() - Upgrade.MAX);
+                    return out;
+                }
+            }
             return stack.getItem() instanceof UpgradeItem ? super.insertItem(slot, stack, simulate) : stack;
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return Upgrade.MAX;
         }
     };
     private LazyOptional<ItemStackHandler> optionalInventory = LazyOptional.empty();
@@ -121,7 +139,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
                 entity.generatingTick += 1;
             }
             if (entity.generatingTick / 20 == 5 && !entity.isInventoryFull()){
-                entity.addItems();
+                if (new Random().nextInt(10)> 0) entity.addItems();
                 entity.generatingTick = 0;
                 if (level.random.nextInt(5) < 4 && entity.remainingDurability > 0){
                     entity.remainingDurability--;

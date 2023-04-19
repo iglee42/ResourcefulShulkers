@@ -1,7 +1,7 @@
 package fr.iglee42.techresourcesshulker.jei;
 
 import fr.iglee42.techresourcesshulker.ModContent;
-import fr.iglee42.techresourcesshulker.recipes.ShulkerEnvironnementRecipe;
+import fr.iglee42.techresourcesshulker.recipes.ShulkerRecipeEnvironnement;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.recipe.RecipeType;
@@ -31,7 +31,7 @@ public class JEIPlugin implements IModPlugin {
 
     @Override
     public void registerRecipeCatalysts(@Nonnull IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(new ItemStack(ModContent.SHULKER_INFUSER_ITEM.get()), new RecipeType<>(ShulkerEnvironnementInfusionRecipeCategory.UID, ShulkerEnvironnementRecipe.class));
+        registration.addRecipeCatalyst(new ItemStack(ModContent.SHULKER_INFUSER_ITEM.get()), new RecipeType<>(ShulkerEnvironnementInfusionRecipeCategory.UID, ShulkerRecipeEnvironnement.class));
     }
 
 
@@ -39,9 +39,9 @@ public class JEIPlugin implements IModPlugin {
     public void registerRecipes(IRecipeRegistration registration){
         RecipeManager rm = Minecraft.getInstance().level.getRecipeManager();
         registration.addRecipes(ShulkerEnvironnementInfusionRecipeCategory.RECIPE_TYPE,
-                rm.getAllRecipesFor(ShulkerEnvironnementRecipe.Type.INSTANCE)
+                rm.getAllRecipesFor(ShulkerRecipeEnvironnement.Type.INSTANCE)
                         .stream()
-                        .map(r -> (ShulkerEnvironnementRecipe) r)
+                        .map(r -> (ShulkerRecipeEnvironnement) r)
                         .collect(Collectors.toList()));
 
     }

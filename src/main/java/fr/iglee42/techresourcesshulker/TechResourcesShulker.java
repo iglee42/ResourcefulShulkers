@@ -1,11 +1,11 @@
 package fr.iglee42.techresourcesshulker;
 
 import fr.iglee42.techresourcesshulker.customize.Types;
+import fr.iglee42.techresourcesshulker.events.ClientEvents;
 import fr.iglee42.techresourcesshulker.network.ModMessages;
 import fr.iglee42.techresourcesshulker.recipes.ModRecipes;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;

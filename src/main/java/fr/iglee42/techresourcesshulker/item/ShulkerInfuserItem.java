@@ -14,11 +14,16 @@ public class ShulkerInfuserItem extends Item {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        if (context.getLevel().getBlockState(context.getClickedPos()).is(ModContent.ENERGY_INPUTER.get())){
+        if (context.getLevel().getBlockState(context.getClickedPos()).is(ModContent.ENERGY_INSERTER.get())){
             context.getLevel().setBlockAndUpdate(context.getClickedPos().offset(0,1,0),ModContent.SHULKER_INFUSER.get().defaultBlockState());
             if (!context.getPlayer().isCreative())context.getPlayer().getMainHandItem().setCount(context.getPlayer().getMainHandItem().getCount() - 1);
             return InteractionResult.SUCCESS;
         }
         return super.useOn(context);
+    }
+
+    @Override
+    public String getDescriptionId() {
+        return "block.techresourcesshulker.shulker_infuser";
     }
 }

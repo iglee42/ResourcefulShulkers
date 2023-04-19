@@ -117,3 +117,8 @@ run/
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
 /src/main/resources/assets/techresourcesshulker/textures/item/shell_delta.png
+/src/main/resources/assets/techresourcesshulker/textures/entity/easter_egg_toopa.png
+/src/main/resources/assets/minecraft/models/item/name_tag.json
+/src/main/resources/assets/techresourcesshulker/models/item/to0pa_name_tag.json
+/src/main/java/fr/iglee42/techresourcesshulker/events/EasterClientsEvents.java
+/src/main/resources/assets/techresourcesshulker/textures/item/to0pa_name_tag.png

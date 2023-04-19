@@ -2,7 +2,7 @@ package fr.iglee42.techresourcesshulker.blocks;
 
 import fr.iglee42.techresourcesshulker.ModContent;
 import fr.iglee42.techresourcesshulker.blocks.entites.ShulkerInfuserBlockEntity;
-import fr.iglee42.techresourcesshulker.recipes.ShulkerEnvironnementRecipe;
+import fr.iglee42.techresourcesshulker.recipes.ShulkerRecipeEnvironnement;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -10,13 +10,11 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -33,7 +31,6 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
@@ -100,21 +97,21 @@ public class ShulkerInfuserBlock extends BaseEntityBlock {
                 player.displayClientMessage(new TextComponent("There is no entity on the infuser").withStyle(ChatFormatting.RED), true);
                 return InteractionResult.FAIL;
             }
-            if (level.getRecipeManager().getAllRecipesFor(ShulkerEnvironnementRecipe.Type.INSTANCE).stream().anyMatch(r -> {
+            if (level.getRecipeManager().getAllRecipesFor(ShulkerRecipeEnvironnement.Type.INSTANCE).stream().anyMatch(r -> {
                 boolean flag = r.getBaseEntity().equals(target.getType().getRegistryName());
                 Biome b = level.getBiomeManager().getBiome(pos).value();
-                boolean flag1 = r.getAllowedBiomes().contains(b.getRegistryName()) || r.getAllowedBiomesTags().stream().anyMatch(bt -> level.getBiomeManager().getBiome(pos).containsTag(ForgeRegistries.BIOMES.tags().stream().filter(btg -> btg.getKey().location().equals(bt)).findAny().get()));
+                boolean flag1 = r.getAllowedBiomes().contains(b.getRegistryName()) || r.getAllowedBiomesTags().stream().anyMatch(bt -> level.getBiomeManager().getBiome(pos).containsTag(new TagKey<>(Registry.BIOME_REGISTRY,bt)));
                 boolean flag2 = pos.getY() >= r.getMinY() && pos.getY() <= r.getMaxY();
                 return flag && flag1 && flag2;
             })) {
-                ShulkerEnvironnementRecipe recipe = level.getRecipeManager().getAllRecipesFor(ShulkerEnvironnementRecipe.Type.INSTANCE).stream().filter(r -> {
+                ShulkerRecipeEnvironnement recipe = level.getRecipeManager().getAllRecipesFor(ShulkerRecipeEnvironnement.Type.INSTANCE).stream().filter(r -> {
                     boolean flag = r.getBaseEntity().equals(target.getType().getRegistryName());
                     Biome b = level.getBiomeManager().getBiome(pos).value();
-                    boolean flag1 = r.getAllowedBiomes().contains(b.getRegistryName()) || r.getAllowedBiomesTags().stream().anyMatch(bt -> level.getBiomeManager().getBiome(pos).containsTag(ForgeRegistries.BIOMES.tags().stream().filter(btg -> btg.getKey().location().equals(bt)).findAny().get()));
+                    boolean flag1 = r.getAllowedBiomes().contains(b.getRegistryName()) || r.getAllowedBiomesTags().stream().anyMatch(bt -> level.getBiomeManager().getBiome(pos).containsTag(new TagKey<>(Registry.BIOME_REGISTRY,bt)));
                     boolean flag2 = pos.getY() >= r.getMinY() && pos.getY() <= r.getMaxY();
                     return flag && flag1 && flag2;
                 }).findFirst().get();
-                ((ShulkerInfuserBlockEntity) level.getBlockEntity(pos)).enable(recipe);
+                ((ShulkerInfuserBlockEntity) level.getBlockEntity(pos)).start(recipe);
 
             }
         }

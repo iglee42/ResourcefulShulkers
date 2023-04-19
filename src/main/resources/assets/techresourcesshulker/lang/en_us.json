@@ -15,5 +15,8 @@
   "entity.techresourcesshulker.overworld_shulker": "Overworld Shulker",
   "entity.techresourcesshulker.sky_shulker": "Sky Shulker",
   "entity.techresourcesshulker.nether_shulker": "Nether Shulker",
-  "entity.techresourcesshulker.end_shulker": "End Shulker"
+  "entity.techresourcesshulker.end_shulker": "End Shulker",
+
+  "block.techresourcesshulker.energy_inserter": "Energy Inserter",
+  "block.techresourcesshulker.shulker_infuser": "Shulker Infuser"
 }

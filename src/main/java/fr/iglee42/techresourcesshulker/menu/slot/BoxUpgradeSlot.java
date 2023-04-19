@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import fr.iglee42.techresourcesshulker.ModContent;
 import fr.iglee42.techresourcesshulker.TechResourcesShulker;
 import fr.iglee42.techresourcesshulker.item.UpgradeItem;
+import fr.iglee42.techresourcesshulker.utils.Upgrade;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
@@ -26,7 +27,12 @@ public class BoxUpgradeSlot extends SlotItemHandler {
     }
 
     @Override
+    public int getMaxStackSize() {
+        return Upgrade.MAX;
+    }
+
+    @Override
     public boolean mayPlace(@NotNull ItemStack stack) {
-        return stack.getItem() instanceof UpgradeItem;
+        return stack.getItem() instanceof UpgradeItem upg && !Upgrade.inventoryContainsUpgrade(this.getItemHandler(),upg.getUpgrade());
     }
 }

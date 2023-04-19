@@ -1,9 +1,13 @@
 package fr.iglee42.techresourcesshulker;
 
+import fr.iglee42.techresourcesshulker.blocks.EnergyInserterBlock;
 import fr.iglee42.techresourcesshulker.blocks.GeneratingBoxBlock;
 import fr.iglee42.techresourcesshulker.blocks.ShulkerInfuserBlock;
+import fr.iglee42.techresourcesshulker.blocks.ShulkerPedestalBlock;
+import fr.iglee42.techresourcesshulker.blocks.entites.EnergyInserterBlockEntity;
 import fr.iglee42.techresourcesshulker.blocks.entites.GeneratingBoxBlockEntity;
 import fr.iglee42.techresourcesshulker.blocks.entites.ShulkerInfuserBlockEntity;
+import fr.iglee42.techresourcesshulker.blocks.entites.ShulkerPedestalBlockEntity;
 import fr.iglee42.techresourcesshulker.entity.BaseEssenceShulker;
 import fr.iglee42.techresourcesshulker.item.ShellItem;
 import fr.iglee42.techresourcesshulker.item.ShulkerInfuserItem;
@@ -11,8 +15,8 @@ import fr.iglee42.techresourcesshulker.item.ShulkerItem;
 import fr.iglee42.techresourcesshulker.item.UpgradeItem;
 import fr.iglee42.techresourcesshulker.menu.GeneratingBoxMenu;
 import fr.iglee42.techresourcesshulker.utils.Resource;
+import fr.iglee42.techresourcesshulker.utils.Upgrade;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -25,19 +29,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.phys.shapes.BooleanOp;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.network.IContainerFactory;
@@ -60,28 +55,14 @@ public class ModContent {
 
 
     public static final RegistryObject<Block> SHULKER_INFUSER = createBlockWithoutItem("shulker_infuser", ShulkerInfuserBlock::new);
-    public static final RegistryObject<Block> ENERGY_INPUTER = createBlock("energy_inputer", () ->new Block(BlockBehaviour.Properties.of(Material.METAL).noOcclusion()){
-        public boolean propagatesSkylightDown(BlockState p_49100_, BlockGetter p_49101_, BlockPos p_49102_) {
-            return true;
-        }
-
-        @Override
-        public VoxelShape getShape(BlockState p_60555_, BlockGetter p_60556_, BlockPos p_60557_, CollisionContext p_60558_) {
-            VoxelShape shape = Shapes.empty();
-            shape = Shapes.join(shape, Shapes.box(0.375, 1, 0.375, 0.625, 1.5625, 0.625), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.1875, 0, 0.1875, 0.8125, 1, 0.8125), BooleanOp.OR);
-
-            return shape;
-
-        }
-
-        public float getShadeBrightness(BlockState p_49094_, BlockGetter p_49095_, BlockPos p_49096_) {
-            return 1.0F;
-        }
-    });
+    public static final RegistryObject<Block> ENERGY_INSERTER = createBlock("energy_inserter", EnergyInserterBlock::new);
+    public static final RegistryObject<Block> SHULKER_PEDESTAL = createBlock("shulker_pedestal", ShulkerPedestalBlock::new);
         //public static final RegistryObject<Block> GENERATING_BOX = createBlock("generating_box", () -> new GeneratingBoxBlock(id));
     public static final RegistryObject<BlockEntityType<GeneratingBoxBlockEntity>> GENERATING_BOX_BLOCK_ENTITY = BLOCK_ENTITIES.register("generating_box", ()->BlockEntityType.Builder.of(GeneratingBoxBlockEntity::new,getAllBox()).build(null));
     public static final RegistryObject<BlockEntityType<ShulkerInfuserBlockEntity>> SHULKER_INFUSER_BLOCK_ENTITY = BLOCK_ENTITIES.register("shulker_infuser", ()->BlockEntityType.Builder.of(ShulkerInfuserBlockEntity::new,ModContent.SHULKER_INFUSER.get()).build(null));
+    public static final RegistryObject<BlockEntityType<EnergyInserterBlockEntity>> ENERGY_INSERTER_BLOCK_ENTITY = BLOCK_ENTITIES.register("energy_inserter", ()->BlockEntityType.Builder.of(EnergyInserterBlockEntity::new,ModContent.ENERGY_INSERTER.get()).build(null));
+    public static final RegistryObject<BlockEntityType<ShulkerPedestalBlockEntity>> SHULKER_PEDESTAL_BLOCK_ENTITY = BLOCK_ENTITIES.register("shulker_pedestal", ()->BlockEntityType.Builder.of(ShulkerPedestalBlockEntity::new,ModContent.SHULKER_PEDESTAL.get()).build(null));
+
 
     public static final RegistryObject<EntityType<BaseEssenceShulker>> OVERWORLD_SHULKER = ENTITIES.register("overworld_shulker", ()->EntityType.Builder.<BaseEssenceShulker>of((type, level) -> new BaseEssenceShulker(type,level, DyeColor.LIME), MobCategory.CREATURE).fireImmune().canSpawnFarFromPlayer().sized(1.0F, 1.0F).clientTrackingRange(10).build(new ResourceLocation(TechResourcesShulker.MODID,"overworld_shulker").toString()));
     public static final RegistryObject<EntityType<BaseEssenceShulker>> SKY_SHULKER = ENTITIES.register("sky_shulker", ()->EntityType.Builder.<BaseEssenceShulker>of((type, level) -> new BaseEssenceShulker(type,level, DyeColor.LIGHT_BLUE), MobCategory.CREATURE).fireImmune().canSpawnFarFromPlayer().sized(1.0F, 1.0F).clientTrackingRange(10).build(new ResourceLocation(TechResourcesShulker.MODID,"sky_shulker").toString()));
@@ -118,7 +99,10 @@ public class ModContent {
     public static final RegistryObject<Item> NETHER_ESSENCE = ITEMS.register("nether_essence", () -> new Item(new Item.Properties().tab(TechResourcesShulker.GROUP)));
     public static final RegistryObject<Item> END_ESSENCE = ITEMS.register("end_essence", () -> new Item(new Item.Properties().tab(TechResourcesShulker.GROUP)));
 
-    public static final RegistryObject<Item> UPGRADE_BASE = ITEMS.register("upgrade_base", UpgradeItem::new);
+    public static final RegistryObject<Item> UPGRADE_BASE = ITEMS.register("upgrade_base", ()-> new Item(new Item.Properties().tab(TechResourcesShulker.GROUP)));
+    public static final RegistryObject<Item> SPEED_UPGRADE = ITEMS.register("speed_upgrade", ()-> new UpgradeItem(Upgrade.SPEED));
+    public static final RegistryObject<Item> DURABILITY_UPGRADE = ITEMS.register("durability_upgrade", ()-> new UpgradeItem(Upgrade.DURABILITY));
+
 
     public static Block[] getAllBox() {
         List<RegistryObject<Block>> registries = BLOCKS.getEntries().stream().filter(r->r.getId().toString().endsWith("_generating_box")).toList();

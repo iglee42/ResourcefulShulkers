@@ -59,7 +59,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 
-public class CustomShulker extends AbstractGolem {
+public abstract class CustomShulker extends AbstractGolem {
    private static final UUID COVERED_ARMOR_MODIFIER_UUID = UUID.fromString("7E0292F2-9434-48D5-A29F-9583AF7DF27F");
    private static final AttributeModifier COVERED_ARMOR_MODIFIER = new AttributeModifier(COVERED_ARMOR_MODIFIER_UUID, "Covered armor bonus", 20.0D, AttributeModifier.Operation.ADDITION);
    public static final EntityDataAccessor<Direction> DATA_ATTACH_FACE_ID = SynchedEntityData.defineId(CustomShulker.class, EntityDataSerializers.DIRECTION);
@@ -385,9 +385,16 @@ public class CustomShulker extends AbstractGolem {
       if (this.isClosed()) {
          Entity entity = p_33421_.getDirectEntity();
          return !(entity instanceof AbstractArrow);
+      } else if (p_33421_.isProjectile()) {
+         Entity entity1 = p_33421_.getDirectEntity();
+         if (entity1 != null && entity1.getType() == EntityType.SHULKER_BULLET) {
+            hitByShulkerBullet();
+         }
       }
       return true;
    }
+
+   public abstract void hitByShulkerBullet();
 
    boolean isClosed() {
       return this.getRawPeekAmount() == 0;

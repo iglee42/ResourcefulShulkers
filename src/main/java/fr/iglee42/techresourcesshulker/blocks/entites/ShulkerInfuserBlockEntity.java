@@ -3,29 +3,25 @@ package fr.iglee42.techresourcesshulker.blocks.entites;
 import fr.iglee42.igleelib.api.blockentities.EnergyStorage;
 import fr.iglee42.igleelib.api.blockentities.SecondBlockEntity;
 import fr.iglee42.techresourcesshulker.ModContent;
-import fr.iglee42.techresourcesshulker.entity.CustomShulker;
-import fr.iglee42.techresourcesshulker.recipes.ShulkerEnvironnementRecipe;
+import fr.iglee42.techresourcesshulker.recipes.ITickableRecipe;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ItemParticleOption;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.registries.ForgeRegistries;
+
+import static fr.iglee42.igleelib.api.utils.ModsUtils.spawnParticle;
 
 public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
 
-    private final VoxelShape WORKING_AREA;
+    public final VoxelShape WORKING_AREA;
 
     private EnergyStorage energyStorage = new EnergyStorage(1000000,10000) {
         @Override
@@ -39,8 +35,7 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
 
     private boolean enabled;
 
-    private Mob target;
-    private ShulkerEnvironnementRecipe recipe;
+    private ITickableRecipe recipe;
 
 
     public ShulkerInfuserBlockEntity(BlockPos pos, BlockState state) {
@@ -55,35 +50,18 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
     }
 
     private void tickEntity(Level level, BlockPos pos, BlockState state) {
-        target = level.getNearestEntity(level.getEntitiesOfClass(Mob.class, WORKING_AREA.bounds()), TargetingConditions.DEFAULT, null, pos.getX(), pos.getY(), pos.getZ());
 
-        Vec3 posi = Vec3.atBottomCenterOf(pos);
-
-        if (progress == 15*20 || target == null || recipe == null){
+        if (progress == 15*20 || recipe == null || !hasEnoughEnergy()){
             enabled = false;
             progress = 0;
         }
+        //Tick Recipe
         if (enabled){
-            if (progress >= 5*20 && progress <= 10*20) {
-                
-                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM,recipe.getParticle().getItems()[0]),(ServerLevel) level,posi.add(2,0,0),posi.add(0,4,0),0);
-                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM,recipe.getParticle().getItems()[0]),(ServerLevel) level,posi.add(-2,0,0),posi.add(0,4,0),0);
-                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM,recipe.getParticle().getItems()[0]),(ServerLevel) level,posi.add(0,0,2),posi.add(0,4,0),0);
-                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM,recipe.getParticle().getItems()[0]),(ServerLevel) level,posi.add(0,0,-2),posi.add(0,4,0),0);
-            }
-            if (progress >= 10*20){
-                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM,recipe.getParticle().getItems()[0]),(ServerLevel) level,posi.add(0.5,2.05,0.5),posi.add(0.5,1.05,0.5),0);
-                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM,recipe.getParticle().getItems()[0]),(ServerLevel) level,posi.add(-0.5,2.05,-0.5),posi.add(-0.5,1.05,-0.5),0);
-                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM,recipe.getParticle().getItems()[0]),(ServerLevel) level,posi.add(-0.5,2.05,0.5),posi.add(-0.5,1.05,0.5),0);
-                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM,recipe.getParticle().getItems()[0]),(ServerLevel) level,posi.add(0.5,2.05,-0.5),posi.add(0.5,1.05,-0.5),0);
-            }
+            recipe.tick(level,pos,state,progress,this);
+            //Finish Recipe
             if (progress == 15*20-1){
-                Vec3 basePos = posi.add(0,1,0);
-                spawnParticle(ParticleTypes.FIREWORK,(ServerLevel) level,basePos,basePos.add(0,1,0),50);
-                Entity newEntity = ForgeRegistries.ENTITIES.getValue(recipe.getResultEntity()).create(level);
-                newEntity.setPos(target.position());
-                target.remove(Entity.RemovalReason.KILLED);
-                level.addFreshEntity(newEntity);
+                spawnParticle(ParticleTypes.FIREWORK,(ServerLevel) level,Vec3.atBottomCenterOf(pos).add(0,1,0),Vec3.atBottomCenterOf(pos).add(0,2,0),50);
+                recipe.finish(level,pos,state,this);
             }
             progress++;
         }
@@ -91,38 +69,22 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
 
     @Override
     protected void second(Level level, BlockPos pos, BlockState state, SecondBlockEntity secondBlockEntity) {
-        Vec3 posi = Vec3.atBottomCenterOf(pos);
-
         if (!level.isClientSide) {
-
+            //Second recipe
             if (enabled){
-                    if (progress < 5*20) {
-                        int y = 0;
-                        if (progress / 20 == 0) y = 5;
-                        if (progress / 20 == 1) y = 4;
-                        if (progress / 20 == 2) y = 3;
-                        if (progress / 20 == 3) y = 2;
-                        if (progress / 20 == 4) y = 1;
-                    for (double t = 0; t <= 2 * Math.PI; t += 0.001) {
-                        double vx = 2 * Math.cos(t);
-                        double vz = 2 * Math.sin(t);
-                        Vec3 particle = new Vec3(posi.x + vx, posi.y() + y + 0.05, posi.z + vz);
-                        spawnParticle(new ItemParticleOption(ParticleTypes.ITEM,recipe.getParticle().getItems()[0]),(ServerLevel) level, particle, particle,0);
-                    }
-                }
-                    if (progress >= 5*20 && progress <= 10*20){
-                        for (double t = 0; t <= 2 * Math.PI; t += 0.003) {
-                            double vx = 2 * Math.cos(t);
-                            double vz = 2 * Math.sin(t);
-                            Vec3 particle = new Vec3(posi.x + vx, posi.y()+ 0.05, posi.z + vz);
-                            spawnParticle(new ItemParticleOption(ParticleTypes.ITEM,recipe.getParticle().getItems()[0]),(ServerLevel) level, particle, particle,0);
-                        }
+                    if (hasEnoughEnergy()) {
+                        recipe.second(level,pos,state,progress,this);
+                        energyStorage.extractEnergy(1000, false);
                     }
             }
 
+            
+            //Freeze Target On the Infuser
 
+            Mob target = level.getNearestEntity(level.getEntitiesOfClass(Mob.class, WORKING_AREA.bounds()), TargetingConditions.DEFAULT, null, pos.getX(), pos.getY(), pos.getZ());
 
-            if (hasEnougthEnergyToWork()){
+            if (hasEnoughEnergy()){
+
                 Vec3 particlePos = Vec3.atBottomCenterOf(pos);
                 spawnParticle(ParticleTypes.END_ROD,(ServerLevel) level,particlePos.add(0.5, 1.05, 0), particlePos.add(0, 1.1, 0),0);
                 spawnParticle(ParticleTypes.END_ROD,(ServerLevel) level,particlePos.add(-0.5, 1.05, 0), particlePos.add(0, 1.1, 0),0);
@@ -140,32 +102,23 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
         }
     }
 
-    public void enable(ShulkerEnvironnementRecipe recipe){
+    //START
+    public void start(ITickableRecipe recipe){
         enabled = true;
         this.recipe = recipe;
+        this.recipe.start(this.level,this.getBlockPos(),this.getBlockState(),this);
     }
 
-    private boolean hasEnougthEnergyToWork() {
+    public boolean hasEnoughEnergy() {
         return energyStorage.getEnergyStored() >= 1000;
     }
 
 
-    private static <T extends ParticleOptions> void spawnParticle(T particleType, ServerLevel level , Vec3 fromPos, Vec3 goPos, int count) {
-        if (level == null || level.isClientSide())
-            return;
+ 
 
-
-        double x = fromPos.x();
-        double y = fromPos.y();
-        double z = fromPos.z();
-
-        double velX = goPos.x() - fromPos.x();
-        double velY = goPos.y() - fromPos.y();
-        double velZ = goPos.z() - fromPos.z();
-
-        level.sendParticles(particleType, x, y, z, count, velX, velY, velZ, 0.09D);
+    public EnergyStorage getEnergyStorage() {
+        return energyStorage;
     }
-
 
     @Override
     public void invalidateCaps() {

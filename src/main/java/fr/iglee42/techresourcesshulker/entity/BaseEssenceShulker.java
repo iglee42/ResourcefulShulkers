@@ -33,23 +33,8 @@ public class BaseEssenceShulker extends CustomShulker{
         this.goalSelector.addGoal(6,new BaseEssenceShulker.ShulkerLaunchBulletGoal());
     }
 
-    @Override
-    public boolean hurt(DamageSource p_33421_, float p_33422_) {
-        if (!super.hurt(p_33421_, p_33422_)) {
-            return false;
-        } else {
-            if (p_33421_.isProjectile()) {
-                Entity entity1 = p_33421_.getDirectEntity();
-                if (entity1 != null && entity1.getType() == EntityType.SHULKER_BULLET) {
-                    this.hitByShulkerBullet();
-                }
-            }
 
-            return true;
-        }
-    }
-
-    private void hitByShulkerBullet() {
+    public void hitByShulkerBullet() {
         Vec3 newPos = Vec3.atBottomCenterOf(blockPosition().offset(Mth.randomBetweenInclusive(this.random, -4, 4), 0, Mth.randomBetweenInclusive(this.random, -4, 4)));
         Vec3 newShulkerPos = this.position();
         AABB aabb = this.getBoundingBox();

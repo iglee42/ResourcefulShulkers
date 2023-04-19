@@ -1,20 +1,16 @@
-package fr.iglee42.techresourcesshulker;
+package fr.iglee42.techresourcesshulker.events;
 
+import fr.iglee42.techresourcesshulker.ModContent;
+import fr.iglee42.techresourcesshulker.TechResourcesShulker;
 import fr.iglee42.techresourcesshulker.entity.CustomShulker;
-import fr.iglee42.techresourcesshulker.recipes.ShulkerEnvironnementRecipe;
+import fr.iglee42.techresourcesshulker.recipes.ShulkerItemInfusionRecipe;
+import fr.iglee42.techresourcesshulker.recipes.ShulkerRecipeEnvironnement;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
-import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class Events {
 
@@ -30,7 +26,8 @@ public class Events {
 
         @SubscribeEvent
         public static void registerRecipeTypes(final RegistryEvent.Register<RecipeSerializer<?>> event) {
-            Registry.register(Registry.RECIPE_TYPE, ShulkerEnvironnementRecipe.Type.ID,ShulkerEnvironnementRecipe.Type.INSTANCE);
+            Registry.register(Registry.RECIPE_TYPE, ShulkerRecipeEnvironnement.Type.ID, ShulkerRecipeEnvironnement.Type.INSTANCE);
+            Registry.register(Registry.RECIPE_TYPE, ShulkerItemInfusionRecipe.Type.ID, ShulkerItemInfusionRecipe.Type.INSTANCE);
         }
     }
 

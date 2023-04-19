@@ -6,7 +6,7 @@ import com.mojang.math.Vector3f;
 import fr.iglee42.igleelib.api.utils.MouseUtil;
 import fr.iglee42.techresourcesshulker.ModContent;
 import fr.iglee42.techresourcesshulker.TechResourcesShulker;
-import fr.iglee42.techresourcesshulker.recipes.ShulkerEnvironnementRecipe;
+import fr.iglee42.techresourcesshulker.recipes.ShulkerRecipeEnvironnement;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -37,13 +37,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ShulkerEnvironnementInfusionRecipeCategory implements IRecipeCategory<ShulkerEnvironnementRecipe> {
+public class ShulkerEnvironnementInfusionRecipeCategory implements IRecipeCategory<ShulkerRecipeEnvironnement> {
     public final static ResourceLocation UID = new ResourceLocation(TechResourcesShulker.MODID, "shulker_environnement_infuse");
     public final static ResourceLocation ARROW = new ResourceLocation(TechResourcesShulker.MODID, "textures/gui/arrow.png");
 
 
-    public static final RecipeType<ShulkerEnvironnementRecipe> RECIPE_TYPE = RecipeType.create(TechResourcesShulker.MODID, "shulker_environnement_infuse",
-            ShulkerEnvironnementRecipe.class);
+    public static final RecipeType<ShulkerRecipeEnvironnement> RECIPE_TYPE = RecipeType.create(TechResourcesShulker.MODID, "shulker_environnement_infuse",
+            ShulkerRecipeEnvironnement.class);
     private final IDrawable background;
     private final IDrawable icon;
     private final IDrawableStatic arrow;
@@ -91,7 +91,7 @@ public class ShulkerEnvironnementInfusionRecipeCategory implements IRecipeCatego
     }
 
     @Override
-    public @NotNull RecipeType<ShulkerEnvironnementRecipe> getRecipeType() {
+    public @NotNull RecipeType<ShulkerRecipeEnvironnement> getRecipeType() {
         return RECIPE_TYPE;
     }
 
@@ -111,7 +111,7 @@ public class ShulkerEnvironnementInfusionRecipeCategory implements IRecipeCatego
     }
 
     @Override
-    public void draw(ShulkerEnvironnementRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
+    public void draw(ShulkerRecipeEnvironnement recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
         RenderSystem.setShaderTexture(0, new ResourceLocation(TechResourcesShulker.MODID,"textures/gui/arrow.png"));
         Minecraft.getInstance().screen.blit(stack,52,35,0,0,60,15,60,15);
         int y = 55;
@@ -131,7 +131,7 @@ public class ShulkerEnvironnementInfusionRecipeCategory implements IRecipeCatego
     }
 
     @Override
-    public List<Component> getTooltipStrings(ShulkerEnvironnementRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+    public List<Component> getTooltipStrings(ShulkerRecipeEnvironnement recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         if (MouseUtil.isMouseOver(mouseX, mouseY, 52, 65, Minecraft.getInstance().font.width("Allowed Biomes"), Minecraft.getInstance().font.lineHeight * 2)) {
             List<Component> biomes = new ArrayList<>();
             if (recipe.getAllowedBiomes().size() + recipe.getAllowedBiomesTags().size() == 0)
@@ -155,13 +155,13 @@ public class ShulkerEnvironnementInfusionRecipeCategory implements IRecipeCatego
     }
 
     @Override
-    public Class<? extends ShulkerEnvironnementRecipe> getRecipeClass() {
-        return ShulkerEnvironnementRecipe.class;
+    public Class<? extends ShulkerRecipeEnvironnement> getRecipeClass() {
+        return ShulkerRecipeEnvironnement.class;
     }
 
 
     @Override
-    public void setRecipe(@Nonnull IRecipeLayoutBuilder builder, @Nonnull ShulkerEnvironnementRecipe recipe, @Nonnull IFocusGroup focusGroup) {
+    public void setRecipe(@Nonnull IRecipeLayoutBuilder builder, @Nonnull ShulkerRecipeEnvironnement recipe, @Nonnull IFocusGroup focusGroup) {
         builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT).addIngredients(Ingredient.of(ForgeRegistries.ITEMS.getValue(recipe.getResultEntity())));
     }
 
