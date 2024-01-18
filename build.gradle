@@ -134,12 +134,10 @@ repositories {
     }
 
     maven {
-        name = 'bytesafe'
-        url 'https://techresources.bytesafe.dev/maven/library/'
-        credentials {
-            username = 'bytesafe'
-            password = '01GH6W3DDQH6TAKFT9M26XBXC6'
-        }
+        name = "igleeRepoReleases"
+        url "http://iglee.fr:8080/releases"
+        allowInsecureProtocol = true
+
     }
 
         maven {
@@ -165,7 +163,7 @@ dependencies {
 
     implementation fg.deobf("fr.iglee42.igleelib:IgleeLib:${mc_version}-${lib_version}")
 
-    runtimeOnly fg.deobf("curse.maven:worldedit-225608:3697298")
+    //runtimeOnly fg.deobf("curse.maven:worldedit-225608:3697298")
     // Examples using mod jars from ./libs
     // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
 
