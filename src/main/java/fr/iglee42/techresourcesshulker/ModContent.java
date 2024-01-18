@@ -9,6 +9,10 @@ import fr.iglee42.techresourcesshulker.blocks.entites.GeneratingBoxBlockEntity;
 import fr.iglee42.techresourcesshulker.blocks.entites.ShulkerInfuserBlockEntity;
 import fr.iglee42.techresourcesshulker.blocks.entites.ShulkerPedestalBlockEntity;
 import fr.iglee42.techresourcesshulker.entity.BaseEssenceShulker;
+import fr.iglee42.techresourcesshulker.entity.CustomShulker;
+import fr.iglee42.techresourcesshulker.entity.ResourceShulker;
+import fr.iglee42.techresourcesshulker.init.ModBlocks;
+import fr.iglee42.techresourcesshulker.init.ModItems;
 import fr.iglee42.techresourcesshulker.item.ShellItem;
 import fr.iglee42.techresourcesshulker.item.ShulkerInfuserItem;
 import fr.iglee42.techresourcesshulker.item.ShulkerItem;
@@ -47,21 +51,16 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 public class ModContent {
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS,TechResourcesShulker.MODID);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES,TechResourcesShulker.MODID);
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS,TechResourcesShulker.MODID);
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.CONTAINERS,TechResourcesShulker.MODID);
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES,TechResourcesShulker.MODID);
 
 
-    public static final RegistryObject<Block> SHULKER_INFUSER = createBlockWithoutItem("shulker_infuser", ShulkerInfuserBlock::new);
-    public static final RegistryObject<Block> ENERGY_INSERTER = createBlock("energy_inserter", EnergyInserterBlock::new);
-    public static final RegistryObject<Block> SHULKER_PEDESTAL = createBlock("shulker_pedestal", ShulkerPedestalBlock::new);
-        //public static final RegistryObject<Block> GENERATING_BOX = createBlock("generating_box", () -> new GeneratingBoxBlock(id));
+
     public static final RegistryObject<BlockEntityType<GeneratingBoxBlockEntity>> GENERATING_BOX_BLOCK_ENTITY = BLOCK_ENTITIES.register("generating_box", ()->BlockEntityType.Builder.of(GeneratingBoxBlockEntity::new,getAllBox()).build(null));
-    public static final RegistryObject<BlockEntityType<ShulkerInfuserBlockEntity>> SHULKER_INFUSER_BLOCK_ENTITY = BLOCK_ENTITIES.register("shulker_infuser", ()->BlockEntityType.Builder.of(ShulkerInfuserBlockEntity::new,ModContent.SHULKER_INFUSER.get()).build(null));
-    public static final RegistryObject<BlockEntityType<EnergyInserterBlockEntity>> ENERGY_INSERTER_BLOCK_ENTITY = BLOCK_ENTITIES.register("energy_inserter", ()->BlockEntityType.Builder.of(EnergyInserterBlockEntity::new,ModContent.ENERGY_INSERTER.get()).build(null));
-    public static final RegistryObject<BlockEntityType<ShulkerPedestalBlockEntity>> SHULKER_PEDESTAL_BLOCK_ENTITY = BLOCK_ENTITIES.register("shulker_pedestal", ()->BlockEntityType.Builder.of(ShulkerPedestalBlockEntity::new,ModContent.SHULKER_PEDESTAL.get()).build(null));
+    public static final RegistryObject<BlockEntityType<ShulkerInfuserBlockEntity>> SHULKER_INFUSER_BLOCK_ENTITY = BLOCK_ENTITIES.register("shulker_infuser", ()->BlockEntityType.Builder.of(ShulkerInfuserBlockEntity::new,ModBlocks.SHULKER_INFUSER.get()).build(null));
+    public static final RegistryObject<BlockEntityType<EnergyInserterBlockEntity>> ENERGY_INSERTER_BLOCK_ENTITY = BLOCK_ENTITIES.register("energy_inserter", ()->BlockEntityType.Builder.of(EnergyInserterBlockEntity::new,ModBlocks.ENERGY_INSERTER.get()).build(null));
+    public static final RegistryObject<BlockEntityType<ShulkerPedestalBlockEntity>> SHULKER_PEDESTAL_BLOCK_ENTITY = BLOCK_ENTITIES.register("shulker_pedestal", ()->BlockEntityType.Builder.of(ShulkerPedestalBlockEntity::new,ModBlocks.SHULKER_PEDESTAL.get()).build(null));
 
 
     public static final RegistryObject<EntityType<BaseEssenceShulker>> OVERWORLD_SHULKER = ENTITIES.register("overworld_shulker", ()->EntityType.Builder.<BaseEssenceShulker>of((type, level) -> new BaseEssenceShulker(type,level, DyeColor.LIME), MobCategory.CREATURE).fireImmune().canSpawnFarFromPlayer().sized(1.0F, 1.0F).clientTrackingRange(10).build(new ResourceLocation(TechResourcesShulker.MODID,"overworld_shulker").toString()));
@@ -70,42 +69,11 @@ public class ModContent {
     public static final RegistryObject<EntityType<BaseEssenceShulker>> END_SHULKER = ENTITIES.register("end_shulker", ()->EntityType.Builder.<BaseEssenceShulker>of((type, level) -> new BaseEssenceShulker(type,level, DyeColor.YELLOW), MobCategory.CREATURE).fireImmune().canSpawnFarFromPlayer().sized(1.0F, 1.0F).clientTrackingRange(10).build(new ResourceLocation(TechResourcesShulker.MODID,"end_shulker").toString()));
 
 
-    public static final RegistryObject<Item> SHULKER_INFUSER_ITEM = ITEMS.register("shulker_infuser", ShulkerInfuserItem::new);
-    public static final RegistryObject<Item> SHULKER_KILLER = ITEMS.register("shulker_killer", () -> new Item(new Item.Properties().tab(TechResourcesShulker.GROUP)){
-        @Override
-        public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-            List<BaseEssenceShulker> target = level.getEntitiesOfClass(BaseEssenceShulker.class, player.getBoundingBox().inflate(8), (entity) -> true);
-            for (BaseEssenceShulker s : target){
-                s.remove(Entity.RemovalReason.KILLED);
-            }
-            if (!player.isCreative())player.getItemInHand(hand).setCount(player.getItemInHand(hand).getCount() - 1);
-            return InteractionResultHolder.success(player.getItemInHand(hand));
-        }
 
-        @Override
-        public void appendHoverText(ItemStack p_41421_, @Nullable Level p_41422_, List<Component> p_41423_, TooltipFlag p_41424_) {
-            p_41423_.add(new TextComponent("Kill all custom shulker in radius of 8 blocks").withStyle(ChatFormatting.YELLOW));
-            p_41423_.add(new TextComponent("Creative Only").withStyle(ChatFormatting.RED));
-            super.appendHoverText(p_41421_, p_41422_, p_41423_, p_41424_);
-        }
-    });
-    public static final RegistryObject<Item> SHULKER_ITEM = ITEMS.register("shulker_item", () -> new ShulkerItem(new Item.Properties().tab(TechResourcesShulker.GROUP),EntityType.SHULKER));
-    public static final RegistryObject<Item> OVERWORLD_SHULKER_ITEM = ITEMS.register("overworld_shulker", () -> new ShulkerItem(new Item.Properties().tab(TechResourcesShulker.GROUP),null));
-    public static final RegistryObject<Item> SKY_SHULKER_ITEM = ITEMS.register("sky_shulker", () -> new ShulkerItem(new Item.Properties().tab(TechResourcesShulker.GROUP),null));
-    public static final RegistryObject<Item> NETHER_SHULKER_ITEM = ITEMS.register("nether_shulker", () -> new ShulkerItem(new Item.Properties().tab(TechResourcesShulker.GROUP),null));
-    public static final RegistryObject<Item> END_SHULKER_ITEM = ITEMS.register("end_shulker", () -> new ShulkerItem(new Item.Properties().tab(TechResourcesShulker.GROUP),null));
-    public static final RegistryObject<Item> OVERWORLD_ESSENCE = ITEMS.register("overworld_essence", () -> new Item(new Item.Properties().tab(TechResourcesShulker.GROUP)));
-    public static final RegistryObject<Item> SKY_ESSENCE = ITEMS.register("sky_essence", () -> new Item(new Item.Properties().tab(TechResourcesShulker.GROUP)));
-    public static final RegistryObject<Item> NETHER_ESSENCE = ITEMS.register("nether_essence", () -> new Item(new Item.Properties().tab(TechResourcesShulker.GROUP)));
-    public static final RegistryObject<Item> END_ESSENCE = ITEMS.register("end_essence", () -> new Item(new Item.Properties().tab(TechResourcesShulker.GROUP)));
-
-    public static final RegistryObject<Item> UPGRADE_BASE = ITEMS.register("upgrade_base", ()-> new Item(new Item.Properties().tab(TechResourcesShulker.GROUP)));
-    public static final RegistryObject<Item> SPEED_UPGRADE = ITEMS.register("speed_upgrade", ()-> new UpgradeItem(Upgrade.SPEED));
-    public static final RegistryObject<Item> DURABILITY_UPGRADE = ITEMS.register("durability_upgrade", ()-> new UpgradeItem(Upgrade.DURABILITY));
 
 
     public static Block[] getAllBox() {
-        List<RegistryObject<Block>> registries = BLOCKS.getEntries().stream().filter(r->r.getId().toString().endsWith("_generating_box")).toList();
+        List<RegistryObject<Block>> registries = ModBlocks.BLOCKS.getEntries().stream().filter(r->r.getId().toString().endsWith("_generating_box")).toList();
         List<Block> blocks = new ArrayList<>();
         registries.forEach(r->blocks.add(r.get()));
         return blocks.toArray(new Block[]{});
@@ -115,17 +83,22 @@ public class ModContent {
 
     public static void createShell(int id){
         Resource res = Resource.getById(id);
-        ITEMS.register(res.name().toLowerCase()+"_shell", () -> new ShellItem(id));
+        ModItems.ITEMS.register(res.name()+"_shell", () -> new ShellItem(id));
 
     }
 
     public static void createBox(int id){
         Resource res = Resource.getById(id);
-        createBlock(res.name().toLowerCase() + "_generating_box", ()->new GeneratingBoxBlock(id));
+        ModBlocks.createBlock(res.name()+ "_generating_box", ()->new GeneratingBoxBlock(id));
+    }
+
+    public static void createShulker(int id){
+        Resource res = Resource.getById(id);
+        ENTITIES.register(res.name()+"_shulker", ()->EntityType.Builder.<ResourceShulker>of((type, level) -> new ResourceShulker(type,level,id), MobCategory.CREATURE).fireImmune().canSpawnFarFromPlayer().sized(1.0F, 1.0F).clientTrackingRange(10).build(new ResourceLocation(TechResourcesShulker.MODID,res.name()+"_shulker").toString()));
     }
 
     public static Block getBoxById(int id){
-        Optional<RegistryObject<Block>> block = BLOCKS.getEntries().stream().filter(r->r.get() instanceof GeneratingBoxBlock b && b.getId() == id).findFirst();
+        Optional<RegistryObject<Block>> block = ModBlocks.BLOCKS.getEntries().stream().filter(r->r.get() instanceof GeneratingBoxBlock b && b.getId() == id).findFirst();
         return block.isPresent() ? block.get().get() : Blocks.AIR;
     }
 
@@ -136,28 +109,17 @@ public class ModContent {
     }
 
 
-    public static RegistryObject<Block> createBlock(String name, Supplier<? extends Block> supplier)
-    {
-        RegistryObject<Block> block = BLOCKS.register(name, supplier);
-        ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties().tab(TechResourcesShulker.GROUP)));
-        return block;
-    }
-    public static RegistryObject<Block> createBlockWithoutItem(String name, Supplier<? extends Block> supplier)
-    {
-        RegistryObject<Block> block = BLOCKS.register(name, supplier);
-        return block;
-    }
+
 
     public static void register(IEventBus bus){
-        BLOCKS.register(bus);
-        ITEMS.register(bus);
+
         BLOCK_ENTITIES.register(bus);
         MENUS.register(bus);
         ENTITIES.register(bus);
     }
 
     public static Item getShellById(int resourceId) {
-        Optional<RegistryObject<Item>> item = ITEMS.getEntries().stream().filter(r->r.get() instanceof ShellItem s && s.getId() == resourceId).findFirst();
+        Optional<RegistryObject<Item>> item = ModItems.ITEMS.getEntries().stream().filter(r->r.get() instanceof ShellItem s && s.getId() == resourceId).findFirst();
         return item.isPresent() ? item.get().get() : Items.SHULKER_SHELL;
     }
 }

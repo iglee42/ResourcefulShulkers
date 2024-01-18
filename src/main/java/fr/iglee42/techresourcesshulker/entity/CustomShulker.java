@@ -71,16 +71,18 @@ public abstract class CustomShulker extends AbstractGolem {
       Vec3i vec3i = Direction.SOUTH.getNormal();
       return new Vector3f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
    });
+   private final int typeId;
    private float currentPeekAmountO;
    private float currentPeekAmount;
    @Nullable
    private BlockPos clientOldAttachPosition;
    private int clientSideTeleportInterpolation;
 
-   public CustomShulker(EntityType<? extends CustomShulker> p_33404_, Level p_33405_) {
+   public CustomShulker(EntityType<? extends CustomShulker> p_33404_, Level p_33405_,int typeId) {
       super(p_33404_, p_33405_);
       this.xpReward = 5;
       this.lookControl = new CustomShulker.ShulkerLookControl(this);
+      this.typeId = typeId;
    }
 
    protected void registerGoals() {

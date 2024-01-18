@@ -1,6 +1,7 @@
 package fr.iglee42.techresourcesshulker.mixins;
 
 import fr.iglee42.techresourcesshulker.ModContent;
+import fr.iglee42.techresourcesshulker.init.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
@@ -27,7 +28,7 @@ public class LevelMixin {
     @Inject(method = "loadedAndEntityCanStandOnFace",at = @At("HEAD"), cancellable = true)
     private void loadedAndEntityCanStandOnFace(BlockPos pos, Entity entity, Direction direction, CallbackInfoReturnable<Boolean> cir){
         ChunkAccess chunkaccess = this.getChunk(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()), ChunkStatus.FULL, false);
-        if (chunkaccess.getBlockState(pos).is(ModContent.SHULKER_INFUSER.get()) && direction == UP) cir.setReturnValue(true);
+        if (chunkaccess.getBlockState(pos).is(ModBlocks.SHULKER_INFUSER.get()) && direction == UP) cir.setReturnValue(true);
     }
 
 }

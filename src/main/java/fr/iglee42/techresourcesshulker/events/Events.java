@@ -16,6 +16,7 @@ public class Events {
 
     @EventBusSubscriber(modid = TechResourcesShulker.MODID,bus = EventBusSubscriber.Bus.MOD)
     public static class Mod{
+
         @SubscribeEvent
         public static void registerAttribute(EntityAttributeCreationEvent event) {
             event.put(ModContent.OVERWORLD_SHULKER.get(), CustomShulker.createAttributes().build());
@@ -23,12 +24,17 @@ public class Events {
             event.put(ModContent.NETHER_SHULKER.get(), CustomShulker.createAttributes().build());
             event.put(ModContent.END_SHULKER.get(), CustomShulker.createAttributes().build());
         }
-
         @SubscribeEvent
         public static void registerRecipeTypes(final RegistryEvent.Register<RecipeSerializer<?>> event) {
             Registry.register(Registry.RECIPE_TYPE, ShulkerRecipeEnvironnement.Type.ID, ShulkerRecipeEnvironnement.Type.INSTANCE);
             Registry.register(Registry.RECIPE_TYPE, ShulkerItemInfusionRecipe.Type.ID, ShulkerItemInfusionRecipe.Type.INSTANCE);
         }
+    }
+
+    @EventBusSubscriber(modid = TechResourcesShulker.MODID,bus = EventBusSubscriber.Bus.FORGE)
+    public static class Forge{
+
+
     }
 
 }

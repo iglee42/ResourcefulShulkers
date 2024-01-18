@@ -19,7 +19,7 @@ public class CustomShulkerHeadLayer extends RenderLayer<CustomShulker, CustomShu
    }
 
    public void render(PoseStack p_117445_, MultiBufferSource p_117446_, int p_117447_, CustomShulker p_117448_, float p_117449_, float p_117450_, float p_117451_, float p_117452_, float p_117453_, float p_117454_) {
-      ResourceLocation resourcelocation = CustomShulkerRenderer.getTextureLocation(p_117448_.getColor());
+      ResourceLocation resourcelocation = CustomShulkerRenderer.getShulkerTexture(p_117448_);
       VertexConsumer vertexconsumer = p_117446_.getBuffer(RenderType.entitySolid(resourcelocation));
       this.getParentModel().getHead().render(p_117445_, vertexconsumer, p_117447_, LivingEntityRenderer.getOverlayCoords(p_117448_, 0.0F));
    }

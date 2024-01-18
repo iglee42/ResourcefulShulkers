@@ -3,6 +3,9 @@ package fr.iglee42.techresourcesshulker.client.entites;
 import com.mojang.blaze3d.vertex.PoseStack;
 import javax.annotation.Nullable;
 
+import fr.iglee42.techresourcesshulker.Materials;
+import fr.iglee42.techresourcesshulker.ModContent;
+import fr.iglee42.techresourcesshulker.TechResourcesShulker;
 import fr.iglee42.techresourcesshulker.entity.CustomShulker;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.Sheets;
@@ -47,8 +50,22 @@ public class CustomShulkerRenderer extends MobRenderer<CustomShulker, CustomShul
       }).isPresent();
    }
 
+   @Override
    public ResourceLocation getTextureLocation(CustomShulker shulker) {
+      return getShulkerTexture(shulker);
+   }
+
+   public static ResourceLocation getShulkerTexture(CustomShulker shulker) {
+      if (shulker.getCustomName() != null && shulker.getCustomName().getString().equalsIgnoreCase("To0pa")) return new ResourceLocation(TechResourcesShulker.MODID,"textures/entity/easter_egg_toopa.png");
+
+      if (shulker.getType() == ModContent.OVERWORLD_SHULKER.get()) return getBaseShulkerTexture("overworld");
+      if (shulker.getType() == ModContent.SKY_SHULKER.get()) return getBaseShulkerTexture("sky");
+      if (shulker.getType() == ModContent.NETHER_SHULKER.get()) return getBaseShulkerTexture("nether");
       return getTextureLocation(shulker.getColor());
+   }
+
+   private static ResourceLocation getBaseShulkerTexture(String essence){
+      return new ResourceLocation(TechResourcesShulker.MODID,"textures/entity/base_essence/"+essence+".png");
    }
 
    public static ResourceLocation getTextureLocation(@Nullable DyeColor p_174376_) {

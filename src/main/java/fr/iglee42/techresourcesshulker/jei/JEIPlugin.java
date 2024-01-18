@@ -1,6 +1,9 @@
 package fr.iglee42.techresourcesshulker.jei;
 
 import fr.iglee42.techresourcesshulker.ModContent;
+import fr.iglee42.techresourcesshulker.init.ModBlocks;
+import fr.iglee42.techresourcesshulker.init.ModItems;
+import fr.iglee42.techresourcesshulker.recipes.ShulkerItemInfusionRecipe;
 import fr.iglee42.techresourcesshulker.recipes.ShulkerRecipeEnvironnement;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -14,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeManager;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @JeiPlugin
@@ -26,12 +30,14 @@ public class JEIPlugin implements IModPlugin {
     public void registerCategories(IRecipeCategoryRegistration registration) {
         registration.addRecipeCategories(new
                 ShulkerEnvironnementInfusionRecipeCategory(registration.getJeiHelpers().getGuiHelper()));
-
+        registration.addRecipeCategories(new
+                ShulkerItemInfusionRecipeCategory(registration.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
     public void registerRecipeCatalysts(@Nonnull IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(new ItemStack(ModContent.SHULKER_INFUSER_ITEM.get()), new RecipeType<>(ShulkerEnvironnementInfusionRecipeCategory.UID, ShulkerRecipeEnvironnement.class));
+        registration.addRecipeCatalyst(new ItemStack(ModItems.SHULKER_INFUSER_ITEM.get()), new RecipeType<>(ShulkerEnvironnementInfusionRecipeCategory.UID, ShulkerRecipeEnvironnement.class),ShulkerItemInfusionRecipeCategory.RECIPE_TYPE);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.SHULKER_PEDESTAL.get()), ShulkerItemInfusionRecipeCategory.RECIPE_TYPE);
     }
 
 
@@ -39,10 +45,8 @@ public class JEIPlugin implements IModPlugin {
     public void registerRecipes(IRecipeRegistration registration){
         RecipeManager rm = Minecraft.getInstance().level.getRecipeManager();
         registration.addRecipes(ShulkerEnvironnementInfusionRecipeCategory.RECIPE_TYPE,
-                rm.getAllRecipesFor(ShulkerRecipeEnvironnement.Type.INSTANCE)
-                        .stream()
-                        .map(r -> (ShulkerRecipeEnvironnement) r)
-                        .collect(Collectors.toList()));
-
+                new ArrayList<>(rm.getAllRecipesFor(ShulkerRecipeEnvironnement.Type.INSTANCE)));
+        registration.addRecipes(ShulkerItemInfusionRecipeCategory.RECIPE_TYPE,
+                new ArrayList<>(rm.getAllRecipesFor(ShulkerItemInfusionRecipe.Type.INSTANCE)));
     }
 }

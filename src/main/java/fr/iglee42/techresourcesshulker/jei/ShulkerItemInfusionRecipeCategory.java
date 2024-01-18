@@ -4,9 +4,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import fr.iglee42.igleelib.api.utils.MouseUtil;
-import fr.iglee42.techresourcesshulker.ModContent;
 import fr.iglee42.techresourcesshulker.TechResourcesShulker;
 import fr.iglee42.techresourcesshulker.init.ModItems;
+import fr.iglee42.techresourcesshulker.recipes.ShulkerItemInfusionRecipe;
 import fr.iglee42.techresourcesshulker.recipes.ShulkerRecipeEnvironnement;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -35,23 +35,24 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class ShulkerEnvironnementInfusionRecipeCategory implements IRecipeCategory<ShulkerRecipeEnvironnement> {
-    public final static ResourceLocation UID = new ResourceLocation(TechResourcesShulker.MODID, "shulker_environnement_infuse");
+public class ShulkerItemInfusionRecipeCategory implements IRecipeCategory<ShulkerItemInfusionRecipe> {
+
     public final static ResourceLocation ARROW = new ResourceLocation(TechResourcesShulker.MODID, "textures/gui/arrow.png");
 
 
-    public static final RecipeType<ShulkerRecipeEnvironnement> RECIPE_TYPE = RecipeType.create(TechResourcesShulker.MODID, "shulker_environnement_infuse",
-            ShulkerRecipeEnvironnement.class);
+    public static final RecipeType<ShulkerItemInfusionRecipe> RECIPE_TYPE = RecipeType.create(TechResourcesShulker.MODID, "shulker_item_infusion",
+            ShulkerItemInfusionRecipe.class);
     private final IDrawable background;
     private final IDrawable icon;
     private final IDrawableStatic arrow;
     private final IDrawableAnimated arrowAnim;
 
 
-    public ShulkerEnvironnementInfusionRecipeCategory(IGuiHelper helper) {
+    public ShulkerItemInfusionRecipeCategory(IGuiHelper helper) {
         this.background = helper.createBlankDrawable(176, 92);
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModItems.SHULKER_INFUSER_ITEM.get()));
         this.arrow = helper.createDrawable(ARROW,0,0,22,15);
@@ -92,13 +93,13 @@ public class ShulkerEnvironnementInfusionRecipeCategory implements IRecipeCatego
     }
 
     @Override
-    public @NotNull RecipeType<ShulkerRecipeEnvironnement> getRecipeType() {
+    public @NotNull RecipeType<ShulkerItemInfusionRecipe> getRecipeType() {
         return RECIPE_TYPE;
     }
 
     @Override
     public @NotNull Component getTitle() {
-        return new TextComponent("Shulker Environnement Infusion");
+        return new TextComponent("Shulker Item Infusion");
     }
 
     @Override
@@ -112,57 +113,55 @@ public class ShulkerEnvironnementInfusionRecipeCategory implements IRecipeCatego
     }
 
     @Override
-    public void draw(ShulkerRecipeEnvironnement recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
+    public void draw(ShulkerItemInfusionRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
         RenderSystem.setShaderTexture(0, new ResourceLocation(TechResourcesShulker.MODID,"textures/gui/arrow.png"));
-        Minecraft.getInstance().screen.blit(stack,52,35,0,0,60,15,60,15);
-        int y = 55;
-        float scale = 22.5f, yaw = -25.0f, pitch = -29.0f;
+        Minecraft.getInstance().screen.blit(stack,60,15,0,0,60,15,60,15);
+        int y = 35;
+        float scale = 27.5f, yaw = -25.0f, pitch = -29.0f;
         if (ForgeRegistries.ENTITIES.getValue(recipe.getBaseEntity()).create(Minecraft.getInstance().level) instanceof LivingEntity e) {
-            renderEntity(stack, 20, y, scale, yaw, pitch, e);
+            renderEntity(stack, 27, y, scale, yaw, pitch, e);
         }
+
 
         if (ForgeRegistries.ENTITIES.getValue(recipe.getResultEntity()).create(Minecraft.getInstance().level) instanceof LivingEntity e) {
             renderEntity(stack, 155, y, scale, yaw, pitch, e);
         }
 
-        Minecraft.getInstance().font.draw(stack, ChatFormatting.BLUE + "" + ChatFormatting.UNDERLINE + "Allowed Biomes", 52, y + 10, 0);
-        Minecraft.getInstance().font.draw(stack, ChatFormatting.GRAY + "(Hover)", 70, y + 20, 0);
-        Minecraft.getInstance().font.draw(stack, ChatFormatting.BLUE +  "Y : "+recipe.getMinY() + "   " + recipe.getMaxY(), 54, y - 50, 0);
-        Minecraft.getInstance().font.draw(stack, ChatFormatting.BLUE +  "~", 91, y - 48, 0);
+        Minecraft.getInstance().font.draw(stack, ChatFormatting.BLUE + "" + ChatFormatting.UNDERLINE + "Ingredients", 60, y + 10, 0);
+
+
     }
 
     @Override
-    public List<Component> getTooltipStrings(ShulkerRecipeEnvironnement recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-        if (MouseUtil.isMouseOver(mouseX, mouseY, 52, 65, Minecraft.getInstance().font.width("Allowed Biomes"), Minecraft.getInstance().font.lineHeight * 2)) {
-            List<Component> biomes = new ArrayList<>();
-            if (recipe.getAllowedBiomes().size() + recipe.getAllowedBiomesTags().size() == 0)
-                biomes.add(new TextComponent("There is no biome (This is a problem)").withStyle(ChatFormatting.RED));
-            else {
-                for (ResourceLocation biomeLocation : recipe.getAllowedBiomes()) {
-                    biomes.add(new TextComponent("- ").append(new TranslatableComponent("biome." + biomeLocation.getNamespace() + "." + biomeLocation.getPath())));
-                }
-                for (ResourceLocation tagLocation : recipe.getAllowedBiomesTags()) {
-                    biomes.add(new TextComponent("- ").append("#" + tagLocation.toString()));
-                }
-            }
-            return biomes;
+    public List<Component> getTooltipStrings(ShulkerItemInfusionRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+        if (MouseUtil.isMouseOver(mouseX, mouseY, 50, 45, Minecraft.getInstance().font.width("Ingredients"), Minecraft.getInstance().font.lineHeight)) {
+            return Arrays.asList(new TextComponent("The order of items is not important"));
         }
         return Collections.emptyList();
     }
 
+
+
+
     @Override
     public ResourceLocation getUid() {
-        return UID;
+        return new ResourceLocation(ShulkerItemInfusionRecipe.Type.ID);
     }
 
     @Override
-    public Class<? extends ShulkerRecipeEnvironnement> getRecipeClass() {
-        return ShulkerRecipeEnvironnement.class;
+    public Class<? extends ShulkerItemInfusionRecipe> getRecipeClass() {
+        return ShulkerItemInfusionRecipe.class;
     }
 
 
     @Override
-    public void setRecipe(@Nonnull IRecipeLayoutBuilder builder, @Nonnull ShulkerRecipeEnvironnement recipe, @Nonnull IFocusGroup focusGroup) {
+    public void setRecipe(@Nonnull IRecipeLayoutBuilder builder, @Nonnull ShulkerItemInfusionRecipe recipe, @Nonnull IFocusGroup focusGroup) {
+        List<Ingredient> ingredients = new ArrayList<>(Arrays.stream(recipe.getPedestalsIngredients()).filter(i->!i.isEmpty()).toList());
+        for (int index = 0; index < ingredients.size(); index++){
+            Ingredient i = ingredients.get(index);
+            builder.addSlot(RecipeIngredientRole.INPUT,10 + index * 20,65).addIngredients(i);
+        }
+        builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addIngredients(Ingredient.of(ForgeRegistries.ITEMS.getValue(recipe.getBaseEntity())));
         builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT).addIngredients(Ingredient.of(ForgeRegistries.ITEMS.getValue(recipe.getResultEntity())));
     }
 

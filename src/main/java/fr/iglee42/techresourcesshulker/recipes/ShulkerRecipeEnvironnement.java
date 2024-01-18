@@ -32,7 +32,7 @@ import java.util.List;
 
 import static fr.iglee42.igleelib.api.utils.ModsUtils.spawnParticle;
 
-public class ShulkerRecipeEnvironnement implements Recipe<SimpleContainer>, ITickableRecipe {
+public class ShulkerRecipeEnvironnement implements Recipe<SimpleContainer>, ITickableRecipe<ShulkerInfuserBlockEntity> {
 
     private final ResourceLocation id;
     private final ResourceLocation baseEntity,resultEntity;

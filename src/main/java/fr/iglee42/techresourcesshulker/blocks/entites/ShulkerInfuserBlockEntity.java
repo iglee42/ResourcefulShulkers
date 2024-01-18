@@ -2,12 +2,14 @@ package fr.iglee42.techresourcesshulker.blocks.entites;
 
 import fr.iglee42.igleelib.api.blockentities.EnergyStorage;
 import fr.iglee42.igleelib.api.blockentities.SecondBlockEntity;
+import fr.iglee42.igleelib.api.utils.ModsUtils;
 import fr.iglee42.techresourcesshulker.ModContent;
 import fr.iglee42.techresourcesshulker.recipes.ITickableRecipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.level.Level;
@@ -35,7 +37,7 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
 
     private boolean enabled;
 
-    private ITickableRecipe recipe;
+    private ITickableRecipe<ShulkerInfuserBlockEntity> recipe;
 
 
     public ShulkerInfuserBlockEntity(BlockPos pos, BlockState state) {
@@ -51,7 +53,7 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
 
     private void tickEntity(Level level, BlockPos pos, BlockState state) {
 
-        if (progress == 15*20 || recipe == null || !hasEnoughEnergy()){
+        if (progress == 15*20 || recipe == null || !hasEnoughEnergy() || !recipe.canContinue(level,pos,state,progress,this)){
             enabled = false;
             progress = 0;
         }
@@ -103,7 +105,7 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
     }
 
     //START
-    public void start(ITickableRecipe recipe){
+    public void start(ITickableRecipe<ShulkerInfuserBlockEntity> recipe){
         enabled = true;
         this.recipe = recipe;
         this.recipe.start(this.level,this.getBlockPos(),this.getBlockState(),this);
@@ -146,5 +148,22 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
         energyStorage.deserializeNBT(tag.get("energy"));
         progress = tag.getInt("progress");
         enabled = tag.getBoolean("enabled");
+    }
+
+
+    public enum Mode implements StringRepresentable {
+
+        ENVIRONNEMENT_INFUSION,
+        ITEM_INFUSION,
+        SHULKER_FUSION;
+
+        @Override
+        public String getSerializedName() {
+            return name().toLowerCase().replace("_infusion","");
+        }
+
+        public String getTextName(){
+            return ModsUtils.getUpperName(name().toLowerCase().replace("_infusion","").replace("shulker_","")," ");
+        }
     }
 }

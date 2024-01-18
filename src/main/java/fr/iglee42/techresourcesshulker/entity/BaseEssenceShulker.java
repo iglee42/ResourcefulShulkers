@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class BaseEssenceShulker extends CustomShulker{
     public BaseEssenceShulker(EntityType<? extends CustomShulker> p_33404_, Level p_33405_,DyeColor color) {
-        super(p_33404_, p_33405_);
+        super(p_33404_, p_33405_,-1);
         this.setColor(color);
     }
 

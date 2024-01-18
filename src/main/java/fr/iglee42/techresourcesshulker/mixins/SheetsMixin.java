@@ -15,5 +15,9 @@ public class SheetsMixin {
     @Inject(at = @At("HEAD"), method = "getAllMaterials")
     private static void getAllMaterials(Consumer<Material> consumer, CallbackInfo info) {
         consumer.accept(Materials.CUSTOM_SHULKER_TEXTURE);
+        consumer.accept(Materials.OVERWORLD_SHULKER_TEXTURE);
+        consumer.accept(Materials.SKY_SHULKER_TEXTURE);
+        consumer.accept(Materials.NETHER_SHULKER_TEXTURE);
+        consumer.accept(Materials.TO0PA_SHULKER_TEXTURE);
     }
 }

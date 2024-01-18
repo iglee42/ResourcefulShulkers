@@ -2,6 +2,8 @@ package fr.iglee42.techresourcesshulker;
 
 import fr.iglee42.techresourcesshulker.customize.Types;
 import fr.iglee42.techresourcesshulker.events.ClientEvents;
+import fr.iglee42.techresourcesshulker.init.ModBlocks;
+import fr.iglee42.techresourcesshulker.init.ModItems;
 import fr.iglee42.techresourcesshulker.network.ModMessages;
 import fr.iglee42.techresourcesshulker.recipes.ModRecipes;
 import net.minecraft.world.item.CreativeModeTab;
@@ -22,7 +24,7 @@ public class TechResourcesShulker {
     public static final CreativeModeTab GROUP = new CreativeModeTab(MODID) {
         @Override
         public ItemStack makeIcon() {
-            return new ItemStack(ModContent.SHULKER_ITEM.get());
+            return new ItemStack(ModItems.SHULKER_ITEM.get());
         }
     };
 
@@ -36,7 +38,10 @@ public class TechResourcesShulker {
         });
         Types.init();
 
+        ModBlocks.BLOCKS.register(bus);
+        ModItems.ITEMS.register(bus);
         ModContent.register(bus);
+
         ModMessages.register();
         ModRecipes.SERIALIZER.register(bus);
 

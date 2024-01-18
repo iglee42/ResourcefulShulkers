@@ -2,6 +2,7 @@ package fr.iglee42.techresourcesshulker.blocks;
 
 import fr.iglee42.techresourcesshulker.ModContent;
 import fr.iglee42.techresourcesshulker.blocks.entites.EnergyInserterBlockEntity;
+import fr.iglee42.techresourcesshulker.init.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -58,5 +59,11 @@ public class EnergyInserterBlock extends BaseEntityBlock {
     @Override
     public RenderShape getRenderShape(BlockState p_49232_) {
         return RenderShape.MODEL;
+    }
+
+    @Override
+    public void onRemove(BlockState p_60515_, Level level, BlockPos pos, BlockState p_60518_, boolean p_60519_) {
+        if (level.getBlockState(pos.above()).is(ModBlocks.SHULKER_INFUSER.get())) level.destroyBlock(pos.above(),true);
+        super.onRemove(p_60515_, level, pos, p_60518_, p_60519_);
     }
 }
