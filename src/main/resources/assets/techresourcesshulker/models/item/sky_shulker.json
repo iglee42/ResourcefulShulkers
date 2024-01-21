@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:item/generated",
+  "parent": "techresourcesshulker:item/shulker",
   "textures": {
-    "layer0": "techresourcesshulker:item/sky_shulker"
+    "0": "minecraft:entity/shulker/shulker_light_blue"
   }
 }

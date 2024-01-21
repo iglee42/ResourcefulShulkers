@@ -10,6 +10,8 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.level.Level;
@@ -53,7 +55,7 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
 
     private void tickEntity(Level level, BlockPos pos, BlockState state) {
 
-        if (progress == 15*20 || recipe == null || !hasEnoughEnergy() || !recipe.canContinue(level,pos,state,progress,this)){
+        if (progress == 15*20 || recipe == null || !hasEnoughEnergy() || !recipe.canContinue(level,pos,state,progress,this) || getCurrentTarget() == null){
             enabled = false;
             progress = 0;
         }
@@ -83,7 +85,7 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
             
             //Freeze Target On the Infuser
 
-            Mob target = level.getNearestEntity(level.getEntitiesOfClass(Mob.class, WORKING_AREA.bounds()), TargetingConditions.DEFAULT, null, pos.getX(), pos.getY(), pos.getZ());
+            LivingEntity target = level.getNearestEntity(level.getEntitiesOfClass(LivingEntity.class, WORKING_AREA.bounds()), TargetingConditions.DEFAULT, null, pos.getX(), pos.getY(), pos.getZ());
 
             if (hasEnoughEnergy()){
 
@@ -93,15 +95,20 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
                 spawnParticle(ParticleTypes.END_ROD,(ServerLevel) level,particlePos.add(0, 1.05, 0.5), particlePos.add(0, 1.1, 0),0);
                 spawnParticle(ParticleTypes.END_ROD,(ServerLevel) level,particlePos.add(0, 1.05, -0.5), particlePos.add(0, 1.1, 0),0);
 
-                if (target != null) {
-                    target.setNoAi(true);
+                if (target instanceof Mob m) {
+                    m.setNoAi(true);
                     energyStorage.extractEnergy(1000, false);
                 }
             } else {
-                if (target != null && target.isNoAi())target.setNoAi(false);
+                if (target instanceof Mob m && m.isNoAi())m.setNoAi(false);
             }
 
         }
+    }
+
+    public LivingEntity getCurrentTarget(){
+        return level.getNearestEntity(level.getEntitiesOfClass(LivingEntity.class, WORKING_AREA.bounds()), TargetingConditions.DEFAULT, null, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());
+
     }
 
     //START
@@ -150,20 +157,4 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
         enabled = tag.getBoolean("enabled");
     }
 
-
-    public enum Mode implements StringRepresentable {
-
-        ENVIRONNEMENT_INFUSION,
-        ITEM_INFUSION,
-        SHULKER_FUSION;
-
-        @Override
-        public String getSerializedName() {
-            return name().toLowerCase().replace("_infusion","");
-        }
-
-        public String getTextName(){
-            return ModsUtils.getUpperName(name().toLowerCase().replace("_infusion","").replace("shulker_","")," ");
-        }
-    }
 }

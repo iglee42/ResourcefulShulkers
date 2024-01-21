@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:item/generated",
+  "parent": "techresourcesshulker:item/shulker",
   "textures": {
-    "layer0": "techresourcesshulker:item/overworld_shulker"
+    "0": "minecraft:entity/shulker/shulker_lime"
   }
 }

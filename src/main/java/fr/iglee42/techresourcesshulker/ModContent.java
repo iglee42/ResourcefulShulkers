@@ -1,39 +1,25 @@
 package fr.iglee42.techresourcesshulker;
 
-import fr.iglee42.techresourcesshulker.blocks.EnergyInserterBlock;
 import fr.iglee42.techresourcesshulker.blocks.GeneratingBoxBlock;
-import fr.iglee42.techresourcesshulker.blocks.ShulkerInfuserBlock;
-import fr.iglee42.techresourcesshulker.blocks.ShulkerPedestalBlock;
-import fr.iglee42.techresourcesshulker.blocks.entites.EnergyInserterBlockEntity;
 import fr.iglee42.techresourcesshulker.blocks.entites.GeneratingBoxBlockEntity;
 import fr.iglee42.techresourcesshulker.blocks.entites.ShulkerInfuserBlockEntity;
 import fr.iglee42.techresourcesshulker.blocks.entites.ShulkerPedestalBlockEntity;
 import fr.iglee42.techresourcesshulker.entity.BaseEssenceShulker;
-import fr.iglee42.techresourcesshulker.entity.CustomShulker;
+import fr.iglee42.techresourcesshulker.entity.CustomShulkerBullet;
 import fr.iglee42.techresourcesshulker.entity.ResourceShulker;
 import fr.iglee42.techresourcesshulker.init.ModBlocks;
 import fr.iglee42.techresourcesshulker.init.ModItems;
 import fr.iglee42.techresourcesshulker.item.ShellItem;
-import fr.iglee42.techresourcesshulker.item.ShulkerInfuserItem;
 import fr.iglee42.techresourcesshulker.item.ShulkerItem;
-import fr.iglee42.techresourcesshulker.item.UpgradeItem;
 import fr.iglee42.techresourcesshulker.menu.GeneratingBoxMenu;
 import fr.iglee42.techresourcesshulker.utils.Resource;
-import fr.iglee42.techresourcesshulker.utils.Upgrade;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -43,12 +29,10 @@ import net.minecraftforge.network.IContainerFactory;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 public class ModContent {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES,TechResourcesShulker.MODID);
@@ -59,7 +43,6 @@ public class ModContent {
 
     public static final RegistryObject<BlockEntityType<GeneratingBoxBlockEntity>> GENERATING_BOX_BLOCK_ENTITY = BLOCK_ENTITIES.register("generating_box", ()->BlockEntityType.Builder.of(GeneratingBoxBlockEntity::new,getAllBox()).build(null));
     public static final RegistryObject<BlockEntityType<ShulkerInfuserBlockEntity>> SHULKER_INFUSER_BLOCK_ENTITY = BLOCK_ENTITIES.register("shulker_infuser", ()->BlockEntityType.Builder.of(ShulkerInfuserBlockEntity::new,ModBlocks.SHULKER_INFUSER.get()).build(null));
-    public static final RegistryObject<BlockEntityType<EnergyInserterBlockEntity>> ENERGY_INSERTER_BLOCK_ENTITY = BLOCK_ENTITIES.register("energy_inserter", ()->BlockEntityType.Builder.of(EnergyInserterBlockEntity::new,ModBlocks.ENERGY_INSERTER.get()).build(null));
     public static final RegistryObject<BlockEntityType<ShulkerPedestalBlockEntity>> SHULKER_PEDESTAL_BLOCK_ENTITY = BLOCK_ENTITIES.register("shulker_pedestal", ()->BlockEntityType.Builder.of(ShulkerPedestalBlockEntity::new,ModBlocks.SHULKER_PEDESTAL.get()).build(null));
 
 
@@ -92,9 +75,16 @@ public class ModContent {
         ModBlocks.createBlock(res.name()+ "_generating_box", ()->new GeneratingBoxBlock(id));
     }
 
-    public static void createShulker(int id){
+    public static RegistryObject<EntityType<ResourceShulker>> createShulker(int id){
         Resource res = Resource.getById(id);
-        ENTITIES.register(res.name()+"_shulker", ()->EntityType.Builder.<ResourceShulker>of((type, level) -> new ResourceShulker(type,level,id), MobCategory.CREATURE).fireImmune().canSpawnFarFromPlayer().sized(1.0F, 1.0F).clientTrackingRange(10).build(new ResourceLocation(TechResourcesShulker.MODID,res.name()+"_shulker").toString()));
+        RegistryObject<EntityType<ResourceShulker>> entity = ENTITIES.register(res.name()+"_shulker", ()->EntityType.Builder.<ResourceShulker>of((type1, level) -> new ResourceShulker(type1,level,id), MobCategory.CREATURE).fireImmune().canSpawnFarFromPlayer().sized(1.0F, 1.0F).clientTrackingRange(10).build(new ResourceLocation(TechResourcesShulker.MODID,res.name()+"_shulker").toString()));
+        ModItems.ITEMS.register(res.name().toLowerCase()+"_shulker", () -> new ShulkerItem(new Item.Properties().tab(TechResourcesShulker.GROUP),null));
+        return entity;
+    }
+
+    public static RegistryObject<EntityType<CustomShulkerBullet>> createBullet(int id){
+        Resource res = Resource.getById(id);
+        return ENTITIES.register(res.name()+"_shulker_bullet",()->EntityType.Builder.<CustomShulkerBullet>of((type1,level)-> new CustomShulkerBullet(type1,level,res.id()), MobCategory.MISC).sized(0.3125F, 0.3125F).clientTrackingRange(8).build(new ResourceLocation(TechResourcesShulker.MODID,res.name()+"_shulker_bullet").toString()));
     }
 
     public static Block getBoxById(int id){

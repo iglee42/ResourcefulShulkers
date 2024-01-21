@@ -36,7 +36,7 @@ public class JEIPlugin implements IModPlugin {
 
     @Override
     public void registerRecipeCatalysts(@Nonnull IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(new ItemStack(ModItems.SHULKER_INFUSER_ITEM.get()), new RecipeType<>(ShulkerEnvironnementInfusionRecipeCategory.UID, ShulkerRecipeEnvironnement.class),ShulkerItemInfusionRecipeCategory.RECIPE_TYPE);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.SHULKER_INFUSER.get()), new RecipeType<>(ShulkerEnvironnementInfusionRecipeCategory.UID, ShulkerRecipeEnvironnement.class),ShulkerItemInfusionRecipeCategory.RECIPE_TYPE);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.SHULKER_PEDESTAL.get()), ShulkerItemInfusionRecipeCategory.RECIPE_TYPE);
     }
 

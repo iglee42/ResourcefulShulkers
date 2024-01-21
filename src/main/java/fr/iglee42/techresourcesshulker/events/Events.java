@@ -2,10 +2,13 @@ package fr.iglee42.techresourcesshulker.events;
 
 import fr.iglee42.techresourcesshulker.ModContent;
 import fr.iglee42.techresourcesshulker.TechResourcesShulker;
+import fr.iglee42.techresourcesshulker.customize.Types;
 import fr.iglee42.techresourcesshulker.entity.CustomShulker;
 import fr.iglee42.techresourcesshulker.recipes.ShulkerItemInfusionRecipe;
 import fr.iglee42.techresourcesshulker.recipes.ShulkerRecipeEnvironnement;
 import net.minecraft.core.Registry;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -23,6 +26,9 @@ public class Events {
             event.put(ModContent.SKY_SHULKER.get(), CustomShulker.createAttributes().build());
             event.put(ModContent.NETHER_SHULKER.get(), CustomShulker.createAttributes().build());
             event.put(ModContent.END_SHULKER.get(), CustomShulker.createAttributes().build());
+            Types.TYPES.forEach(r->{
+                event.put(Types.ENTITY_TYPES.get(r.id()).get(),CustomShulker.createAttributes().build());
+            });
         }
         @SubscribeEvent
         public static void registerRecipeTypes(final RegistryEvent.Register<RecipeSerializer<?>> event) {

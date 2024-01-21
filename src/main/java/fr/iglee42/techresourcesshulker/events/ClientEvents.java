@@ -3,8 +3,10 @@ package fr.iglee42.techresourcesshulker.events;
 import fr.iglee42.techresourcesshulker.ModContent;
 import fr.iglee42.techresourcesshulker.TechResourcesShulker;
 import fr.iglee42.techresourcesshulker.client.blockentites.ShulkerPedestalRenderer;
+import fr.iglee42.techresourcesshulker.client.entites.CustomShulkerBulletRenderer;
 import fr.iglee42.techresourcesshulker.client.entites.CustomShulkerRenderer;
 import fr.iglee42.techresourcesshulker.customize.Types;
+import fr.iglee42.techresourcesshulker.entity.CustomShulker;
 import fr.iglee42.techresourcesshulker.init.ModBlocks;
 import fr.iglee42.techresourcesshulker.menu.slot.BoxShellSlot;
 import fr.iglee42.techresourcesshulker.menu.slot.BoxUpgradeSlot;
@@ -12,6 +14,10 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.client.renderer.entity.ShulkerBulletRenderer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
@@ -35,13 +41,16 @@ public class ClientEvents {
         Types.TYPES.forEach(r-> event.getItemColors().register((p_92672_, p_92673_) -> r.shellItemColor(), ModContent.getShellById(r.id())));
     }
     @SubscribeEvent
-    public static void clientSetup(FMLClientSetupEvent event) {
+    public static <T extends Entity> void clientSetup(FMLClientSetupEvent event) {
         EntityRenderers.register(ModContent.OVERWORLD_SHULKER.get(), CustomShulkerRenderer::new);
         EntityRenderers.register(ModContent.SKY_SHULKER.get(), CustomShulkerRenderer::new);
         EntityRenderers.register(ModContent.NETHER_SHULKER.get(), CustomShulkerRenderer::new);
         EntityRenderers.register(ModContent.END_SHULKER.get(), CustomShulkerRenderer::new);
+        Types.TYPES.forEach(r->{
+            EntityRenderers.register(Types.ENTITY_TYPES.get(r.id()).get(), CustomShulkerRenderer::new);
+            EntityRenderers.register(Types.BULLET_TYPES.get(r.id()).get(), CustomShulkerBulletRenderer::new);
+        });
         ItemBlockRenderTypes.setRenderLayer(ModBlocks.SHULKER_INFUSER.get(), RenderType.cutout());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.ENERGY_INSERTER.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(ModBlocks.SHULKER_PEDESTAL.get(), RenderType.cutout());
         BlockEntityRenderers.register(ModContent.SHULKER_PEDESTAL_BLOCK_ENTITY.get(), ShulkerPedestalRenderer::new);
     }

@@ -1,7 +1,5 @@
 package fr.iglee42.techresourcesshulker.blocks;
 
-import fr.iglee42.techresourcesshulker.ModContent;
-import fr.iglee42.techresourcesshulker.blocks.entites.EnergyInserterBlockEntity;
 import fr.iglee42.techresourcesshulker.blocks.entites.ShulkerPedestalBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
@@ -17,8 +15,6 @@ import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
@@ -92,5 +88,11 @@ public class ShulkerPedestalBlock extends BaseEntityBlock {
             }
         }
         return super.use(state, level, pos, player, p_60507_, p_60508_);
+    }
+
+    @Override
+    public void onRemove(BlockState p_60515_, Level p_60516_, BlockPos p_60517_, BlockState p_60518_, boolean p_60519_) {
+        if (p_60516_.getBlockEntity(p_60517_) instanceof ShulkerPedestalBlockEntity be)be.dropContent();
+        super.onRemove(p_60515_, p_60516_, p_60517_, p_60518_, p_60519_);
     }
 }

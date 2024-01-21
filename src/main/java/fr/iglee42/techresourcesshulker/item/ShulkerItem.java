@@ -38,4 +38,9 @@ public class ShulkerItem extends Item {
         context.getPlayer().getMainHandItem().setCount(context.getItemInHand().getCount() - 1);
         return InteractionResult.PASS;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return shulkerType == EntityType.SHULKER ? super.getDescriptionId() : super.getDescriptionId().replace("item","entity");
+    }
 }

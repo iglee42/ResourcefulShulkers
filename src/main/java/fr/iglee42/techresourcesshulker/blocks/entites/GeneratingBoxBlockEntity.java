@@ -1,6 +1,7 @@
 package fr.iglee42.techresourcesshulker.blocks.entites;
 
 import fr.iglee42.igleelib.api.blockentities.SecondBlockEntity;
+import fr.iglee42.igleelib.api.utils.InventoryUtil;
 import fr.iglee42.techresourcesshulker.ModContent;
 import fr.iglee42.techresourcesshulker.blocks.GeneratingBoxBlock;
 import fr.iglee42.techresourcesshulker.item.UpgradeItem;
@@ -21,7 +22,9 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -89,18 +92,15 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
         @Override
         public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
             if (stack.getItem() instanceof UpgradeItem upg) {
-                if (Upgrade.inventoryContainsUpgrade(this,upg.getUpgrade())) return stack;
-                if (stack.getCount() > Upgrade.MAX) {
-                    ItemStack copy = stack.copy();
-                    copy.setCount(Upgrade.MAX);
-                    super.insertItem(slot, copy, simulate);
-
-                    ItemStack out = stack.copy();
-                    out.setCount(stack.getCount() - Upgrade.MAX);
-                    return out;
-                }
+                if (Upgrade.inventoryContainsUpgrade(this,upg.getUpgrade())) {
+                    if (Upgrade.getFirstInventoryIndexWithUpgrade(inventory,upg.getUpgrade()) == slot){
+                        if (stack.getCount() < Upgrade.MAX) {
+                            return super.insertItem(slot,stack,simulate);
+                        } else return stack;
+                    } else return stack;
+                } else return super.insertItem(slot,stack,simulate);
             }
-            return stack.getItem() instanceof UpgradeItem ? super.insertItem(slot, stack, simulate) : stack;
+            return stack;
         }
 
         @Override
@@ -136,12 +136,14 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
             ModMessages.sendToClients(new GeneratingTickSyncS2CPacket(entity.generatingTick, blockPos));
             ModMessages.sendToClients(new GeneratorDurabilitySyncS2CPacket(entity.remainingDurability, blockPos));
             if (entity.remainingDurability > 0 && !entity.isInventoryFull()){
-                entity.generatingTick += 1;
+                int slotWithSpeed = Upgrade.getFirstInventoryIndexWithUpgrade(entity.upgrades,Upgrade.SPEED);
+                entity.generatingTick += (1 + (slotWithSpeed == -1 ? 0 : entity.upgrades.getStackInSlot(slotWithSpeed).getCount()));
             }
             if (entity.generatingTick / 20 == 5 && !entity.isInventoryFull()){
-                if (new Random().nextInt(10)> 0) entity.addItems();
+                entity.addItems();
                 entity.generatingTick = 0;
-                if (level.random.nextInt(5) < 4 && entity.remainingDurability > 0){
+                int slotWithDurability = Upgrade.getFirstInventoryIndexWithUpgrade(entity.upgrades,Upgrade.DURABILITY);
+                if (entity.remainingDurability > 0 && new Random().nextInt(5) < (5 - (slotWithDurability == -1 ? 0 : entity.upgrades.getStackInSlot(slotWithDurability).getCount()))){
                     entity.remainingDurability--;
                 }
             }
@@ -396,6 +398,17 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
 
     public void setDurability(int durability) {
         this.remainingDurability = durability;
+    }
+
+    public void dropContent() {
+        SimpleContainer container = new SimpleContainer(inventory.getSlots() + upgrades.getSlots());
+        for (int i = 0; i < inventory.getSlots();i++){
+            container.setItem(i,inventory.getStackInSlot(i));
+        }
+        for (int i = 0; i < upgrades.getSlots();i++){
+            container.setItem((inventory.getSlots() -1) + i,upgrades.getStackInSlot(i));
+        }
+        Containers.dropContents(level,worldPosition,container);
     }
 }
 

@@ -5,9 +5,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import fr.iglee42.igleelib.api.utils.MouseUtil;
 import fr.iglee42.techresourcesshulker.TechResourcesShulker;
-import fr.iglee42.techresourcesshulker.init.ModItems;
+import fr.iglee42.techresourcesshulker.init.ModBlocks;
 import fr.iglee42.techresourcesshulker.recipes.ShulkerItemInfusionRecipe;
-import fr.iglee42.techresourcesshulker.recipes.ShulkerRecipeEnvironnement;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -23,11 +22,13 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -54,12 +55,14 @@ public class ShulkerItemInfusionRecipeCategory implements IRecipeCategory<Shulke
 
     public ShulkerItemInfusionRecipeCategory(IGuiHelper helper) {
         this.background = helper.createBlankDrawable(176, 92);
-        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModItems.SHULKER_INFUSER_ITEM.get()));
+        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.SHULKER_INFUSER.get()));
         this.arrow = helper.createDrawable(ARROW,0,0,22,15);
         this.arrowAnim = helper.createAnimatedDrawable(arrow,22, IDrawableAnimated.StartDirection.TOP,false);
     }
 
     public static void renderEntity(PoseStack poseStack, int x, int y, double scale, double yaw, double pitch, LivingEntity livingEntity) {
+
+
         PoseStack modelViewStack = RenderSystem.getModelViewStack();
         modelViewStack.pushPose();
         modelViewStack.mulPoseMatrix(poseStack.last().pose());
@@ -118,13 +121,18 @@ public class ShulkerItemInfusionRecipeCategory implements IRecipeCategory<Shulke
         Minecraft.getInstance().screen.blit(stack,60,15,0,0,60,15,60,15);
         int y = 35;
         float scale = 27.5f, yaw = -25.0f, pitch = -29.0f;
-        if (ForgeRegistries.ENTITIES.getValue(recipe.getBaseEntity()).create(Minecraft.getInstance().level) instanceof LivingEntity e) {
+        if (ForgeRegistries.ENTITIES.getValue(recipe.getBaseEntity()).create(Minecraft.getInstance().level) instanceof LivingEntity) {
+            LivingEntity e = (LivingEntity) ForgeRegistries.ENTITIES.getValue(recipe.getBaseEntity()).create(Minecraft.getInstance().level);
             renderEntity(stack, 27, y, scale, yaw, pitch, e);
         }
 
 
-        if (ForgeRegistries.ENTITIES.getValue(recipe.getResultEntity()).create(Minecraft.getInstance().level) instanceof LivingEntity e) {
+        if (ForgeRegistries.ENTITIES.getValue(recipe.getResultEntity()).create(Minecraft.getInstance().level) instanceof LivingEntity) {
+            LivingEntity e = (LivingEntity) ForgeRegistries.ENTITIES.getValue(recipe.getBaseEntity()).create(Minecraft.getInstance().level);
+            e.load(recipe.getResultNBT());
             renderEntity(stack, 155, y, scale, yaw, pitch, e);
+        } else if (ForgeRegistries.ENTITIES.getValue(recipe.getResultEntity()).create(Minecraft.getInstance().level) instanceof ItemEntity){
+            //TODO Render Items
         }
 
         Minecraft.getInstance().font.draw(stack, ChatFormatting.BLUE + "" + ChatFormatting.UNDERLINE + "Ingredients", 60, y + 10, 0);

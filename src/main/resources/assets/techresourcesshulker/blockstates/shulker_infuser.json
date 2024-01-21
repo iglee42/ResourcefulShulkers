@@ -1,7 +1,5 @@
 {
   "variants": {
-    "mode=environnement": {"model": "techresourcesshulker:block/shulker_infuser"},
-    "mode=item": {"model": "techresourcesshulker:block/shulker_infuser_item"},
-    "mode=shulker_fusion": {"model": "techresourcesshulker:block/shulker_infuser_item"}
+    "": {"model": "techresourcesshulker:block/shulker_infuser"}
   }
 }

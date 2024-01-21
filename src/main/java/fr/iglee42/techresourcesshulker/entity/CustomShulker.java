@@ -22,6 +22,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -45,11 +47,13 @@ import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.AbstractGolem;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
@@ -57,9 +61,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.registries.ForgeRegistries;
 
 
-public abstract class CustomShulker extends AbstractGolem {
+public abstract class CustomShulker extends AbstractGolem implements Enemy {
    private static final UUID COVERED_ARMOR_MODIFIER_UUID = UUID.fromString("7E0292F2-9434-48D5-A29F-9583AF7DF27F");
    private static final AttributeModifier COVERED_ARMOR_MODIFIER = new AttributeModifier(COVERED_ARMOR_MODIFIER_UUID, "Covered armor bonus", 20.0D, AttributeModifier.Operation.ADDITION);
    public static final EntityDataAccessor<Direction> DATA_ATTACH_FACE_ID = SynchedEntityData.defineId(CustomShulker.class, EntityDataSerializers.DIRECTION);
@@ -386,15 +391,38 @@ public abstract class CustomShulker extends AbstractGolem {
    public boolean hurt(DamageSource p_33421_, float p_33422_) {
       if (this.isClosed()) {
          Entity entity = p_33421_.getDirectEntity();
-         return !(entity instanceof AbstractArrow);
-      } else if (p_33421_.isProjectile()) {
-         Entity entity1 = p_33421_.getDirectEntity();
-         if (entity1 != null && entity1.getType() == EntityType.SHULKER_BULLET) {
-            hitByShulkerBullet();
+         if (entity instanceof AbstractArrow) {
+            return false;
          }
       }
-      return true;
+      if (!super.hurt(p_33421_, p_33422_)) {
+         return false;
+      } else {
+            if (p_33421_.isProjectile()) {
+               Entity entity1 = p_33421_.getDirectEntity();
+               if (entity1 != null && entity1.getType() == EntityType.SHULKER_BULLET) {
+                  hitByShulkerBullet();
+               }
+            }
+            return true;
+      }
    }
+   @Override
+   protected InteractionResult mobInteract(Player player, InteractionHand p_21473_) {
+      if (player.isCrouching()){
+         player.addItem(new ItemStack(ForgeRegistries.ITEMS.getValue(this.getType().getRegistryName())));
+         this.remove(RemovalReason.KILLED);
+         return InteractionResult.SUCCESS;
+      }
+      return super.mobInteract(player, p_21473_);
+   }
+
+   @org.jetbrains.annotations.Nullable
+   @Override
+   public ItemStack getPickResult() {
+      return new ItemStack(ForgeRegistries.ITEMS.getValue(this.getType().getRegistryName()));
+   }
+
 
    public abstract void hitByShulkerBullet();
 
@@ -497,6 +525,11 @@ public abstract class CustomShulker extends AbstractGolem {
       return b0 != 16 && b0 <= 15 ? DyeColor.byId(b0) : null;
    }
 
+   public int getTypeId() {
+      return typeId;
+   }
+
+   public abstract boolean hasTarget();
 
    static class ShulkerBodyRotationControl extends BodyRotationControl {
       public ShulkerBodyRotationControl(Mob p_149816_) {
@@ -555,7 +588,7 @@ public abstract class CustomShulker extends AbstractGolem {
             peekTime = 0;
             return;
          }
-         if (random.nextInt(5) == 0){
+         if (random.nextInt(5) < 2 && hasTarget()){
             this.peekTime = this.adjustedTickDelay(20 * (1 + CustomShulker.this.random.nextInt(5,10)));
             CustomShulker.this.setRawPeekAmount(100);
          } else {

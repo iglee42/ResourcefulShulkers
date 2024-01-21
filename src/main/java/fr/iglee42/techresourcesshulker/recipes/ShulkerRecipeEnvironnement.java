@@ -209,7 +209,7 @@ public class ShulkerRecipeEnvironnement implements Recipe<SimpleContainer>, ITic
                     if (ForgeRegistries.BIOMES.containsKey(br)){
                         allowedBiomes.add(br);
                     } else {
-                        throw new JsonSyntaxException("The biome \""+ br +"\" is invalid");
+                        throw new IllegalArgumentException("The biome \""+ br +"\" is invalid");
                     }
                 }
 

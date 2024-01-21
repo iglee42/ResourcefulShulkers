@@ -1,8 +1,10 @@
 package fr.iglee42.techresourcesshulker.recipes;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import fr.iglee42.igleelib.api.utils.JsonHelper;
 import fr.iglee42.techresourcesshulker.blocks.ShulkerInfuserBlock;
 import fr.iglee42.techresourcesshulker.blocks.entites.ShulkerInfuserBlockEntity;
@@ -11,15 +13,20 @@ import fr.iglee42.techresourcesshulker.init.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -53,12 +60,14 @@ public class ShulkerItemInfusionRecipe implements Recipe<SimpleContainer>, ITick
 
     private final ResourceLocation id;
     private final ResourceLocation baseEntity, resultEntity;
+    private final CompoundTag resultNBT;
     private final Ingredient[] pedestalsIngredients;
 
-    public ShulkerItemInfusionRecipe(ResourceLocation id, ResourceLocation baseEntity, ResourceLocation resultEntity, Ingredient... pedestalsIngredients) {
+    public ShulkerItemInfusionRecipe(ResourceLocation id, ResourceLocation baseEntity, ResourceLocation resultEntity,CompoundTag resultNBT, Ingredient... pedestalsIngredients) {
         this.id = id;
         this.baseEntity = baseEntity;
         this.resultEntity = resultEntity;
+        this.resultNBT = resultNBT;
         for (int i = 0; i < 8; i++) {
             if (pedestalsIngredients[i] == null) pedestalsIngredients[i] = Ingredient.EMPTY;
         }
@@ -77,17 +86,17 @@ public class ShulkerItemInfusionRecipe implements Recipe<SimpleContainer>, ITick
             if (!stack.isEmpty() && pedestalIngredients.stream().anyMatch(i -> i.getItems()[0].equals(stack, false))) {
                 pedestalIngredients.remove(pedestalIngredients.stream().filter(i->i.getItems()[0].equals(stack,false)).findFirst().get());
                 if (progress <= 150)
-                    spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, ((ShulkerPedestalBlockEntity) level.getBlockEntity(pedestalBlockPos)).getStack()), (ServerLevel) level, pedestalPos, Vec3.atCenterOf(pos).add(0, 1.5, 0), 0);
+                    spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, ((ShulkerPedestalBlockEntity) level.getBlockEntity(pedestalBlockPos)).getStack()), (ServerLevel) level, pedestalPos, Vec3.atCenterOf(pos).add(0, 3, 0), 0);
                 if (progress > 150 && progress % 2 == 0) {
                     if (Arrays.stream(getPedestalsIngredients()).filter(i -> !i.isEmpty()).count() >= 4) {
                         if ((posXYZ[0] == 2 && posXYZ[2] == -2) || (posXYZ[0] == 3))
-                            spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, ((ShulkerPedestalBlockEntity) level.getBlockEntity(pedestalBlockPos)).getStack()), (ServerLevel) level, Vec3.atCenterOf(pos).add(0.5, 1.5, -0.5), Vec3.atCenterOf(pos).add(0.5, 0.5, -0.5), 0);
+                            spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, ((ShulkerPedestalBlockEntity) level.getBlockEntity(pedestalBlockPos)).getStack()), (ServerLevel) level, Vec3.atCenterOf(pos).add(0.5, 0.5 + be.getCurrentTarget().getBbHeight(), -0.5), Vec3.atCenterOf(pos).add(0.5, 0.5, -0.5), 0);
                         if ((posXYZ[0] == -2 && posXYZ[2] == -2) || (posXYZ[2] == -3))
-                            spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, ((ShulkerPedestalBlockEntity) level.getBlockEntity(pedestalBlockPos)).getStack()), (ServerLevel) level, Vec3.atCenterOf(pos).add(-0.5, 1.5, -0.5), Vec3.atCenterOf(pos).add(-0.5, 0.5, -0.5), 0);
+                            spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, ((ShulkerPedestalBlockEntity) level.getBlockEntity(pedestalBlockPos)).getStack()), (ServerLevel) level, Vec3.atCenterOf(pos).add(-0.5, 0.5 + be.getCurrentTarget().getBbHeight(), -0.5), Vec3.atCenterOf(pos).add(-0.5, 0.5, -0.5), 0);
                         if ((posXYZ[0] == -2 && posXYZ[2] == 2) || (posXYZ[0] == -3))
-                            spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, ((ShulkerPedestalBlockEntity) level.getBlockEntity(pedestalBlockPos)).getStack()), (ServerLevel) level, Vec3.atCenterOf(pos).add(-0.5, 1.5, 0.5), Vec3.atCenterOf(pos).add(-0.5, 0.5, 0.5), 0);
+                            spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, ((ShulkerPedestalBlockEntity) level.getBlockEntity(pedestalBlockPos)).getStack()), (ServerLevel) level, Vec3.atCenterOf(pos).add(-0.5, 0.5 + be.getCurrentTarget().getBbHeight(), 0.5), Vec3.atCenterOf(pos).add(-0.5, 0.5, 0.5), 0);
                         if ((posXYZ[0] == 2 && posXYZ[2] == 2) || (posXYZ[2] == 3))
-                            spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, ((ShulkerPedestalBlockEntity) level.getBlockEntity(pedestalBlockPos)).getStack()), (ServerLevel) level, Vec3.atCenterOf(pos).add(0.5, 1.5, 0.5), Vec3.atCenterOf(pos).add(0.5, 0.5, 0.5), 0);
+                            spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, ((ShulkerPedestalBlockEntity) level.getBlockEntity(pedestalBlockPos)).getStack()), (ServerLevel) level, Vec3.atCenterOf(pos).add(0.5, 0.5 + be.getCurrentTarget().getBbHeight(), 0.5), Vec3.atCenterOf(pos).add(0.5, 0.5, 0.5), 0);
                     } else {
                         spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, ((ShulkerPedestalBlockEntity) level.getBlockEntity(pedestalBlockPos)).getStack()), (ServerLevel) level, Vec3.atCenterOf(pos).add(0.5, 1.5, -0.5), Vec3.atCenterOf(pos).add(0.5, 0.5, -0.5), 0);
                         spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, ((ShulkerPedestalBlockEntity) level.getBlockEntity(pedestalBlockPos)).getStack()), (ServerLevel) level, Vec3.atCenterOf(pos).add(-0.5, 1.5, -0.5), Vec3.atCenterOf(pos).add(-0.5, 0.5, -0.5), 0);
@@ -109,7 +118,7 @@ public class ShulkerItemInfusionRecipe implements Recipe<SimpleContainer>, ITick
             ItemStack stack = ((ShulkerPedestalBlockEntity)level.getBlockEntity(pos.offset(pedestalPos[0],pedestalPos[1],pedestalPos[2]))).getStack();
             if (pedestalIngredients.stream().anyMatch(i->i.getItems()[0].equals(stack,false))) {
                 pedestalIngredients.remove(pedestalIngredients.stream().filter(i -> i.getItems()[0].equals(stack, false)).findFirst().get());
-                ((ShulkerPedestalBlockEntity)level.getBlockEntity(pos.offset(pedestalPos[0],pedestalPos[1],pedestalPos[2]))).setStack(ItemStack.EMPTY);
+                ((ShulkerPedestalBlockEntity)level.getBlockEntity(pos.offset(pedestalPos[0],pedestalPos[1],pedestalPos[2]))).setStack(new ItemStack(Items.AIR));
             }
         }
         Vec3 posi = Vec3.atBottomCenterOf(pos);
@@ -118,14 +127,19 @@ public class ShulkerItemInfusionRecipe implements Recipe<SimpleContainer>, ITick
 
         Vec3 basePos = posi.add(0,1,0);
         Entity newEntity = ForgeRegistries.ENTITIES.getValue(getResultEntity()).create(level);
+        newEntity.load(resultNBT);
         newEntity.setPos(target.position());
+
+        /*resultNBT.getAllKeys().forEach(s->{
+            newEntity.getPersistentData().remove(s);
+            newEntity.getPersistentData().put(s,resultNBT.get(s));
+        });*/
         target.remove(Entity.RemovalReason.KILLED);
         level.addFreshEntity(newEntity);
     }
 
     @Override
     public boolean canContinue(Level level, BlockPos pos, BlockState state, int progress, ShulkerInfuserBlockEntity be) {
-        if (state.getValue(ShulkerInfuserBlock.MODE) != ShulkerInfuserBlockEntity.Mode.ITEM_INFUSION) return false;
         List<Ingredient> pedestalIngredients = new ArrayList<>(Arrays.stream(getPedestalsIngredients()).toList());
         pedestalIngredients.removeIf(i->i==Ingredient.EMPTY);
         for (int[] pedestalPos : ShulkerItemInfusionRecipe.PEDESTAL_POSITION){
@@ -184,6 +198,10 @@ public class ShulkerItemInfusionRecipe implements Recipe<SimpleContainer>, ITick
         return pedestalsIngredients;
     }
 
+    public CompoundTag getResultNBT() {
+        return resultNBT;
+    }
+
     public static class Type implements RecipeType<ShulkerItemInfusionRecipe> {
         public static final ShulkerItemInfusionRecipe.Type INSTANCE = new ShulkerItemInfusionRecipe.Type();
         public static final String ID = "shulker_item_infusion";
@@ -194,7 +212,7 @@ public class ShulkerItemInfusionRecipe implements Recipe<SimpleContainer>, ITick
     public static class Serializer extends net.minecraftforge.registries.ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<ShulkerItemInfusionRecipe> {
         public @NotNull ShulkerItemInfusionRecipe fromJson(ResourceLocation rs, JsonObject json) {
             JsonArray array = json.getAsJsonArray("pedestalsIngredients");
-            if (array.size() < 1) throw new JsonSyntaxException("The recipe requires at least 1 pedestal ingredient");
+            if (array.isEmpty()) throw new JsonSyntaxException("The recipe requires at least 1 pedestal ingredient");
             if (array.size() > 8) throw new JsonSyntaxException("There is too many pedestals ingredients");
             Ingredient[] ingredients = new Ingredient[8];
             AtomicInteger index = new AtomicInteger();
@@ -204,16 +222,25 @@ public class ShulkerItemInfusionRecipe implements Recipe<SimpleContainer>, ITick
                 ingredients[index.get()] = ingredient;
                 index.getAndIncrement();
             });
-            return new ShulkerItemInfusionRecipe(rs, new ResourceLocation(JsonHelper.getString(json, "baseEntity")), new ResourceLocation(JsonHelper.getString(json, "resultEntity")), ingredients);
+            CompoundTag tag = new CompoundTag();
+            if (json.has("resultNbt")){
+                try {
+                    tag = TagParser.parseTag(new Gson().toJson(json.getAsJsonObject("resultNbt")));
+                } catch (CommandSyntaxException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return new ShulkerItemInfusionRecipe(rs, new ResourceLocation(JsonHelper.getString(json, "baseEntity")), new ResourceLocation(JsonHelper.getString(json, "resultEntity")),tag, ingredients);
         }
 
         public ShulkerItemInfusionRecipe fromNetwork(ResourceLocation rs, FriendlyByteBuf buffer) {
-            return new ShulkerItemInfusionRecipe(rs, buffer.readResourceLocation(), buffer.readResourceLocation(), buffer.readList(Ingredient::fromNetwork).toArray(new Ingredient[8]));
+            return new ShulkerItemInfusionRecipe(rs, buffer.readResourceLocation(), buffer.readResourceLocation(),buffer.readNbt(), buffer.readList(Ingredient::fromNetwork).toArray(new Ingredient[8]));
         }
 
         public void toNetwork(FriendlyByteBuf buffer, ShulkerItemInfusionRecipe recipe) {
             buffer.writeResourceLocation(recipe.baseEntity);
             buffer.writeResourceLocation(recipe.resultEntity);
+            buffer.writeNbt(recipe.resultNBT);
             buffer.writeCollection(Arrays.stream(recipe.pedestalsIngredients).toList(), (buf, ingr) -> ingr.toNetwork(buf));
         }
     }

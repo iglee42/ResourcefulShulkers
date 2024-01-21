@@ -1,6 +1,7 @@
 package fr.iglee42.techresourcesshulker.network.packets;
 
 import fr.iglee42.techresourcesshulker.blocks.entites.GeneratingBoxBlockEntity;
+import fr.iglee42.techresourcesshulker.blocks.entites.ShulkerPedestalBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -39,6 +40,8 @@ public class ItemStackSyncS2CPacket {
         context.enqueueWork(() -> {
             if(Minecraft.getInstance().level.getBlockEntity(pos) instanceof GeneratingBoxBlockEntity tile) {
                 tile.getInventory().setStackInSlot(slot,stack);
+            } else if (Minecraft.getInstance().level.getBlockEntity(pos) instanceof ShulkerPedestalBlockEntity tile){
+                tile.setStack(stack);
             }
 
         });

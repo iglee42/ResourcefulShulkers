@@ -6,6 +6,7 @@ import com.mojang.math.Vector3f;
 import fr.iglee42.igleelib.api.utils.MouseUtil;
 import fr.iglee42.techresourcesshulker.ModContent;
 import fr.iglee42.techresourcesshulker.TechResourcesShulker;
+import fr.iglee42.techresourcesshulker.init.ModBlocks;
 import fr.iglee42.techresourcesshulker.init.ModItems;
 import fr.iglee42.techresourcesshulker.recipes.ShulkerRecipeEnvironnement;
 import mezz.jei.api.constants.VanillaTypes;
@@ -53,7 +54,7 @@ public class ShulkerEnvironnementInfusionRecipeCategory implements IRecipeCatego
 
     public ShulkerEnvironnementInfusionRecipeCategory(IGuiHelper helper) {
         this.background = helper.createBlankDrawable(176, 92);
-        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModItems.SHULKER_INFUSER_ITEM.get()));
+        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.SHULKER_INFUSER.get()));
         this.arrow = helper.createDrawable(ARROW,0,0,22,15);
         this.arrowAnim = helper.createAnimatedDrawable(arrow,22, IDrawableAnimated.StartDirection.TOP,false);
     }
@@ -127,8 +128,12 @@ public class ShulkerEnvironnementInfusionRecipeCategory implements IRecipeCatego
 
         Minecraft.getInstance().font.draw(stack, ChatFormatting.BLUE + "" + ChatFormatting.UNDERLINE + "Allowed Biomes", 52, y + 10, 0);
         Minecraft.getInstance().font.draw(stack, ChatFormatting.GRAY + "(Hover)", 70, y + 20, 0);
-        Minecraft.getInstance().font.draw(stack, ChatFormatting.BLUE +  "Y : "+recipe.getMinY() + "   " + recipe.getMaxY(), 54, y - 50, 0);
-        Minecraft.getInstance().font.draw(stack, ChatFormatting.BLUE +  "~", 91, y - 48, 0);
+        if (recipe.getMinY() > -64 || recipe.getMaxY() < 320) {
+            Minecraft.getInstance().font.draw(stack, ChatFormatting.BLUE + "Y : " + recipe.getMinY() + "   " + recipe.getMaxY(), 54, y - 50, 0);
+            Minecraft.getInstance().font.draw(stack, ChatFormatting.BLUE + "~", 91, y - 48, 0);
+        } else {
+            Minecraft.getInstance().font.draw(stack, ChatFormatting.BLUE + "Y : Any", 70, y - 50, 0);
+        }
     }
 
     @Override

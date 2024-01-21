@@ -1,6 +1,9 @@
 {
   "itemGroup.techresourcesshulker": "TechResources - Shulker",
 
+  "item.techresourcesshulker.speed_upgrade": "Speed Upgrade",
+  "item.techresourcesshulker.durability_upgrade": "Durability Upgrade",
+  "item.techresourcesshulker.upgrade_base": "Upgrade Base",
   "item.techresourcesshulker.shulker_killer": "Shulker Killer",
   "item.techresourcesshulker.shulker_item": "Shulker",
   "item.techresourcesshulker.overworld_essence": "Overworld Essence",
@@ -17,6 +20,10 @@
   "entity.techresourcesshulker.nether_shulker": "Nether Shulker",
   "entity.techresourcesshulker.end_shulker": "End Shulker",
 
-  "block.techresourcesshulker.energy_inserter": "Energy Inserter",
-  "block.techresourcesshulker.shulker_infuser": "Shulker Infuser"
+  "block.techresourcesshulker.shulker_pedestal": "Shulker Pedestal",
+  "block.techresourcesshulker.shulker_infuser": "Shulker Infuser",
+  "block.techresourcesshulker.purpur_target": "Purpur Target",
+
+  "tooltip.techresourcesshulker.speed_upgrade": "Increase Speed by 1",
+  "tooltip.techresourcesshulker.durability_upgrade": "Reduces the chance of durability loss by 20%"
 }

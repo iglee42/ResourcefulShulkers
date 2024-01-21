@@ -51,11 +51,9 @@ import java.util.List;
 
 public class ShulkerInfuserBlock extends BaseEntityBlock {
 
-    public static final EnumProperty<ShulkerInfuserBlockEntity.Mode> MODE = EnumProperty.create("mode", ShulkerInfuserBlockEntity.Mode.class);
 
     public ShulkerInfuserBlock() {
         super(Properties.of(Material.METAL).noOcclusion());
-        registerDefaultState(defaultBlockState().setValue(MODE, ShulkerInfuserBlockEntity.Mode.ENVIRONNEMENT_INFUSION));
     }
 
     @Nullable
@@ -87,69 +85,28 @@ public class ShulkerInfuserBlock extends BaseEntityBlock {
     @Override
     public VoxelShape getShape(BlockState p_60555_, BlockGetter p_60556_, BlockPos p_60557_, CollisionContext p_60558_) {
         VoxelShape shape = Shapes.empty();
-        if (p_60555_.getValue(MODE) == ShulkerInfuserBlockEntity.Mode.ENVIRONNEMENT_INFUSION) {
-            shape = Shapes.join(shape, Shapes.box(0, 0.9375, 0, 1, 1, 1), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.3125, 0.5625, 0.3125, 0.6875, 0.9375, 0.6875), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(-0.0625, 0.9375, 0.25, 0, 1.125, 0.75), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(1, 0.9375, 0.25, 1.0625, 1.125, 0.75), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.25, 0.9375, -0.0625, 0.75, 1.125, 0), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.25, 0.9375, 1, 0.75, 1.125, 1.0625), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.1875, 0, 0.1875, 0.375, 0.5625, 0.8125), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.625, 0, 0.1875, 0.8125, 0.5625, 0.8125), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.375, 0, 0.625, 0.625, 0.5625, 0.8125), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.375, 0, 0.1875, 0.625, 0.5625, 0.375), BooleanOp.OR);
-        } else if (p_60555_.getValue(MODE) == ShulkerInfuserBlockEntity.Mode.ITEM_INFUSION){
-            shape = Shapes.join(shape, Shapes.box(0.5625, 0.9375, 0, 1, 1, 1), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0, 0.9375, 0, 0.4375, 1, 1), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.4375, 0.9375, 0, 0.5625, 1, 0.4375), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.4375, 0.9375, 0.5625, 0.5625, 1, 1), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.5625, 0.625, 0.3125, 0.6875, 0.9375, 0.4375), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.5625, 0.625, 0.5625, 0.6875, 0.9375, 0.6875), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.5625, 0.875, 0.4375, 0.6875, 0.9375, 0.5625), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.3125, 0.875, 0.4375, 0.4375, 0.9375, 0.5625), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.4375, 0.875, 0.3125, 0.5625, 0.9375, 0.4375), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.4375, 0.875, 0.5625, 0.5625, 0.9375, 0.6875), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.3125, 0.625, 0.5625, 0.4375, 0.9375, 0.6875), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.3125, 0.625, 0.3125, 0.4375, 0.9375, 0.4375), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(-0.0625, 0.9375, 0.25, 0, 1.125, 0.75), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(1, 0.9375, 0.25, 1.0625, 1.125, 0.75), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.25, 0.9375, -0.0625, 0.75, 1.125, 0), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.25, 0.9375, 1, 0.75, 1.125, 1.0625), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.3125, 0.5625, 0.3125, 0.6875, 0.625, 0.6875), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.1875, 0, 0.1875, 0.375, 0.5625, 0.8125), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.625, 0, 0.1875, 0.8125, 0.5625, 0.8125), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.375, 0, 0.625, 0.625, 0.5625, 0.8125), BooleanOp.OR);
-            shape = Shapes.join(shape, Shapes.box(0.375, 0, 0.1875, 0.625, 0.5625, 0.375), BooleanOp.OR);
 
-        }
+        shape = Shapes.join(shape, Shapes.box(0, 0.9375, 0, 1, 1, 1), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.5625, 0.625, 0.3125, 0.6875, 0.875, 0.4375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.5625, 0.625, 0.5625, 0.6875, 0.875, 0.6875), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.3125, 0.875, 0.3125, 0.6875, 0.9375, 0.6875), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.3125, 0.625, 0.5625, 0.4375, 0.875, 0.6875), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.3125, 0.625, 0.3125, 0.4375, 0.875, 0.4375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(-0.0625, 0.9375, 0.25, 0, 1.125, 0.75), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(1, 0.9375, 0.25, 1.0625, 1.125, 0.75), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.25, 0.9375, -0.0625, 0.75, 1.125, 0), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.25, 0.9375, 1, 0.75, 1.125, 1.0625), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.3125, 0.5625, 0.3125, 0.6875, 0.625, 0.6875), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.1875, 0, 0.1875, 0.8125, 0.5625, 0.8125), BooleanOp.OR);
+
         return shape;
     }
 
-    @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
-        return new ItemStack(ModItems.SHULKER_INFUSER_ITEM.get());
-    }
 
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand p_60507_, BlockHitResult p_60508_) {
         if (level.isClientSide) return InteractionResult.sidedSuccess(true);
         if (player.getMainHandItem().is(Items.AIR)) {
-            if (player.isCrouching()){
-                switch (state.getValue(MODE)){
-                    case ENVIRONNEMENT_INFUSION -> {
-                        level.setBlockAndUpdate(pos,state.setValue(MODE, ShulkerInfuserBlockEntity.Mode.ITEM_INFUSION));
-                        player.displayClientMessage(new TextComponent("Mode : " + ShulkerInfuserBlockEntity.Mode.ITEM_INFUSION.getTextName()),true);
-                    }
-                    case ITEM_INFUSION -> {
-                        level.setBlockAndUpdate(pos,state.setValue(MODE, ShulkerInfuserBlockEntity.Mode.SHULKER_FUSION));
-                        player.displayClientMessage(new TextComponent("Mode : " + ShulkerInfuserBlockEntity.Mode.SHULKER_FUSION.getTextName()),true);
-                    }
-                    case SHULKER_FUSION -> {
-                        level.setBlockAndUpdate(pos,state.setValue(MODE, ShulkerInfuserBlockEntity.Mode.ENVIRONNEMENT_INFUSION));
-                        player.displayClientMessage(new TextComponent("Mode : " + ShulkerInfuserBlockEntity.Mode.ENVIRONNEMENT_INFUSION.getTextName()),true);
-                    }
-                }
-            } else {
                 VoxelShape working = Shapes.box(0, 0, 0, 1, 2, 1).move(pos.getX(), pos.getY(), pos.getZ());
                 LivingEntity target = level.getNearestEntity(level.getEntitiesOfClass(LivingEntity.class, working.bounds()), TargetingConditions.DEFAULT, null, pos.getX(), pos.getY(), pos.getZ());
                 if (target == null) {
@@ -161,7 +118,7 @@ public class ShulkerInfuserBlock extends BaseEntityBlock {
                     Biome b = level.getBiomeManager().getBiome(pos).value();
                     boolean flag1 = r.getAllowedBiomes().contains(b.getRegistryName()) || r.getAllowedBiomesTags().stream().anyMatch(bt -> level.getBiomeManager().getBiome(pos).containsTag(new TagKey<>(Registry.BIOME_REGISTRY,bt)));
                     boolean flag2 = pos.getY() >= r.getMinY() && pos.getY() <= r.getMaxY();
-                    return flag && flag1 && flag2 && state.getValue(MODE) == ShulkerInfuserBlockEntity.Mode.ENVIRONNEMENT_INFUSION;
+                    return flag && flag1 && flag2;
                 })) {
                     ShulkerRecipeEnvironnement recipe = level.getRecipeManager().getAllRecipesFor(ShulkerRecipeEnvironnement.Type.INSTANCE).stream().filter(r -> {
                         boolean flag = r.getBaseEntity().equals(target.getType().getRegistryName());
@@ -188,7 +145,7 @@ public class ShulkerInfuserBlock extends BaseEntityBlock {
                     boolean flag1 = r.getBaseEntity().equals(target.getType().getRegistryName());
                     boolean flag2 = pedestalIngredients.isEmpty();
 
-                    return flag && flag1 && flag2 && state.getValue(MODE) == ShulkerInfuserBlockEntity.Mode.ITEM_INFUSION;
+                    return flag && flag1 && flag2;
                 })) {
                     ShulkerItemInfusionRecipe recipe = level.getRecipeManager().getAllRecipesFor(ShulkerItemInfusionRecipe.Type.INSTANCE).stream().filter(r -> {
                         boolean flag = true;
@@ -204,25 +161,14 @@ public class ShulkerInfuserBlock extends BaseEntityBlock {
                         boolean flag1 = r.getBaseEntity().equals(target.getType().getRegistryName());
                         boolean flag2 = pedestalIngredients.isEmpty();
 
-                        return flag && flag1 && flag2 && state.getValue(MODE) == ShulkerInfuserBlockEntity.Mode.ITEM_INFUSION;
+                        return flag && flag1 && flag2;
                     }).findFirst().get();
                     ((ShulkerInfuserBlockEntity) level.getBlockEntity(pos)).start(recipe);
 
-                }
             }
         }
         return super.use(state, level, pos, player, p_60507_, p_60508_);
     }
 
-    @Nullable
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return super.getStateForPlacement(context).setValue(MODE, ShulkerInfuserBlockEntity.Mode.ENVIRONNEMENT_INFUSION);
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(MODE);
-    }
 }
 

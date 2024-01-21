@@ -1,8 +1,7 @@
 package fr.iglee42.techresourcesshulker.init;
 
 import fr.iglee42.techresourcesshulker.TechResourcesShulker;
-import fr.iglee42.techresourcesshulker.entity.BaseEssenceShulker;
-import fr.iglee42.techresourcesshulker.item.ShulkerInfuserItem;
+import fr.iglee42.techresourcesshulker.entity.CustomShulker;
 import fr.iglee42.techresourcesshulker.item.ShulkerItem;
 import fr.iglee42.techresourcesshulker.item.UpgradeItem;
 import fr.iglee42.techresourcesshulker.utils.Upgrade;
@@ -29,12 +28,11 @@ public class ModItems {
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, TechResourcesShulker.MODID);
 
-    public static final RegistryObject<Item> SHULKER_INFUSER_ITEM = ITEMS.register("shulker_infuser", ShulkerInfuserItem::new);
     public static final RegistryObject<Item> SHULKER_KILLER = ITEMS.register("shulker_killer", () -> new Item(new Item.Properties().tab(TechResourcesShulker.GROUP)){
         @Override
         public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-            List<BaseEssenceShulker> target = level.getEntitiesOfClass(BaseEssenceShulker.class, player.getBoundingBox().inflate(8), (entity) -> true);
-            for (BaseEssenceShulker s : target){
+            List<CustomShulker> target = level.getEntitiesOfClass(CustomShulker.class, player.getBoundingBox().inflate(8), (entity) -> true);
+            for (CustomShulker s : target){
                 s.remove(Entity.RemovalReason.KILLED);
             }
             if (!player.isCreative())player.getItemInHand(hand).setCount(player.getItemInHand(hand).getCount() - 1);

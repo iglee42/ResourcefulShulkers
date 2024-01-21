@@ -18,6 +18,5 @@ public class SheetsMixin {
         consumer.accept(Materials.OVERWORLD_SHULKER_TEXTURE);
         consumer.accept(Materials.SKY_SHULKER_TEXTURE);
         consumer.accept(Materials.NETHER_SHULKER_TEXTURE);
-        consumer.accept(Materials.TO0PA_SHULKER_TEXTURE);
     }
 }

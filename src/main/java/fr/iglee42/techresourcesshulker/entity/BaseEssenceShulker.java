@@ -55,19 +55,8 @@ public class BaseEssenceShulker extends CustomShulker{
     }
 
     @Override
-    protected InteractionResult mobInteract(Player player, InteractionHand p_21473_) {
-        if (player.isCrouching()){
-            player.addItem(new ItemStack(ForgeRegistries.ITEMS.getValue(this.getType().getRegistryName())));
-            this.remove(RemovalReason.KILLED);
-            return InteractionResult.SUCCESS;
-        }
-        return super.mobInteract(player, p_21473_);
-    }
-
-    @Nullable
-    @Override
-    public ItemStack getPickResult() {
-        return new ItemStack(ForgeRegistries.ITEMS.getValue(this.getType().getRegistryName()));
+    public boolean hasTarget() {
+        return false;
     }
 
     class ShulkerLaunchBulletGoal extends Goal {
@@ -76,10 +65,7 @@ public class BaseEssenceShulker extends CustomShulker{
             return BaseEssenceShulker.this.getRawPeekAmount() == 100;
         }
 
-        @Override
-        public boolean canContinueToUse() {
-            return canUse();
-        }
+
 
         @Override
         public boolean requiresUpdateEveryTick() {
