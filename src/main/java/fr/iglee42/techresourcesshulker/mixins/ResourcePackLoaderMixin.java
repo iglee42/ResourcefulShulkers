@@ -1,6 +1,6 @@
 package fr.iglee42.techresourcesshulker.mixins;
 
-import fr.iglee42.techresourcesshulker.TechResourcesShulker;
+import fr.iglee42.techresourcesshulker.resourcepack.InMemoryPack;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.RepositorySource;
 import net.minecraftforge.forgespi.locating.IModFile;
@@ -19,6 +19,6 @@ public class ResourcePackLoaderMixin {
 
     @Inject(method = "loadResourcePacks(Lnet/minecraft/server/packs/repository/PackRepository;Ljava/util/function/Function;)V", at = @At("RETURN"), remap = false)
     private static void inject(PackRepository resourcePacks, Function<Map<IModFile, ? extends PathResourcePack>, ? extends RepositorySource> packFinder, CallbackInfo ci){
-        TechResourcesShulker.injectDatapackFinder(resourcePacks);
+        InMemoryPack.injectDatapackFinder(resourcePacks);
     }
 }

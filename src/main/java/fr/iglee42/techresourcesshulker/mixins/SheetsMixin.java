@@ -1,6 +1,7 @@
 package fr.iglee42.techresourcesshulker.mixins;
 
-import fr.iglee42.techresourcesshulker.Materials;
+import fr.iglee42.techresourcesshulker.utils.Materials;
+import fr.iglee42.techresourcesshulker.utils.ShulkersManager;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.resources.model.Material;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,9 +15,9 @@ import java.util.function.Consumer;
 public class SheetsMixin {
     @Inject(at = @At("HEAD"), method = "getAllMaterials")
     private static void getAllMaterials(Consumer<Material> consumer, CallbackInfo info) {
-        consumer.accept(Materials.CUSTOM_SHULKER_TEXTURE);
         consumer.accept(Materials.OVERWORLD_SHULKER_TEXTURE);
         consumer.accept(Materials.SKY_SHULKER_TEXTURE);
         consumer.accept(Materials.NETHER_SHULKER_TEXTURE);
+        ShulkersManager.TYPES.forEach(r->consumer.accept(r.getMaterial()));
     }
 }
