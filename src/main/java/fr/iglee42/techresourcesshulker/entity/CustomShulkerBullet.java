@@ -2,13 +2,14 @@ package fr.iglee42.techresourcesshulker.entity;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
-import fr.iglee42.techresourcesshulker.customize.Types;
+import fr.iglee42.techresourcesshulker.utils.ShulkersManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -20,10 +21,8 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -33,7 +32,6 @@ import net.minecraftforge.event.ForgeEventFactory;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.UUID;
 
 public class CustomShulkerBullet extends Projectile {
 
@@ -46,17 +44,17 @@ public class CustomShulkerBullet extends Projectile {
     private double targetDeltaY;
     private double targetDeltaZ;
 
-    private int typeId;
+    private ResourceLocation typeId;
 
     private BlockPos target;
-    public CustomShulkerBullet(EntityType<? extends CustomShulkerBullet> p_37319_, Level p_37320_, int typeId) {
+    public CustomShulkerBullet(EntityType<? extends CustomShulkerBullet> p_37319_, Level p_37320_, ResourceLocation typeId) {
         super(p_37319_, p_37320_);
         this.typeId = typeId;
         this.noPhysics = true;
     }
 
-    public CustomShulkerBullet(Level p_37330_, LivingEntity p_37331_, BlockPos target, Direction.Axis p_37333_,int typeId) {
-        this(Types.BULLET_TYPES.get(typeId).get(), p_37330_, typeId);
+    public CustomShulkerBullet(Level p_37330_, LivingEntity p_37331_, BlockPos target, Direction.Axis p_37333_,ResourceLocation typeId) {
+        this(ShulkersManager.BULLET_TYPES.get(typeId).get(), p_37330_, typeId);
         this.target = target;
         this.setOwner(p_37331_);
         BlockPos blockpos = p_37331_.blockPosition();
@@ -69,7 +67,7 @@ public class CustomShulkerBullet extends Projectile {
 
     }
 
-    public int getTypeId() {
+    public ResourceLocation getTypeId() {
         return typeId;
     }
 

@@ -68,7 +68,7 @@ public class GeneratingBoxScreen extends AbstractContainerScreen<GeneratingBoxMe
         RenderSystem.setShaderTexture(0, TEXTURE);
         blit(pPoseStack,x + 35,y +37,0,166,menu.getTile().getGeneratingTick(),8);
         renderTooltip(pPoseStack, mouseX, mouseY);
-        String generating = "Generating : " + new TranslatableComponent(menu.getTile().getResourceGenerated().item().getDescriptionId()).getString();
+        String generating = "Generating : " + new TranslatableComponent(menu.getTile().getResourceGenerated().getItem().getDescriptionId()).getString();
         int xGeneratingPos = x + 80 + (generating.length() / 2);
         drawCenteredString(pPoseStack,font, generating, xGeneratingPos ,y + 40 , Color.GRAY.getRGB());
         String dura = menu.getTile().getRemainingDurability() > 0 ? "Durability : "  + menu.getTile().getRemainingDurability() + "/"+ GeneratingBoxBlockEntity.MAX_DURABILITY : "Reload Needed";

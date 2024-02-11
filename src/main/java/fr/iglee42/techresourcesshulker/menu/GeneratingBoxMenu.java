@@ -1,6 +1,8 @@
 package fr.iglee42.techresourcesshulker.menu;
 
-import fr.iglee42.techresourcesshulker.ModContent;
+import fr.iglee42.techresourcesshulker.init.ModBlockEntities;
+import fr.iglee42.techresourcesshulker.init.ModBlocks;
+import fr.iglee42.techresourcesshulker.init.ModEntities;
 import fr.iglee42.techresourcesshulker.blocks.entites.GeneratingBoxBlockEntity;
 import fr.iglee42.techresourcesshulker.menu.slot.BoxShellSlot;
 import fr.iglee42.techresourcesshulker.menu.slot.BoxUpgradeSlot;
@@ -26,7 +28,7 @@ public class GeneratingBoxMenu extends AbstractContainerMenu {
     }
 
     public GeneratingBoxMenu(int id, Inventory playerInv, BlockEntity entity) {
-        super(ModContent.GENERATING_BOX_MENU.get(),id);
+        super(ModBlockEntities.GENERATING_BOX_MENU.get(),id);
         this.blockEntity = (GeneratingBoxBlockEntity) entity;
         this.level = playerInv.player.level;
         blockEntity.startOpen(playerInv.player);
@@ -98,7 +100,7 @@ public class GeneratingBoxMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        for (Block block : ModContent.getAllBox()) {
+        for (Block block : ModBlocks.getAllBox()) {
             if (stillValid(ContainerLevelAccess.create(level,blockEntity.getBlockPos()),player,block)) return true;
         }
         return false;

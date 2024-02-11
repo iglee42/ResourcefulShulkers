@@ -1,16 +1,13 @@
 package fr.iglee42.techresourcesshulker.blocks.entites;
 
-import fr.iglee42.igleelib.api.blockentities.EnergyStorage;
 import fr.iglee42.igleelib.api.blockentities.SecondBlockEntity;
-import fr.iglee42.igleelib.api.utils.ModsUtils;
-import fr.iglee42.techresourcesshulker.ModContent;
+import fr.iglee42.techresourcesshulker.init.ModBlockEntities;
 import fr.iglee42.techresourcesshulker.recipes.ITickableRecipe;
+import fr.iglee42.techresourcesshulker.aura.ShulkerAuraManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -19,21 +16,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.util.LazyOptional;
 
 import static fr.iglee42.igleelib.api.utils.ModsUtils.spawnParticle;
 
 public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
 
     public final VoxelShape WORKING_AREA;
-
-    private EnergyStorage energyStorage = new EnergyStorage(1000000,10000) {
-        @Override
-        public void onEnergyChanged() {
-            setChanged();
-        }
-    };
-    private LazyOptional<EnergyStorage> lazyEnergy = LazyOptional.empty();
 
     private int progress = 0;
 
@@ -43,7 +31,7 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
 
 
     public ShulkerInfuserBlockEntity(BlockPos pos, BlockState state) {
-        super(ModContent.SHULKER_INFUSER_BLOCK_ENTITY.get(),pos,state);
+        super(ModBlockEntities.SHULKER_INFUSER_BLOCK_ENTITY.get(),pos,state);
         WORKING_AREA = Shapes.box(0,0,0,1,2,1).move(pos.getX(),pos.getY(),pos.getZ());
     }
 
@@ -55,7 +43,7 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
 
     private void tickEntity(Level level, BlockPos pos, BlockState state) {
 
-        if (progress == 15*20 || recipe == null || !hasEnoughEnergy() || !recipe.canContinue(level,pos,state,progress,this) || getCurrentTarget() == null){
+        if (progress == 15*20 || recipe == null || !hasEnoughAura() || !recipe.canContinue(level,pos,state,progress,this) || getCurrentTarget() == null){
             enabled = false;
             progress = 0;
         }
@@ -76,9 +64,9 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
         if (!level.isClientSide) {
             //Second recipe
             if (enabled){
-                    if (hasEnoughEnergy()) {
+                    if (hasEnoughAura()) {
                         recipe.second(level,pos,state,progress,this);
-                        energyStorage.extractEnergy(1000, false);
+                        ShulkerAuraManager.get(level).extractAura(pos,100);
                     }
             }
 
@@ -87,7 +75,7 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
 
             LivingEntity target = level.getNearestEntity(level.getEntitiesOfClass(LivingEntity.class, WORKING_AREA.bounds()), TargetingConditions.DEFAULT, null, pos.getX(), pos.getY(), pos.getZ());
 
-            if (hasEnoughEnergy()){
+            if (hasEnoughAura()){
 
                 Vec3 particlePos = Vec3.atBottomCenterOf(pos);
                 spawnParticle(ParticleTypes.END_ROD,(ServerLevel) level,particlePos.add(0.5, 1.05, 0), particlePos.add(0, 1.1, 0),0);
@@ -97,7 +85,7 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
 
                 if (target instanceof Mob m) {
                     m.setNoAi(true);
-                    energyStorage.extractEnergy(1000, false);
+                    ShulkerAuraManager.get(level).extractAura(pos,100);
                 }
             } else {
                 if (target instanceof Mob m && m.isNoAi())m.setNoAi(false);
@@ -118,33 +106,17 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
         this.recipe.start(this.level,this.getBlockPos(),this.getBlockState(),this);
     }
 
-    public boolean hasEnoughEnergy() {
-        return energyStorage.getEnergyStored() >= 1000;
+    public boolean hasEnoughAura() {
+        if (level.isClientSide) return false;
+        return ShulkerAuraManager.get(level).getAura(getBlockPos()) >= 100;
     }
 
 
- 
 
-    public EnergyStorage getEnergyStorage() {
-        return energyStorage;
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyEnergy.invalidate();
-    }
-
-    @Override
-    public void onLoad() {
-        super.onLoad();
-        lazyEnergy = LazyOptional.of(()->energyStorage);
-    }
 
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        tag.put("energy",energyStorage.serializeNBT());
         tag.putInt("progress",progress);
         tag.putBoolean("enabled",enabled);
     }
@@ -152,7 +124,6 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        energyStorage.deserializeNBT(tag.get("energy"));
         progress = tag.getInt("progress");
         enabled = tag.getBoolean("enabled");
     }

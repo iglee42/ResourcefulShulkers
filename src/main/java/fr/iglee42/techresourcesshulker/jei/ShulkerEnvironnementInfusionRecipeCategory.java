@@ -4,10 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import fr.iglee42.igleelib.api.utils.MouseUtil;
-import fr.iglee42.techresourcesshulker.ModContent;
 import fr.iglee42.techresourcesshulker.TechResourcesShulker;
 import fr.iglee42.techresourcesshulker.init.ModBlocks;
-import fr.iglee42.techresourcesshulker.init.ModItems;
 import fr.iglee42.techresourcesshulker.recipes.ShulkerRecipeEnvironnement;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -78,6 +76,7 @@ public class ShulkerEnvironnementInfusionRecipeCategory implements IRecipeCatego
         livingEntity.setXRot(xRot);
         livingEntity.yHeadRot = yRot;
         livingEntity.yHeadRotO = yRot;
+
         mobPoseStack.translate(0.0F, livingEntity.getY(), 0.0F);
         RenderSystem.applyModelViewMatrix();
         EntityRenderDispatcher entityRenderDispatcher = Minecraft.getInstance().getEntityRenderDispatcher();

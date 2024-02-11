@@ -1,15 +1,15 @@
-package fr.iglee42.techresourcesshulker.custompack.generation;
+package fr.iglee42.techresourcesshulker.resourcepack.generation;
 
 import fr.iglee42.techresourcesshulker.TechResourcesShulker;
-import fr.iglee42.techresourcesshulker.customize.Types;
-import fr.iglee42.techresourcesshulker.custompack.PathConstant;
+import fr.iglee42.techresourcesshulker.utils.ShulkersManager;
+import fr.iglee42.techresourcesshulker.resourcepack.PathConstant;
 
 import java.io.File;
 import java.io.FileWriter;
 
 public class LootTablesGenerator {
     public static void generate() {
-        Types.TYPES.forEach(r->normal(r.name().toLowerCase()+"_generating_box"));
+        ShulkersManager.TYPES.forEach(r->normal(r.id().getPath().toLowerCase()+"_generating_box"));
     }
 
     private static void normal(String name){

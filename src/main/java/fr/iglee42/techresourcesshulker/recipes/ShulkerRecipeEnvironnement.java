@@ -4,7 +4,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import fr.iglee42.igleelib.api.utils.JsonHelper;
+import fr.iglee42.techresourcesshulker.TechResourcesShulker;
 import fr.iglee42.techresourcesshulker.blocks.entites.ShulkerInfuserBlockEntity;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -12,11 +14,13 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
@@ -25,9 +29,11 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static fr.iglee42.igleelib.api.utils.ModsUtils.spawnParticle;
@@ -40,8 +46,10 @@ public class ShulkerRecipeEnvironnement implements Recipe<SimpleContainer>, ITic
     private final List<ResourceLocation> allowedBiomesTags;
     private final Ingredient particle;
     private final int minY,maxY;
+    private final int auraConsummed;
 
-    public ShulkerRecipeEnvironnement(ResourceLocation id, ResourceLocation baseEntity, ResourceLocation resultEntity, List<ResourceLocation> allowedBiomes, List<ResourceLocation> allowedBiomesTags, Ingredient particle, int minY, int maxY) {
+
+    public ShulkerRecipeEnvironnement(ResourceLocation id, ResourceLocation baseEntity, ResourceLocation resultEntity, List<ResourceLocation> allowedBiomes, List<ResourceLocation> allowedBiomesTags, Ingredient particle, int minY, int maxY,int auraConsummed) {
         this.id = id;
         this.baseEntity = baseEntity;
         this.resultEntity = resultEntity;
@@ -50,6 +58,7 @@ public class ShulkerRecipeEnvironnement implements Recipe<SimpleContainer>, ITic
         this.particle = particle;
         this.minY = minY;
         this.maxY = maxY;
+        this.auraConsummed = auraConsummed;
     }
 
     @Override
@@ -174,6 +183,16 @@ public class ShulkerRecipeEnvironnement implements Recipe<SimpleContainer>, ITic
         newEntity.setPos(target.position());
         target.remove(Entity.RemovalReason.KILLED);
         level.addFreshEntity(newEntity);
+        if (!level.isClientSide) {
+            level.getEntitiesOfClass(Player.class, Shapes.box(0, -2.5, 0, 5, 5, 5).move(pos.getX(), pos.getY(), pos.getZ()).bounds()).forEach(p -> {
+                Advancement adv = p.getServer().getAdvancements().getAdvancement(new ResourceLocation(TechResourcesShulker.MODID,"environment_infusion"));
+                Iterator<String> it = ((ServerPlayer)p).getAdvancements().getOrStartProgress(adv).getRemainingCriteria().iterator();
+                while (it.hasNext()){
+                    String criteria = it.next();
+                    ((ServerPlayer)p).getAdvancements().award(adv,criteria);
+                }
+            });
+        }
     }
 
     @Override
@@ -181,6 +200,10 @@ public class ShulkerRecipeEnvironnement implements Recipe<SimpleContainer>, ITic
         Mob target = level.getNearestEntity(level.getEntitiesOfClass(Mob.class, be.WORKING_AREA.bounds()), TargetingConditions.DEFAULT, null, pos.getX(), pos.getY(), pos.getZ());
 
         return target != null;
+    }
+
+    public int getAuraConsummed() {
+        return auraConsummed;
     }
 
     public static class Type implements RecipeType<ShulkerRecipeEnvironnement> {
@@ -222,11 +245,12 @@ public class ShulkerRecipeEnvironnement implements Recipe<SimpleContainer>, ITic
                     allowedBiomesTags,
                     Ingredient.of(JsonHelper.getItem(json,"particleItem")),
                     JsonHelper.getIntOrDefault(json,"minY",-64),
-                    JsonHelper.getIntOrDefault(json,"maxY",320));
+                    JsonHelper.getIntOrDefault(json,"maxY",320),
+                    JsonHelper.getIntOrDefault(json,"aura",1500));
         }
 
         public ShulkerRecipeEnvironnement fromNetwork(ResourceLocation rs, FriendlyByteBuf buffer) {
-            return new ShulkerRecipeEnvironnement(rs, buffer.readResourceLocation(),buffer.readResourceLocation(), buffer.readList(FriendlyByteBuf::readResourceLocation),buffer.readList(FriendlyByteBuf::readResourceLocation),Ingredient.fromNetwork(buffer),buffer.readInt(),buffer.readInt());
+            return new ShulkerRecipeEnvironnement(rs, buffer.readResourceLocation(),buffer.readResourceLocation(), buffer.readList(FriendlyByteBuf::readResourceLocation),buffer.readList(FriendlyByteBuf::readResourceLocation),Ingredient.fromNetwork(buffer),buffer.readInt(),buffer.readInt(),buffer.readInt());
         }
 
         public void toNetwork(FriendlyByteBuf buffer, ShulkerRecipeEnvironnement recipe) {
@@ -237,6 +261,7 @@ public class ShulkerRecipeEnvironnement implements Recipe<SimpleContainer>, ITic
             recipe.particle.toNetwork(buffer);
             buffer.writeInt(recipe.minY);
             buffer.writeInt(recipe.maxY);
+            buffer.writeInt(recipe.auraConsummed);
         }
     }
 }

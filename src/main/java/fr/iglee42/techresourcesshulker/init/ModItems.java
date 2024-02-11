@@ -2,27 +2,37 @@ package fr.iglee42.techresourcesshulker.init;
 
 import fr.iglee42.techresourcesshulker.TechResourcesShulker;
 import fr.iglee42.techresourcesshulker.entity.CustomShulker;
+import fr.iglee42.techresourcesshulker.item.ShellItem;
 import fr.iglee42.techresourcesshulker.item.ShulkerItem;
 import fr.iglee42.techresourcesshulker.item.UpgradeItem;
+import fr.iglee42.techresourcesshulker.utils.ShulkerType;
 import fr.iglee42.techresourcesshulker.utils.Upgrade;
 import net.minecraft.ChatFormatting;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 public class ModItems {
 
@@ -55,9 +65,43 @@ public class ModItems {
     public static final RegistryObject<Item> SKY_ESSENCE = ITEMS.register("sky_essence", () -> new Item(new Item.Properties().tab(TechResourcesShulker.GROUP)));
     public static final RegistryObject<Item> NETHER_ESSENCE = ITEMS.register("nether_essence", () -> new Item(new Item.Properties().tab(TechResourcesShulker.GROUP)));
     public static final RegistryObject<Item> END_ESSENCE = ITEMS.register("end_essence", () -> new Item(new Item.Properties().tab(TechResourcesShulker.GROUP)));
+    public static final RegistryObject<Item> BASE_ESSENCE = ITEMS.register("base_essence", () -> new Item(new Item.Properties().tab(TechResourcesShulker.GROUP)));
 
     public static final RegistryObject<Item> UPGRADE_BASE = ITEMS.register("upgrade_base", ()-> new Item(new Item.Properties().tab(TechResourcesShulker.GROUP)));
     public static final RegistryObject<Item> SPEED_UPGRADE = ITEMS.register("speed_upgrade", ()-> new UpgradeItem(Upgrade.SPEED));
     public static final RegistryObject<Item> DURABILITY_UPGRADE = ITEMS.register("durability_upgrade", ()-> new UpgradeItem(Upgrade.DURABILITY));
+    public static final RegistryObject<Item> SHULKER_HEAD = ITEMS.register("shulker_head", ()-> new StandingAndWallBlockItem(ModBlocks.SHULKER_HEAD.get(),ModBlocks.WALL_SHULKER_HEAD.get(), new Item.Properties().tab(TechResourcesShulker.GROUP)){
+        @Override
+        public void onArmorTick(ItemStack stack, Level level, Player player) {
+            if (!level.isClientSide)
+            {
+                Advancement adv = player.getServer().getAdvancements().getAdvancement(new ResourceLocation(TechResourcesShulker.MODID,"head"));
+                Iterator<String> it = ((ServerPlayer)player).getAdvancements().getOrStartProgress(adv).getRemainingCriteria().iterator();
+                while (it.hasNext()){
+                    String criteria = it.next();
+                    ((ServerPlayer)player).getAdvancements().award(adv,criteria);
+                }
+                if (level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE,player.blockPosition()).getY() + 10 > player.position().y())
+                {
+                    player.addEffect(new MobEffectInstance(MobEffects.LEVITATION,20,1,false,false));
+                } else if ((level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE,player.blockPosition()).getY() + 10) == (int) player.position().y()){
+                    player.addEffect(new MobEffectInstance(MobEffects.LEVITATION,20,255,false,false));
+                }
+            }
+            super.onArmorTick(stack, level, player);
+        }
+    });
+
+
+
+    public static Item getShellById(ResourceLocation resourceId) {
+        Optional<RegistryObject<Item>> item = ITEMS.getEntries().stream().filter(r->r.get() instanceof ShellItem s && s.getId() == resourceId).findFirst();
+        return item.map(RegistryObject::get).orElse(Items.SHULKER_SHELL);
+    }
+    public static void createShell(ResourceLocation id){
+        ShulkerType res = ShulkerType.getById(id);
+        ITEMS.register(res.id().getPath()+"_shell", () -> new ShellItem(id));
+
+    }
 
 }

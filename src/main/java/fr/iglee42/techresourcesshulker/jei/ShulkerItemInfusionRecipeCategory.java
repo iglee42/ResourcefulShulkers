@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import fr.iglee42.igleelib.api.utils.MouseUtil;
 import fr.iglee42.techresourcesshulker.TechResourcesShulker;
+import fr.iglee42.techresourcesshulker.entity.CustomShulker;
 import fr.iglee42.techresourcesshulker.init.ModBlocks;
 import fr.iglee42.techresourcesshulker.recipes.ShulkerItemInfusionRecipe;
 import mezz.jei.api.constants.VanillaTypes;
@@ -21,13 +22,16 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -60,7 +64,7 @@ public class ShulkerItemInfusionRecipeCategory implements IRecipeCategory<Shulke
         this.arrowAnim = helper.createAnimatedDrawable(arrow,22, IDrawableAnimated.StartDirection.TOP,false);
     }
 
-    public static void renderEntity(PoseStack poseStack, int x, int y, double scale, double yaw, double pitch, LivingEntity livingEntity) {
+    public static void renderEntity(PoseStack poseStack, int x, int y, double scale, double yaw, double pitch, Entity livingEntity) {
 
 
         PoseStack modelViewStack = RenderSystem.getModelViewStack();
@@ -71,23 +75,26 @@ public class ShulkerItemInfusionRecipeCategory implements IRecipeCategory<Shulke
         PoseStack mobPoseStack = new PoseStack();
         mobPoseStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
 
-        mobPoseStack.mulPose(Vector3f.XN.rotationDegrees(((float) Math.atan((pitch / 40.0F))) * 20.0F));
-        livingEntity.yo = (float) Math.atan(yaw / 40.0F) * 20.0F;
-        float yRot = (float) Math.atan(yaw / 40.0F) * 40.0F;
-        float xRot = -((float) Math.atan(pitch / 40.0F)) * 20.0F;
-        livingEntity.yBodyRot = (float) (180.0F + yaw * 20.0F);
-        livingEntity.setYRot(yRot);
-        livingEntity.setYRot(yRot);
-        livingEntity.setXRot(xRot);
-        livingEntity.yHeadRot = yRot;
-        livingEntity.yHeadRotO = yRot;
+        if (livingEntity instanceof  LivingEntity e){
+            mobPoseStack.mulPose(Vector3f.XN.rotationDegrees(((float) Math.atan((pitch / 40.0F))) * 20.0F));
+            livingEntity.yo = (float) Math.atan(yaw / 40.0F) * 20.0F;
+            float yRot = (float) Math.atan(yaw / 40.0F) * 40.0F;
+            float xRot = -((float) Math.atan(pitch / 40.0F)) * 20.0F;
+            e.yBodyRot = (float) (180.0F + yaw * 20.0F);
+            livingEntity.setYRot(yRot);
+            livingEntity.setYRot(yRot);
+            livingEntity.setXRot(xRot);
+            e.yHeadRot = yRot;
+            e.yHeadRotO = yRot;
+        }
+
         mobPoseStack.translate(0.0F, livingEntity.getY(), 0.0F);
         RenderSystem.applyModelViewMatrix();
         EntityRenderDispatcher entityRenderDispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
         entityRenderDispatcher.setRenderShadow(false);
         MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
         RenderSystem.runAsFancy(() -> {
-            entityRenderDispatcher.render(livingEntity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, mobPoseStack, bufferSource, 15728880);
+            entityRenderDispatcher.render(livingEntity, 0.0D, 0.0D, 0.0D, Minecraft.getInstance().getFrameTime(), 1.0F, mobPoseStack, bufferSource, 15728880);
         });
         bufferSource.endBatch();
         entityRenderDispatcher.setRenderShadow(true);
@@ -127,12 +134,10 @@ public class ShulkerItemInfusionRecipeCategory implements IRecipeCategory<Shulke
         }
 
 
-        if (ForgeRegistries.ENTITIES.getValue(recipe.getResultEntity()).create(Minecraft.getInstance().level) instanceof LivingEntity) {
-            LivingEntity e = (LivingEntity) ForgeRegistries.ENTITIES.getValue(recipe.getBaseEntity()).create(Minecraft.getInstance().level);
+        if (ForgeRegistries.ENTITIES.getValue(recipe.getResultEntity()).create(Minecraft.getInstance().level) instanceof Entity && !(ForgeRegistries.ENTITIES.getValue(recipe.getResultEntity()).create(Minecraft.getInstance().level) instanceof ItemEntity)) {
+            Entity e = ForgeRegistries.ENTITIES.getValue(recipe.getResultEntity()).create(Minecraft.getInstance().level);
             e.load(recipe.getResultNBT());
             renderEntity(stack, 155, y, scale, yaw, pitch, e);
-        } else if (ForgeRegistries.ENTITIES.getValue(recipe.getResultEntity()).create(Minecraft.getInstance().level) instanceof ItemEntity){
-            //TODO Render Items
         }
 
         Minecraft.getInstance().font.draw(stack, ChatFormatting.BLUE + "" + ChatFormatting.UNDERLINE + "Ingredients", 60, y + 10, 0);
@@ -168,6 +173,12 @@ public class ShulkerItemInfusionRecipeCategory implements IRecipeCategory<Shulke
         for (int index = 0; index < ingredients.size(); index++){
             Ingredient i = ingredients.get(index);
             builder.addSlot(RecipeIngredientRole.INPUT,10 + index * 20,65).addIngredients(i);
+        }
+        if (recipe.getResultEntity().equals(new ResourceLocation("item"))){
+            Entity e = ForgeRegistries.ENTITIES.getValue(recipe.getResultEntity()).create(Minecraft.getInstance().level);
+            e.load(recipe.getResultNBT());
+            ItemEntity itemEntity = (ItemEntity) e;
+            builder.addSlot(RecipeIngredientRole.OUTPUT,135, 10).addIngredients(Ingredient.of(itemEntity.getItem())).setCustomRenderer(VanillaTypes.ITEM_STACK,new BigItemstackRenderer());
         }
         builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addIngredients(Ingredient.of(ForgeRegistries.ITEMS.getValue(recipe.getBaseEntity())));
         builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT).addIngredients(Ingredient.of(ForgeRegistries.ITEMS.getValue(recipe.getResultEntity())));

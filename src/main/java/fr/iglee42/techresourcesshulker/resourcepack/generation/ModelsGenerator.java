@@ -1,8 +1,8 @@
-package fr.iglee42.techresourcesshulker.custompack.generation;
+package fr.iglee42.techresourcesshulker.resourcepack.generation;
 
 import fr.iglee42.techresourcesshulker.TechResourcesShulker;
-import fr.iglee42.techresourcesshulker.customize.Types;
-import fr.iglee42.techresourcesshulker.custompack.PathConstant;
+import fr.iglee42.techresourcesshulker.utils.ShulkersManager;
+import fr.iglee42.techresourcesshulker.resourcepack.PathConstant;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -11,9 +11,10 @@ import static fr.iglee42.techresourcesshulker.TechResourcesShulker.MODID;
 
 public class ModelsGenerator {
     public static void generate() {
-        Types.TYPES.forEach(r->{
-            itemFromParent(r.name().toLowerCase()+"_shell","item/generated",new TextureKey("layer0","techresourcesshulker:item/shulker_shell"));
-            itemFromParent(r.name().toLowerCase()+"_shulker",MODID+":item/shulker",new TextureKey("0","minecraft:entity/shulker/shulker_"+r.color().getName().toLowerCase()));
+        ShulkersManager.TYPES.forEach(r->{
+            itemFromParent(r.id().getPath().toLowerCase()+"_shell","item/generated",new TextureKey("layer0","techresourcesshulker:item/shulker_shell"));
+            itemFromParent(r.id().getPath().toLowerCase()+"_shulker",MODID+":item/shulker",new TextureKey("0",r.getTexture().toString().replace(".png","")));
+            itemFromParent(r.id().getPath().toLowerCase()+"_generating_box","item/shulker_box");
         });
     }
 

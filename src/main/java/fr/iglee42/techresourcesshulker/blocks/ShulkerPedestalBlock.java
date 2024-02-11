@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ShulkerPedestalBlock extends BaseEntityBlock {
     public ShulkerPedestalBlock() {
-        super(BlockBehaviour.Properties.of(Material.METAL).noOcclusion());
+        super(BlockBehaviour.Properties.of(Material.METAL).noOcclusion().strength(1.5F,6.0F));
     }
 
     @Nullable

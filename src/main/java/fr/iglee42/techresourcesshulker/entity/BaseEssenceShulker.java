@@ -1,29 +1,23 @@
 package fr.iglee42.techresourcesshulker.entity;
 
-import fr.iglee42.techresourcesshulker.ModContent;
+import fr.iglee42.techresourcesshulker.TechResourcesShulker;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.Nullable;
 
 public class BaseEssenceShulker extends CustomShulker{
     public BaseEssenceShulker(EntityType<? extends CustomShulker> p_33404_, Level p_33405_,DyeColor color) {
-        super(p_33404_, p_33405_,-1);
+        super(p_33404_, p_33405_,new ResourceLocation(TechResourcesShulker.MODID,"base_essence"));
         this.setColor(color);
     }
 

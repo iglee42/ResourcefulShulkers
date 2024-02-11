@@ -1,24 +1,27 @@
 package fr.iglee42.techresourcesshulker.blocks.entites;
 
 import fr.iglee42.igleelib.api.blockentities.SecondBlockEntity;
-import fr.iglee42.igleelib.api.utils.InventoryUtil;
-import fr.iglee42.techresourcesshulker.ModContent;
+import fr.iglee42.igleelib.api.utils.ModsUtils;
+import fr.iglee42.techresourcesshulker.init.ModBlockEntities;
+import fr.iglee42.techresourcesshulker.init.ModEntities;
+import fr.iglee42.techresourcesshulker.TechResourcesShulker;
 import fr.iglee42.techresourcesshulker.blocks.GeneratingBoxBlock;
+import fr.iglee42.techresourcesshulker.init.ModItems;
 import fr.iglee42.techresourcesshulker.item.UpgradeItem;
 import fr.iglee42.techresourcesshulker.menu.GeneratingBoxMenu;
 import fr.iglee42.techresourcesshulker.network.ModMessages;
 import fr.iglee42.techresourcesshulker.network.packets.GeneratingTickSyncS2CPacket;
 import fr.iglee42.techresourcesshulker.network.packets.GeneratorDurabilitySyncS2CPacket;
 import fr.iglee42.techresourcesshulker.network.packets.ItemStackSyncS2CPacket;
-import fr.iglee42.techresourcesshulker.utils.Resource;
+import fr.iglee42.techresourcesshulker.utils.ShulkerType;
 import fr.iglee42.techresourcesshulker.utils.Upgrade;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -39,7 +42,6 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
-import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.PushReaction;
@@ -69,13 +71,13 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     private float progress;
     private float progressOld;
 
-    private int id;
+    private ResourceLocation id;
 
     private ItemStackHandler inventory = new ItemStackHandler(10) {
         @NotNull
         @Override
         public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            return slot > 0 && slot < 10 ? stack : (slot==0 && stack.is(ModContent.getShellById(id)) ?super.insertItem(slot,stack,simulate) : stack);
+            return slot > 0 && slot < 10 ? stack : (slot==0 && stack.is(ModItems.getShellById(id)) ?super.insertItem(slot,stack,simulate) : stack);
         }
 
         @Override
@@ -115,23 +117,24 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     private boolean explosing;
 
 
-    public GeneratingBoxBlockEntity(BlockPos pos, BlockState state, int id) {
-        super(ModContent.GENERATING_BOX_BLOCK_ENTITY.get(), pos,state );
+    public GeneratingBoxBlockEntity(BlockPos pos, BlockState state, ResourceLocation id) {
+        super(ModBlockEntities.GENERATING_BOX_BLOCK_ENTITY.get(), pos,state );
         this.id = id;
     }
 
     public GeneratingBoxBlockEntity(BlockPos blockPos, BlockState blockState) {
-        this(blockPos,blockState,0);
+        this(blockPos,blockState,new ResourceLocation(TechResourcesShulker.MODID,"empty"));
     }
 
     public static void tick(Level level, BlockPos blockPos, BlockState blockState,GeneratingBoxBlockEntity entity){
         SecondBlockEntity.tick(level,blockPos,blockState,entity);
         entity.updateAnimation(level,blockPos,blockState);
-        if (level.getBlockEntity(blockPos.west()) instanceof SignBlockEntity s){
+        ModsUtils.debugSign(level,blockPos,entity.generatingTick+"",entity.inventory.getStackInSlot(1).getCount() + "",entity.getRemainingDurability() + "/"+ MAX_DURABILITY);
+/*        if (level.getBlockEntity(blockPos.west()) instanceof SignBlockEntity s){
             s.setMessage(0,new TextComponent(entity.generatingTick + ""));
             s.setMessage(1,new TextComponent(entity.inventory.getStackInSlot(1).getCount() + ""));
             s.setMessage(2,new TextComponent(entity.getRemainingDurability() + "/"+ MAX_DURABILITY));
-        }
+        }*/
         if (!level.isClientSide) {
             ModMessages.sendToClients(new GeneratingTickSyncS2CPacket(entity.generatingTick, blockPos));
             ModMessages.sendToClients(new GeneratorDurabilitySyncS2CPacket(entity.remainingDurability, blockPos));
@@ -178,16 +181,18 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     }
 
     private void addItems() {
-        Resource res = Resource.getById(id);
-        ItemStack stack = new ItemStack(res.item());
-        int slot = getFirstSlotNotFull(stack.getItem());
-        if (slot == -1) return;
-        if (inventory.getStackInSlot(slot).isEmpty()){
-            inventory.setStackInSlot(slot,stack);
-        } else {
-            ItemStack newStack = stack.copy();
-            newStack.setCount(inventory.getStackInSlot(slot).getCount() + newStack.getCount());
-            inventory.setStackInSlot(slot,newStack);
+        ShulkerType res = ShulkerType.getById(id);
+        if (res != null) {
+            ItemStack stack = new ItemStack(res.getItem());
+            int slot = getFirstSlotNotFull(stack.getItem());
+            if (slot == -1) return;
+            if (inventory.getStackInSlot(slot).isEmpty()) {
+                inventory.setStackInSlot(slot, stack);
+            } else {
+                ItemStack newStack = stack.copy();
+                newStack.setCount(inventory.getStackInSlot(slot).getCount() + newStack.getCount());
+                inventory.setStackInSlot(slot, newStack);
+            }
         }
 
     }
@@ -243,7 +248,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
         super.load(tag);
         inventory.deserializeNBT(tag.getCompound("inventory"));
         upgrades.deserializeNBT(tag.getCompound("upgrades"));
-        id = tag.getInt("resourceId");
+        id = ResourceLocation.tryParse(tag.getString("resourceId"));
         remainingDurability = tag.getInt("remainingDurability");
         generatingTick = tag.getInt("generatingTick");
         explosing = tag.getBoolean("isExplosing");
@@ -256,7 +261,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
         super.saveAdditional(tag);
         tag.put("inventory", inventory.serializeNBT());
         tag.put("upgrades", upgrades.serializeNBT());
-        tag.putInt("resourceId",id);
+        tag.putString("resourceId",id.toString());
         tag.putInt("remainingDurability",remainingDurability);
         tag.putInt("generatingTick", generatingTick);
         tag.putBoolean("isExplosing",explosing);
@@ -380,8 +385,8 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
         return generatingTick;
     }
 
-    public Resource getResourceGenerated(){
-        return Resource.getById(id);
+    public ShulkerType getResourceGenerated(){
+        return ShulkerType.getById(id);
     }
 
     public int getRemainingDurability() {

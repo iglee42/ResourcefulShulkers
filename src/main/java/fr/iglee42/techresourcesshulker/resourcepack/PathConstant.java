@@ -1,4 +1,4 @@
-package fr.iglee42.techresourcesshulker.custompack;
+package fr.iglee42.techresourcesshulker.resourcepack;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -20,6 +20,7 @@ public class PathConstant {
     public static Path LOOT_TABLES_PATH;
     public static Path TAGS_PATH;
 
+    public static Path ITEMS_TAGS_PATH;
     public static Path ENTITY_TYPES_TAGS_PATH;
 
     public static Path BLOCK_STATES_PATH;
@@ -59,6 +60,7 @@ public class PathConstant {
         TAGS_PATH = DATAS_PATH.resolve("tags");
 
 
+        ITEMS_TAGS_PATH = TAGS_PATH.resolve("items");
         ENTITY_TYPES_TAGS_PATH = TAGS_PATH.resolve("entity_types");
 
         ITEM_MODELS_PATH = MODELS_PATH.resolve("item");
@@ -83,6 +85,7 @@ public class PathConstant {
         LOOT_TABLES_PATH.toFile().mkdirs();
         TAGS_PATH.toFile().mkdirs();
 
+        ITEMS_TAGS_PATH.toFile().mkdirs();
         ENTITY_TYPES_TAGS_PATH.toFile().mkdirs();
 
         MC_TAGS_PATH.toFile().mkdirs();
@@ -93,8 +96,6 @@ public class PathConstant {
         FORGE_TAGS_PATH.toFile().mkdirs();
         FORGE_BLOCK_TAGS_PATH.toFile().mkdirs();
         FORGE_ITEM_TAGS_PATH.toFile().mkdirs();
-        FORGE_BLOCK_TAGS_PATH.resolve("chests").toFile().mkdirs();
-        FORGE_ITEM_TAGS_PATH.resolve("chests").toFile().mkdirs();
 
 
 

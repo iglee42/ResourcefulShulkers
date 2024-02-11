@@ -1,9 +1,9 @@
-package fr.iglee42.techresourcesshulker.custompack.generation;
+package fr.iglee42.techresourcesshulker.resourcepack.generation;
 
 import fr.iglee42.igleelib.api.utils.ModsUtils;
 import fr.iglee42.techresourcesshulker.TechResourcesShulker;
-import fr.iglee42.techresourcesshulker.customize.Types;
-import fr.iglee42.techresourcesshulker.custompack.PathConstant;
+import fr.iglee42.techresourcesshulker.utils.ShulkersManager;
+import fr.iglee42.techresourcesshulker.resourcepack.PathConstant;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -19,10 +19,10 @@ public class LangsGenerator {
     private static Map<String,String> langs = new HashMap<>();
     public static void generate() {
 
-        Types.TYPES.forEach(r->{
-            langs.put("entity."+MODID+"."+r.name().toLowerCase()+"_shulker", ModsUtils.getUpperName(r.name().toLowerCase()+"_shulker","_"));
-            langs.put("item."+MODID+"."+r.name().toLowerCase()+"_shell",ModsUtils.getUpperName(r.name().toLowerCase()+"_shell","_"));
-            langs.put("block."+MODID+"."+r.name().toLowerCase()+"_generating_box",ModsUtils.getUpperName(r.name().toLowerCase()+"_generating_box","_"));
+        ShulkersManager.TYPES.forEach(r->{
+            langs.put("entity."+MODID+"."+r.id().getPath().toLowerCase()+"_shulker", ModsUtils.getUpperName(r.id().getPath().toLowerCase()+"_shulker","_"));
+            langs.put("item."+MODID+"."+r.id().getPath().toLowerCase()+"_shell",ModsUtils.getUpperName(r.id().getPath().toLowerCase()+"_shulker_shell","_"));
+            langs.put("block."+MODID+"."+r.id().getPath().toLowerCase()+"_generating_box",ModsUtils.getUpperName(r.id().getPath().toLowerCase()+"_generating_box","_"));
         });
 
         try {

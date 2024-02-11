@@ -1,6 +1,7 @@
 package fr.iglee42.techresourcesshulker.blocks.entites;
 
-import fr.iglee42.techresourcesshulker.ModContent;
+import fr.iglee42.techresourcesshulker.init.ModBlockEntities;
+import fr.iglee42.techresourcesshulker.init.ModEntities;
 import fr.iglee42.techresourcesshulker.network.ModMessages;
 import fr.iglee42.techresourcesshulker.network.packets.ItemStackSyncS2CPacket;
 import net.minecraft.core.BlockPos;
@@ -41,7 +42,7 @@ public class ShulkerPedestalBlockEntity extends BlockEntity {
 
 
     public ShulkerPedestalBlockEntity(BlockPos pos, BlockState state) {
-        super(ModContent.SHULKER_PEDESTAL_BLOCK_ENTITY.get(), pos,state);
+        super(ModBlockEntities.SHULKER_PEDESTAL_BLOCK_ENTITY.get(), pos,state);
     }
 
     @NotNull

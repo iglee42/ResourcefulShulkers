@@ -1,8 +1,10 @@
 package fr.iglee42.techresourcesshulker.blocks;
 
-import fr.iglee42.techresourcesshulker.ModContent;
+import fr.iglee42.techresourcesshulker.init.ModBlockEntities;
+import fr.iglee42.techresourcesshulker.init.ModEntities;
 import fr.iglee42.techresourcesshulker.blocks.entites.GeneratingBoxBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -28,9 +30,9 @@ import org.jetbrains.annotations.Nullable;
 public class GeneratingBoxBlock extends BaseEntityBlock {
 
 
-    private final int id;
+    private final ResourceLocation id;
 
-    public GeneratingBoxBlock(int id) {
+    public GeneratingBoxBlock(ResourceLocation id) {
         super(Properties.copy(Blocks.SHULKER_BOX));
         this.id = id;
 
@@ -80,11 +82,11 @@ public class GeneratingBoxBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<T> type) {
-        return createTickerHelper(type,ModContent.GENERATING_BOX_BLOCK_ENTITY.get(),GeneratingBoxBlockEntity::tick);
+        return createTickerHelper(type, ModBlockEntities.GENERATING_BOX_BLOCK_ENTITY.get(),GeneratingBoxBlockEntity::tick);
     }
 
 
-    public int getId() {
+    public ResourceLocation getId() {
         return id;
     }
 

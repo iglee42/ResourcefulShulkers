@@ -1,12 +1,11 @@
 package fr.iglee42.techresourcesshulker.entity;
 
 import com.mojang.math.Vector3f;
-import java.util.EnumSet;
+
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
-import fr.iglee42.techresourcesshulker.ModContent;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,16 +15,15 @@ import net.minecraft.network.protocol.game.ClientboundAddMobPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntitySelector;
@@ -44,14 +42,10 @@ import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.AbstractGolem;
 import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -76,14 +70,14 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
       Vec3i vec3i = Direction.SOUTH.getNormal();
       return new Vector3f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
    });
-   private final int typeId;
+   private final ResourceLocation typeId;
    private float currentPeekAmountO;
    private float currentPeekAmount;
    @Nullable
    private BlockPos clientOldAttachPosition;
    private int clientSideTeleportInterpolation;
 
-   public CustomShulker(EntityType<? extends CustomShulker> p_33404_, Level p_33405_,int typeId) {
+   public CustomShulker(EntityType<? extends CustomShulker> p_33404_, Level p_33405_,ResourceLocation typeId) {
       super(p_33404_, p_33405_);
       this.xpReward = 5;
       this.lookControl = new CustomShulker.ShulkerLookControl(this);
@@ -525,7 +519,7 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
       return b0 != 16 && b0 <= 15 ? DyeColor.byId(b0) : null;
    }
 
-   public int getTypeId() {
+   public ResourceLocation getTypeId() {
       return typeId;
    }
 

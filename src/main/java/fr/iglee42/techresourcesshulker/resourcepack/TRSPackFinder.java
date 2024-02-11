@@ -1,4 +1,4 @@
-package fr.iglee42.techresourcesshulker.custompack;
+package fr.iglee42.techresourcesshulker.resourcepack;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.repository.Pack;

@@ -1,4 +1,4 @@
-package fr.iglee42.techresourcesshulker.custompack;
+package fr.iglee42.techresourcesshulker.resourcepack;
 
 public enum PackType {
     DATA("data", net.minecraft.server.packs.PackType.SERVER_DATA),

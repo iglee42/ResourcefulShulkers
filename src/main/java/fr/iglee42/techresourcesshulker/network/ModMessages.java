@@ -4,6 +4,7 @@ import fr.iglee42.techresourcesshulker.TechResourcesShulker;
 import fr.iglee42.techresourcesshulker.network.packets.GeneratingTickSyncS2CPacket;
 import fr.iglee42.techresourcesshulker.network.packets.GeneratorDurabilitySyncS2CPacket;
 import fr.iglee42.techresourcesshulker.network.packets.ItemStackSyncS2CPacket;
+import fr.iglee42.techresourcesshulker.network.packets.ShulkerAuraSyncS2CPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
@@ -44,6 +45,11 @@ public class ModMessages {
                 .decoder(GeneratorDurabilitySyncS2CPacket::new)
                 .encoder(GeneratorDurabilitySyncS2CPacket::toBytes)
                 .consumer(GeneratorDurabilitySyncS2CPacket::handle)
+                .add();
+        net.messageBuilder(ShulkerAuraSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(ShulkerAuraSyncS2CPacket::new)
+                .encoder(ShulkerAuraSyncS2CPacket::toBytes)
+                .consumer(ShulkerAuraSyncS2CPacket::handle)
                 .add();
 
     }

@@ -1,7 +1,6 @@
 package fr.iglee42.techresourcesshulker.menu.slot;
 
 import com.mojang.datafixers.util.Pair;
-import fr.iglee42.techresourcesshulker.ModContent;
 import fr.iglee42.techresourcesshulker.TechResourcesShulker;
 import fr.iglee42.techresourcesshulker.item.UpgradeItem;
 import fr.iglee42.techresourcesshulker.utils.Upgrade;

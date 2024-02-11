@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -16,7 +17,7 @@ public class ResourceShulker extends CustomShulker{
 
     private BlockPos target;
 
-    public ResourceShulker(EntityType<? extends CustomShulker> p_33404_, Level p_33405_, int typeId) {
+    public ResourceShulker(EntityType<? extends CustomShulker> p_33404_, Level p_33405_, ResourceLocation typeId) {
         super(p_33404_, p_33405_, typeId);
     }
 
