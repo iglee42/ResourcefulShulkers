@@ -1,0 +1,6 @@
+{
+  "parent": "resourcefulshulkers:item/shulker",
+  "textures": {
+    "0": "resourcefulshulkers:entity/base_essence/nether"
+  }
+}

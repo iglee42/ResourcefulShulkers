@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "resourcefulshulkers:overworld_essence",
+    "resourcefulshulkers:sky_essence",
+    "resourcefulshulkers:nether_essence",
+    "resourcefulshulkers:end_essence"
+  ]
+}

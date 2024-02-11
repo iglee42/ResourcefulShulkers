@@ -1,9 +1,0 @@
-{
-  "type": "techresourcesshulker:shulker_environnement_infusion",
-  "baseEntity": "minecraft:shulker",
-  "resultEntity": "techresourcesshulker:end_shulker",
-  "biomes": [
-    "#forge:is_end"
-  ],
-  "particleItem": "minecraft:end_stone"
-}

@@ -1,6 +1,0 @@
-{
-  "parent": "techresourcesshulker:item/shulker",
-  "textures": {
-    "0": "techresourcesshulker:entity/base_essence/overworld"
-  }
-}

@@ -1,0 +1,6 @@
+{
+  "parent": "resourcefulshulkers:item/shulker",
+  "textures": {
+    "0": "minecraft:entity/shulker/shulker_yellow"
+  }
+}

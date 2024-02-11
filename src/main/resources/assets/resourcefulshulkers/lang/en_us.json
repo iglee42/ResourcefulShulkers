@@ -1,0 +1,34 @@
+{
+  "itemGroup.resourcefulshulkers": "Resourceful Shulkers",
+  "itemGroup.resourcefulshulkers.shulkers": "Resourceful Shulkers - Customs",
+
+  "item.resourcefulshulkers.speed_upgrade": "Speed Upgrade",
+  "item.resourcefulshulkers.durability_upgrade": "Durability Upgrade",
+  "item.resourcefulshulkers.upgrade_base": "Upgrade Base",
+  "item.resourcefulshulkers.shulker_killer": "Shulker Killer",
+  "item.resourcefulshulkers.shulker_item": "Shulker",
+  "item.resourcefulshulkers.overworld_essence": "Overworld Essence",
+  "item.resourcefulshulkers.sky_essence": "Sky Essence",
+  "item.resourcefulshulkers.nether_essence": "Nether Essence",
+  "item.resourcefulshulkers.end_essence": "End Essence",
+  "item.resourcefulshulkers.overworld_shulker": "Overworld Shulker",
+  "item.resourcefulshulkers.sky_shulker": "Sky Shulker",
+  "item.resourcefulshulkers.nether_shulker": "Nether Shulker",
+  "item.resourcefulshulkers.end_shulker": "End Shulker",
+  "item.resourcefulshulkers.base_essence": "Base Essence",
+
+  "entity.resourcefulshulkers.overworld_shulker": "Overworld Shulker",
+  "entity.resourcefulshulkers.sky_shulker": "Sky Shulker",
+  "entity.resourcefulshulkers.nether_shulker": "Nether Shulker",
+  "entity.resourcefulshulkers.end_shulker": "End Shulker",
+
+  "block.resourcefulshulkers.shulker_pedestal": "Shulker Pedestal",
+  "block.resourcefulshulkers.shulker_infuser": "Shulker Infuser",
+  "block.resourcefulshulkers.purpur_target": "Purpur Target",
+  "block.resourcefulshulkers.shulker_head": "Shulker Head",
+  "block.resourcefulshulkers.shulker_absorber": "Shulker Absorber",
+
+  "tooltip.resourcefulshulkers.speed_upgrade": "Increase Speed by 1",
+  "tooltip.resourcefulshulkers.durability_upgrade": "Reduces the chance of durability loss by 20%",
+  "tooltip.resourcefulshulkers.shulker_pickup": "Shulkers can be picked up with sneak + right click"
+}

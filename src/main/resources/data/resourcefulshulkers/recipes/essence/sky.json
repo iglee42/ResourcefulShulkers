@@ -1,0 +1,22 @@
+{
+  "type": "resourcefulshulkers:shulker_item_infusion",
+  "baseEntity": "resourcefulshulkers:sky_shulker",
+  "resultEntity": "minecraft:item",
+  "resultNbt": {
+    "Item": {
+      "id": "resourcefulshulkers:sky_essence",
+      "Count": 4
+    }
+  },
+  "pedestalsIngredients": [
+    {
+        "item": "resourcefulshulkers:base_essence"
+    },{
+        "item": "resourcefulshulkers:base_essence"
+    },{
+        "item": "resourcefulshulkers:base_essence"
+    },{
+        "item": "resourcefulshulkers:base_essence"
+    }
+  ]
+}

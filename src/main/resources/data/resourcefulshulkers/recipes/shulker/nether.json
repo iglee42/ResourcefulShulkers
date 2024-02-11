@@ -1,0 +1,9 @@
+{
+  "type": "resourcefulshulkers:shulker_environnement_infusion",
+  "baseEntity": "minecraft:shulker",
+  "resultEntity": "resourcefulshulkers:nether_shulker",
+  "biomes": [
+    "#minecraft:is_nether"
+  ],
+  "particleItem": "minecraft:nether_brick"
+}

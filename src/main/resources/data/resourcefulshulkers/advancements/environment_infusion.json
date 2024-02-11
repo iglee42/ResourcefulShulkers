@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "item": "resourcefulshulkers:overworld_shulker"
+    },
+    "title": "You suck the world",
+    "description": "Use the environment mode of the shulker infuser",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "minecraft:textures/block/purpur_block.png"
+  },
+  "parent": "resourcefulshulkers:aura",
+  "criteria": {
+    "shulker": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "shulker"
+    ]
+  ]
+}

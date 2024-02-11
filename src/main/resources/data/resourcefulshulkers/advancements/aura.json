@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "item": "resourcefulshulkers:shulker_absorber"
+    },
+    "title": "Why is this named aura ?",
+    "description": "Create shulker aura with a shulker absorber",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "minecraft:textures/block/purpur_block.png"
+  },
+  "parent": "resourcefulshulkers:root",
+  "criteria": {
+    "shulker": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "shulker"
+    ]
+  ]
+}
