@@ -1,0 +1,10 @@
+{
+  "type": "techresourcesshulker:shulker_environnement_infusion",
+  "baseEntity": "minecraft:shulker",
+  "resultEntity": "techresourcesshulker:overworld_shulker",
+  "biomes": [
+    "#forge:is_overworld"
+  ],
+  "particleItem": "minecraft:grass_block",
+  "maxY": 192
+}

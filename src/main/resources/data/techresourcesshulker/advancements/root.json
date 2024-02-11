@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "item": "techresourcesshulker:shulker_item"
+    },
+    "title": "TechResources - Shulker",
+    "description": "Root advancement",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false,
+    "background": "minecraft:textures/block/purpur_block.png"
+  },
+  "criteria": {
+    "shulker": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "requirements": [
+    [
+      "shulker"
+    ]
+  ]
+}
