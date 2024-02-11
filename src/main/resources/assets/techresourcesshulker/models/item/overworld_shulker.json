@@ -1,6 +1,6 @@
 {
   "parent": "techresourcesshulker:item/shulker",
   "textures": {
-    "0": "minecraft:entity/shulker/shulker_lime"
+    "0": "techresourcesshulker:entity/base_essence/overworld"
   }
 }
