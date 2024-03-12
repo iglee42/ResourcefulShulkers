@@ -10,8 +10,66 @@ import java.io.FileWriter;
 public class RecipesGenerator {
     public static void generate() {
         ShulkersManager.TYPES.forEach(r->{
-            generatingBox(r.id().getPath().toLowerCase());
+            if (r.item().startsWith("#")) generatingBoxWithTag(r.id().getPath().toLowerCase(),r.item().substring(1));
+            else generatingBox(r.id().getPath().toLowerCase());
         });
+    }
+
+
+
+    private static void generatingBoxWithTag(String name,String tag){
+        try {
+            FileWriter writer = new FileWriter(new File(PathConstant.RECIPES_PATH.toFile(), name+"_generating_box.json"));
+            writer.write("{\n" +
+                    "  \"type\": \"forge:conditional\",\n" +
+                    "  \"recipes\": [\n" +
+                    "    {\n" +
+                    "      \"conditions\": [\n" +
+                    "        {\n" +
+                    "          \"type\": \"forge:not\",\n" +
+                    "          \"value\": {\n" +
+                    "            \"type\": \"forge:tag_empty\",\n" +
+                    "            \"tag\": \""+tag+"\"\n" +
+                    "          }\n" +
+                    "        }\n" +
+                    "      ],\n" +
+                    "      \"recipe\": {\n" +
+                    "        \"type\": \"resourcefulshulkers:shulker_item_infusion\",\n" +
+                    "        \"baseEntity\": \"resourcefulshulkers:"+name+"_shulker\",\n" +
+                    "        \"resultEntity\": \"minecraft:item\",\n" +
+                    "        \"resultNbt\": {\n" +
+                    "          \"Item\": {\n" +
+                    "            \"id\": \"resourcefulshulkers:"+name+"_generating_box\",\n" +
+                    "            \"Count\": 1\n" +
+                    "          }\n" +
+                    "        },\n" +
+                    "        \"pedestalsIngredients\": [\n" +
+                    "          {\n" +
+                    "            \"item\": \"resourcefulshulkers:"+name+"_shell\"\n" +
+                    "          },{\n" +
+                    "            \"item\": \"resourcefulshulkers:"+name+"_shell\"\n" +
+                    "          },{\n" +
+                    "            \"tag\": \"resourcefulshulkers:essences\"\n" +
+                    "          },{\n" +
+                    "            \"tag\": \"resourcefulshulkers:essences\"\n" +
+                    "          },{\n" +
+                    "            \"item\": \"minecraft:chest\"\n" +
+                    "          },{\n" +
+                    "            \"item\": \"minecraft:chest\"\n" +
+                    "          },{\n" +
+                    "            \"item\": \"minecraft:chest\"\n" +
+                    "          },{\n" +
+                    "            \"item\": \"minecraft:chest\"\n" +
+                    "          }\n" +
+                    "        ]\n" +
+                    "      }\n" +
+                    "    }\n" +
+                    "  ]\n" +
+                    "}");
+            writer.close();
+        } catch (Exception exception){
+            ResourcefulShulkers.LOGGER.error("An error was detected when blockstates generating",exception);
+        }
     }
 
     private static void generatingBox(String name){

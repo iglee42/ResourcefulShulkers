@@ -1,9 +1,12 @@
 package fr.iglee42.resourcefulshulkers.jei;
 
+import fr.iglee42.resourcefulshulkers.entity.ResourceShulker;
 import fr.iglee42.resourcefulshulkers.init.ModBlocks;
 import fr.iglee42.resourcefulshulkers.init.ModItems;
 import fr.iglee42.resourcefulshulkers.recipes.ShulkerItemInfusionRecipe;
 import fr.iglee42.resourcefulshulkers.recipes.ShulkerRecipeEnvironnement;
+import fr.iglee42.resourcefulshulkers.utils.ShulkerType;
+import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
@@ -14,7 +17,9 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -49,5 +54,6 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipes(ShulkerItemInfusionRecipeCategory.RECIPE_TYPE,
                 new ArrayList<>(rm.getAllRecipesFor(ShulkerItemInfusionRecipe.Type.INSTANCE)));
         registration.getIngredientManager().removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK, Arrays.asList(new ItemStack(ModItems.SHULKER_KILLER.get())));
+        ShulkersManager.TYPES.stream().filter(t->t.getItem() == Items.AIR).forEach(t-> registration.getIngredientManager().removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK,Arrays.asList(new ItemStack(ModItems.getShellById(t.id())), new ItemStack(ModBlocks.getBoxById(t.id())), new ItemStack(ModItems.getShulkerItemById(t.id())))));
     }
 }

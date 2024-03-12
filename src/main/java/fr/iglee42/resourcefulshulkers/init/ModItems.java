@@ -30,11 +30,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+
+import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
 
 public class ModItems {
 
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ResourcefulShulkers.MODID);
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
 
     public static final RegistryObject<Item> SHULKER_KILLER = ITEMS.register("shulker_killer", () -> new Item(new Item.Properties().tab(ResourcefulShulkers.GROUP)){
         @Override
@@ -73,7 +76,7 @@ public class ModItems {
         public void onArmorTick(ItemStack stack, Level level, Player player) {
             if (!level.isClientSide)
             {
-                Advancement adv = player.getServer().getAdvancements().getAdvancement(new ResourceLocation(ResourcefulShulkers.MODID,"head"));
+                Advancement adv = player.getServer().getAdvancements().getAdvancement(new ResourceLocation(MODID,"head"));
                 Iterator<String> it = ((ServerPlayer)player).getAdvancements().getOrStartProgress(adv).getRemainingCriteria().iterator();
                 while (it.hasNext()){
                     String criteria = it.next();
@@ -90,7 +93,10 @@ public class ModItems {
         }
     });
 
-
+    public static Item getShulkerItemById(ResourceLocation resourceId) {
+        Optional<RegistryObject<Item>> item = ITEMS.getEntries().stream().filter(r-> Objects.equals(r.getId(), new ResourceLocation(MODID, resourceId.getPath() + "_shulker"))).findFirst();
+        return item.map(RegistryObject::get).orElse(ModItems.SHULKER_ITEM.get());
+    }
 
     public static Item getShellById(ResourceLocation resourceId) {
         Optional<RegistryObject<Item>> item = ITEMS.getEntries().stream().filter(r->r.get() instanceof ShellItem s && s.getId() == resourceId).findFirst();
