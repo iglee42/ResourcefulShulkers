@@ -13,7 +13,7 @@ public class ModelsGenerator {
     public static void generate() {
         ShulkersManager.TYPES.forEach(r->{
             itemFromParent(r.id().getPath().toLowerCase()+"_shell","item/generated",new TextureKey("layer0","resourcefulshulkers:item/shulker_shell"));
-            itemFromParent(r.id().getPath().toLowerCase()+"_shulker",MODID+":item/shulker",new TextureKey("0",r.getTexture().toString().replace(".png","")));
+            itemFromParent(r.id().getPath().toLowerCase()+"_shulker",MODID+":item/shulker",new TextureKey("0",r.getTexture().toString().replace(".png","")),new TextureKey("1",r.getTexture().toString().replace(".png","")));
             itemFromParent(r.id().getPath().toLowerCase()+"_generating_box","item/shulker_box");
         });
     }
