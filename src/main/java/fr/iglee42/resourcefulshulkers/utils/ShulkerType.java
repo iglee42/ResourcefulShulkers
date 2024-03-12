@@ -18,7 +18,7 @@ import static net.minecraft.client.renderer.Sheets.SHULKER_SHEET;
 public record ShulkerType(ResourceLocation id, @DefaultParameter(stringValue = "minecraft:stone") String item, @DefaultParameter(stringValue = "black") @OptionalParameter String color, String shellItemColor, @DefaultParameter(stringValue = "minecraft:entity/shulker/shulker") String texture,@OptionalParameter @DefaultParameter(stringValue = "minecraft:entity/shulker/shulker") String boxTexture) {
 
     public static ShulkerType getById(ResourceLocation id){
-        return ShulkersManager.TYPES.stream().filter(r->r.id == id).findFirst().orElse(null);
+        return ShulkersManager.TYPES.stream().filter(r->r.id.equals(id)).findFirst().orElse(null);
     }
 
     public Material getMaterial(){
