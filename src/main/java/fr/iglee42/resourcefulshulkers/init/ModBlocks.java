@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
 import fr.iglee42.resourcefulshulkers.blocks.*;
+import fr.iglee42.resourcefulshulkers.item.GeneratingBoxItem;
 import fr.iglee42.resourcefulshulkers.utils.ShulkerType;
 import fr.iglee42.resourcefulshulkers.utils.SkullTypes;
 import net.minecraft.core.BlockPos;
@@ -62,7 +63,7 @@ public class ModBlocks {
     public static RegistryObject<Block> createBlock(String name, Supplier<? extends Block> supplier, Item.Properties itemProperties)
     {
         RegistryObject<Block> block = BLOCKS.register(name, supplier);
-        ModItems.ITEMS.register(name, () -> new BlockItem(block.get(), itemProperties));
+        ModItems.ITEMS.register(name, () -> name.endsWith("_generating_box")? new GeneratingBoxItem(block.get(), itemProperties) : new BlockItem(block.get(), itemProperties));
         return block;
     }
     public static RegistryObject<Block> createBlock(String name, Supplier<? extends Block> supplier)
@@ -82,7 +83,7 @@ public class ModBlocks {
     }
     public static void createBox(ResourceLocation id){
         ShulkerType res = ShulkerType.getById(id);
-        ModBlocks.createBlock(res.id().getPath()+ "_generating_box", ()->new GeneratingBoxBlock(id), new Item.Properties().tab(ResourcefulShulkers.SHULKERS_GROUP));
+        createBlock(res.id().getPath()+ "_generating_box", ()->new GeneratingBoxBlock(id), new Item.Properties().tab(ResourcefulShulkers.SHULKERS_GROUP));
     }
     public static Block[] getAllBox() {
         List<RegistryObject<Block>> registries = BLOCKS.getEntries().stream().filter(r->r.getId().toString().endsWith("_generating_box")).toList();

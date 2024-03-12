@@ -9,12 +9,12 @@ import java.io.FileWriter;
 
 public class LootTablesGenerator {
     public static void generate() {
-        ShulkersManager.TYPES.forEach(r->normal(r.id().getPath().toLowerCase()+"_generating_box"));
+        ShulkersManager.TYPES.forEach(r-> generatingBox(r.id().getPath().toLowerCase()));
     }
 
-    private static void normal(String name){
+    private static void generatingBox(String name){
         try {
-            FileWriter writer = new FileWriter(new File(PathConstant.LOOT_TABLES_PATH.toFile(), name+".json"));
+            FileWriter writer = new FileWriter(new File(PathConstant.LOOT_TABLES_PATH.toFile(), name+"_generating_box.json"));
             writer.write("{\n" +
                     "  \"type\": \"minecraft:block\",\n" +
                     "  \"pools\": [\n" +
@@ -28,13 +28,30 @@ public class LootTablesGenerator {
                     "      \"entries\": [\n" +
                     "        {\n" +
                     "          \"type\": \"minecraft:item\",\n" +
-                    "          \"name\": \"resourcefulshulkers:"+name+"\"\n" +
+                    "          \"functions\": [\n" +
+                    "            {\n" +
+                    "              \"function\": \"minecraft:copy_name\",\n" +
+                    "              \"source\": \"block_entity\"\n" +
+                    "            },\n" +
+                    "            {\n" +
+                    "              \"function\": \"minecraft:copy_nbt\",\n" +
+                    "              \"ops\": [\n" +
+                    "                {\n" +
+                    "                  \"op\": \"replace\",\n" +
+                    "                  \"source\": \"remainingDurability\",\n" +
+                    "                  \"target\": \"durability\"\n" +
+                    "                }\n" +
+                    "              ],\n" +
+                    "              \"source\": \"block_entity\"\n" +
+                    "            }\n" +
+                    "          ],\n" +
+                    "          \"name\": \"resourcefulshulkers:"+name+"_generating_box\"\n" +
                     "        }\n" +
                     "      ],\n" +
                     "      \"rolls\": 1.0\n" +
                     "    }\n" +
                     "  ],\n" +
-                    "  \"random_sequence\": \"resourcefulshulkers:"+name+"\"\n" +
+                    "  \"random_sequence\": \"resourcefulshulkers:blocks/"+name+"_generating_box\"\n" +
                     "}");
             writer.close();
         } catch (Exception exception){
