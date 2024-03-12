@@ -15,7 +15,7 @@ import net.minecraftforge.registries.tags.ITagManager;
 
 import static net.minecraft.client.renderer.Sheets.SHULKER_SHEET;
 
-public record ShulkerType(ResourceLocation id, @DefaultParameter(stringValue = "minecraft:stone") String item, @DefaultParameter(stringValue = "black") @OptionalParameter String color, String shellItemColor, @DefaultParameter(stringValue = "minecraft:entity/shulker/shulker") String texture) {
+public record ShulkerType(ResourceLocation id, @DefaultParameter(stringValue = "minecraft:stone") String item, @DefaultParameter(stringValue = "black") @OptionalParameter String color, String shellItemColor, @DefaultParameter(stringValue = "minecraft:entity/shulker/shulker") String texture,@OptionalParameter @DefaultParameter(stringValue = "minecraft:entity/shulker/shulker") String boxTexture) {
 
     public static ShulkerType getById(ResourceLocation id){
         return ShulkersManager.TYPES.stream().filter(r->r.id == id).findFirst().orElse(null);
@@ -23,6 +23,9 @@ public record ShulkerType(ResourceLocation id, @DefaultParameter(stringValue = "
 
     public Material getMaterial(){
         return new Material(SHULKER_SHEET,new ResourceLocation(ResourcefulShulkers.MODID,getTexture().getPath().replace(".png","")));
+    }
+    public Material getBoxMaterial(){
+        return new Material(SHULKER_SHEET,new ResourceLocation(ResourcefulShulkers.MODID,getBoxTexture().getPath().replace(".png","")));
     }
 
     public DyeColor getColor() {
@@ -45,6 +48,10 @@ public record ShulkerType(ResourceLocation id, @DefaultParameter(stringValue = "
 
     public ResourceLocation getTexture(){
         return texture != null ? new ResourceLocation(texture) : new ResourceLocation(ResourcefulShulkers.MODID,"entity/mod_base/"+id.getPath().toLowerCase()+".png");
+    }
+
+    public ResourceLocation getBoxTexture(){
+        return boxTexture != null ? new ResourceLocation(boxTexture) : new ResourceLocation(ResourcefulShulkers.MODID,"entity/boxes/"+id.getPath().toLowerCase()+".png");
     }
 
 }

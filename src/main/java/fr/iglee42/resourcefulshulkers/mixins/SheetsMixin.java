@@ -19,5 +19,6 @@ public class SheetsMixin {
         consumer.accept(Materials.SKY_SHULKER_TEXTURE);
         consumer.accept(Materials.NETHER_SHULKER_TEXTURE);
         ShulkersManager.TYPES.forEach(r->consumer.accept(r.getMaterial()));
+        ShulkersManager.TYPES.forEach(r->consumer.accept(r.getBoxMaterial()));
     }
 }

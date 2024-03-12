@@ -29,8 +29,11 @@ public class GeneratingBoxRenderer implements BlockEntityRenderer<GeneratingBoxB
       Direction direction = Direction.UP;
 
 
-      Material material = entity.getResourceGenerated().getMaterial();
+      Material material = entity.getResourceGenerated().getBoxMaterial();
 
+      if (material.sprite() instanceof MissingTextureAtlasSprite){
+         material = entity.getResourceGenerated().getMaterial();
+      }
       if (material.sprite() instanceof MissingTextureAtlasSprite){
          material = Sheets.SHULKER_TEXTURE_LOCATION.get(entity.getResourceGenerated().getColor().getId());
       }
