@@ -36,6 +36,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
@@ -111,7 +112,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     };
     private LazyOptional<ItemStackHandler> optionalInventory = LazyOptional.empty();
     private LazyOptional<ItemStackHandler> optionalUpgrades = LazyOptional.empty();
-    private int remainingDurability = MAX_DURABILITY;
+    private int remainingDurability;
     private int generatingTick;
     private boolean explosing;
 
@@ -134,7 +135,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
             s.setMessage(1,new TextComponent(entity.inventory.getStackInSlot(1).getCount() + ""));
             s.setMessage(2,new TextComponent(entity.getRemainingDurability() + "/"+ MAX_DURABILITY));
         }*/
-        if (!level.isClientSide) {
+        if (!level.isClientSide && entity.getResourceGenerated() != null && entity.getResourceGenerated().getItem() != Items.AIR) {
             ModMessages.sendToClients(new GeneratingTickSyncS2CPacket(entity.generatingTick, blockPos));
             ModMessages.sendToClients(new GeneratorDurabilitySyncS2CPacket(entity.remainingDurability, blockPos));
             if (entity.remainingDurability > 0 && !entity.isInventoryFull()){
@@ -168,7 +169,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
 
     @Override
     protected void second(Level level, BlockPos blockPos, BlockState blockState, SecondBlockEntity be) {
-        if (!level.isClientSide){
+        if (!level.isClientSide && getResourceGenerated() != null && getResourceGenerated().getItem() != Items.AIR){
             if (remainingDurability <= (MAX_DURABILITY - SHELL_DURABILITY_ADDED)){
                 if(!inventory.getStackInSlot(0).isEmpty()){
                     remainingDurability = remainingDurability + SHELL_DURABILITY_ADDED;
@@ -245,12 +246,12 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        inventory.deserializeNBT(tag.getCompound("inventory"));
-        upgrades.deserializeNBT(tag.getCompound("upgrades"));
-        id = ResourceLocation.tryParse(tag.getString("resourceId"));
-        remainingDurability = tag.getInt("remainingDurability");
-        generatingTick = tag.getInt("generatingTick");
-        explosing = tag.getBoolean("isExplosing");
+        this.id = ResourceLocation.tryParse(tag.getString("resourceId"));
+        this.inventory.deserializeNBT(tag.getCompound("inventory"));
+        this.upgrades.deserializeNBT(tag.getCompound("upgrades"));
+        this.remainingDurability = tag.getInt("remainingDurability");
+        this.generatingTick = tag.getInt("generatingTick");
+        this.explosing = tag.getBoolean("isExplosing");
     }
 
 
@@ -258,12 +259,12 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        tag.put("inventory", inventory.serializeNBT());
-        tag.put("upgrades", upgrades.serializeNBT());
-        tag.putString("resourceId",id.toString());
-        tag.putInt("remainingDurability",remainingDurability);
-        tag.putInt("generatingTick", generatingTick);
-        tag.putBoolean("isExplosing",explosing);
+        tag.putString("resourceId",this.id.toString());
+        tag.put("inventory", this.inventory.serializeNBT());
+        tag.put("upgrades", this.upgrades.serializeNBT());
+        tag.putInt("remainingDurability",this.remainingDurability);
+        tag.putInt("generatingTick", this.generatingTick);
+        tag.putBoolean("isExplosing",this.explosing);
     }
 
     private void updateAnimation(Level p_155680_, BlockPos p_155681_, BlockState p_155682_) {

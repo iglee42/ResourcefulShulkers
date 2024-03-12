@@ -7,8 +7,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -20,6 +22,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -34,7 +37,23 @@ public class GeneratingBoxBlock extends BaseEntityBlock {
     public GeneratingBoxBlock(ResourceLocation id) {
         super(Properties.copy(Blocks.SHULKER_BOX));
         this.id = id;
+    }
 
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack stack) {
+        super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
+        if (level.isClientSide) return;
+        if (stack == null) return;
+        if (level.getBlockEntity(pos) instanceof GeneratingBoxBlockEntity be) {
+            be.setDurability(stack.getOrCreateTag().getInt("durability"));
+        }
+    }
+
+    @Override
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+        ItemStack stack = super.getCloneItemStack(state, target, level, pos, player);
+        if (level.getBlockEntity(pos) instanceof GeneratingBoxBlockEntity be) stack.getOrCreateTag().putInt("durability",be.getRemainingDurability());
+        return stack;
     }
 
     @Override

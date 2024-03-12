@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Items;
 
 import java.awt.*;
 
@@ -68,11 +69,11 @@ public class GeneratingBoxScreen extends AbstractContainerScreen<GeneratingBoxMe
         RenderSystem.setShaderTexture(0, TEXTURE);
         blit(pPoseStack,x + 35,y +37,0,166,menu.getTile().getGeneratingTick(),8);
         renderTooltip(pPoseStack, mouseX, mouseY);
-        String generating = "Generating : " + new TranslatableComponent(menu.getTile().getResourceGenerated().getItem().getDescriptionId()).getString();
-        int xGeneratingPos = x + 80 + (generating.length() / 2);
-        drawCenteredString(pPoseStack,font, generating, xGeneratingPos ,y + 40 , Color.GRAY.getRGB());
+        String generating = menu.getTile().getResourceGenerated().getItem() != Items.AIR ?"Generating : " + new TranslatableComponent(menu.getTile().getResourceGenerated().getItem().getDescriptionId()).getString() : "Resource Not Found";
+        int xGeneratingPos = x + 78 + (generating.length() / 2);
+        drawCenteredString(pPoseStack,font, generating, xGeneratingPos ,y + 40 , menu.getTile().getResourceGenerated().getItem()!= Items.AIR ? Color.GRAY.getRGB(): ChatFormatting.RED.getColor());
         String dura = menu.getTile().getRemainingDurability() > 0 ? "Durability : "  + menu.getTile().getRemainingDurability() + "/"+ GeneratingBoxBlockEntity.MAX_DURABILITY : "Reload Needed";
-        int xDuraPos = x + 80 + (dura.length() / 2);
+        int xDuraPos = x + 78 + (dura.length() / 2);
         drawCenteredString(pPoseStack,font, dura, xDuraPos ,y + 5 ,menu.getTile().getRemainingDurability() > 0 ? Color.GRAY.getRGB() : ChatFormatting.RED.getColor());
 
     }
