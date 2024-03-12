@@ -11,6 +11,7 @@ import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
 public enum BaseTypes {
 
     ALUMINUM("#forge:ingots/aluminum", DyeColor.LIGHT_GRAY,"C2AEA0"),
+    AMETHYST(Items.AMETHYST_SHARD, DyeColor.MAGENTA,"B38EF3"),
     BRASS("#forge:ingots/brass", DyeColor.ORANGE,"E4B763"),
     BRONZE("#forge:ingots/bronze", DyeColor.ORANGE,"CE6E26"),
     CLAY(Items.CLAY_BALL, DyeColor.LIGHT_GRAY,"A1A7B1"),
@@ -29,6 +30,7 @@ public enum BaseTypes {
     LEAD("#forge:ingots/lead", DyeColor.BLUE,"484E6A"),
     NETHERITE(Items.NETHERITE_SCRAP, DyeColor.BROWN,"4D494D"),
     NICKEL("#forge:ingots/nickel", DyeColor.YELLOW,"BCAD7E"),
+    OBSIDIAN(Items.OBSIDIAN, DyeColor.PURPLE,"271E3D"),
     OSMIUM("#forge:ingots/osmium", DyeColor.LIGHT_GRAY,"A5B1BA"),
     QUARTZ(Items.QUARTZ, DyeColor.WHITE,"F2EFED"),
     REDSTONE(Items.REDSTONE, DyeColor.RED,"7E0F00"),
@@ -41,6 +43,13 @@ public enum BaseTypes {
     URANIUM("#forge:ingots/uranium", DyeColor.LIME,"9FC3A1"),
     WOOD(Items.OAK_LOG, DyeColor.BROWN,"745A36"),
     ZINC("#forge:ingots/zinc", DyeColor.LIGHT_GRAY,"AAB59D"),
+
+    ENDERMAN(Items.ENDER_PEARL,DyeColor.BLACK, "161616"),
+    BLAZE(Items.BLAZE_ROD,DyeColor.YELLOW,"FFD528"),
+    CREEPER(Items.GUNPOWDER,DyeColor.LIME,"4AC63A"),
+    ZOMBIE(Items.ROTTEN_FLESH, DyeColor.GREEN,"497135"),
+    SKELETON(Items.BONE,DyeColor.WHITE,"BCBCBC"),
+    GUARDIAN(Items.PRISMARINE_SHARD,DyeColor.CYAN,"4E7966")
     ;
 
     private String item, color, shellColor;
@@ -63,6 +72,7 @@ public enum BaseTypes {
         obj.addProperty("color",color);
         obj.addProperty("shellItemColor",shellColor);
         obj.addProperty("texture",MODID + ":entity/mod_base/"+name().toLowerCase()+".png");
+        obj.addProperty("boxTexture",MODID + ":entity/boxes/"+name().toLowerCase()+".png");
         return new GsonBuilder().setPrettyPrinting().create().toJson(obj);
     }
 
