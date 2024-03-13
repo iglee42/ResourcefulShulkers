@@ -30,6 +30,7 @@ public class TagsGenerator {
 
         try {
             writeTag(shulker,new File(PathConstant.ENTITY_TYPES_TAGS_PATH.toFile(), "shulkers.json"));
+            writeTag(shulker,new File(PathConstant.ITEMS_TAGS_PATH.toFile(), "shulkers.json"));
             writeTag(shells,new File(PathConstant.ITEMS_TAGS_PATH.toFile(), "shulker_shells.json"));
             writeTag(pickaxe,new File(PathConstant.MC_MINEABLE_TAGS_PATH.toFile(), "pickaxe.json"));
 

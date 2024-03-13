@@ -61,12 +61,13 @@ public class ShulkerItemInfusionRecipe implements Recipe<SimpleContainer>, ITick
     };
 
     private final ResourceLocation id;
-    private final ResourceLocation baseEntity, resultEntity;
+    private final String baseEntity;
+    private final ResourceLocation resultEntity;
     private final CompoundTag resultNBT;
     private final Ingredient[] pedestalsIngredients;
     private final int auraConsummed;
 
-    public ShulkerItemInfusionRecipe(ResourceLocation id, ResourceLocation baseEntity, ResourceLocation resultEntity,CompoundTag resultNBT,int auraConsummed, Ingredient... pedestalsIngredients) {
+    public ShulkerItemInfusionRecipe(ResourceLocation id, String baseEntity, ResourceLocation resultEntity,CompoundTag resultNBT,int auraConsummed, Ingredient... pedestalsIngredients) {
         this.id = id;
         this.baseEntity = baseEntity;
         this.resultEntity = resultEntity;
@@ -200,7 +201,7 @@ public class ShulkerItemInfusionRecipe implements Recipe<SimpleContainer>, ITick
         return Type.INSTANCE;
     }
 
-    public ResourceLocation getBaseEntity() {
+    public String getBaseEntity() {
         return baseEntity;
     }
 
@@ -247,15 +248,15 @@ public class ShulkerItemInfusionRecipe implements Recipe<SimpleContainer>, ITick
                     throw new RuntimeException(e);
                 }
             }
-            return new ShulkerItemInfusionRecipe(rs, new ResourceLocation(JsonHelper.getString(json, "baseEntity")), new ResourceLocation(JsonHelper.getString(json, "resultEntity")),tag,JsonHelper.getIntOrDefault(json,"aura",1500), ingredients);
+            return new ShulkerItemInfusionRecipe(rs, JsonHelper.getString(json, "baseEntity"), new ResourceLocation(JsonHelper.getString(json, "resultEntity")),tag,JsonHelper.getIntOrDefault(json,"aura",1500), ingredients);
         }
 
         public ShulkerItemInfusionRecipe fromNetwork(ResourceLocation rs, FriendlyByteBuf buffer) {
-            return new ShulkerItemInfusionRecipe(rs, buffer.readResourceLocation(), buffer.readResourceLocation(),buffer.readNbt(),buffer.readInt(), buffer.readList(Ingredient::fromNetwork).toArray(new Ingredient[8]));
+            return new ShulkerItemInfusionRecipe(rs, buffer.readUtf(), buffer.readResourceLocation(),buffer.readNbt(),buffer.readInt(), buffer.readList(Ingredient::fromNetwork).toArray(new Ingredient[8]));
         }
 
         public void toNetwork(FriendlyByteBuf buffer, ShulkerItemInfusionRecipe recipe) {
-            buffer.writeResourceLocation(recipe.baseEntity);
+            buffer.writeUtf(recipe.baseEntity);
             buffer.writeResourceLocation(recipe.resultEntity);
             buffer.writeNbt(recipe.resultNBT);
             buffer.writeInt(recipe.auraConsummed);

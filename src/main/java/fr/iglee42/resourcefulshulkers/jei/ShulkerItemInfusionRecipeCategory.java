@@ -7,6 +7,7 @@ import fr.iglee42.igleelib.api.utils.MouseUtil;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
 import fr.iglee42.resourcefulshulkers.init.ModBlocks;
 import fr.iglee42.resourcefulshulkers.recipes.ShulkerItemInfusionRecipe;
+import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -25,7 +26,10 @@ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.tags.TagManager;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -34,10 +38,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class ShulkerItemInfusionRecipeCategory implements IRecipeCategory<ShulkerItemInfusionRecipe> {
 
@@ -123,8 +124,14 @@ public class ShulkerItemInfusionRecipeCategory implements IRecipeCategory<Shulke
         Minecraft.getInstance().screen.blit(stack,60,15,0,0,60,15,60,15);
         int y = 35;
         float scale = 27.5f, yaw = -25.0f, pitch = -29.0f;
-        if (ForgeRegistries.ENTITIES.getValue(recipe.getBaseEntity()).create(Minecraft.getInstance().level) instanceof LivingEntity) {
-            LivingEntity e = (LivingEntity) ForgeRegistries.ENTITIES.getValue(recipe.getBaseEntity()).create(Minecraft.getInstance().level);
+        Entity en;
+        if (recipe.getBaseEntity().startsWith("#")){
+            en = ForgeRegistries.ENTITIES.tags().getTag(ForgeRegistries.ENTITIES.tags().createTagKey(new ResourceLocation(recipe.getBaseEntity().substring(1)))).stream().toList().get(0).create(Minecraft.getInstance().level);
+            Minecraft.getInstance().font.draw(stack, ChatFormatting.GRAY + "" + ChatFormatting.ITALIC + "(Hover)", 8, y + 5, 0);
+        } else {
+            en = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(recipe.getBaseEntity())).create(Minecraft.getInstance().level);
+        }
+        if (en instanceof LivingEntity e) {
             renderEntity(stack, 27, y, scale, yaw, pitch, e);
         }
 
@@ -142,8 +149,11 @@ public class ShulkerItemInfusionRecipeCategory implements IRecipeCategory<Shulke
 
     @Override
     public List<Component> getTooltipStrings(ShulkerItemInfusionRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-        if (MouseUtil.isMouseOver(mouseX, mouseY, 50, 45, Minecraft.getInstance().font.width("Ingredients"), Minecraft.getInstance().font.lineHeight)) {
+        if (MouseUtil.isMouseOver(mouseX, mouseY, 60, 45, Minecraft.getInstance().font.width("Ingredients"), Minecraft.getInstance().font.lineHeight)) {
             return Arrays.asList(new TextComponent("The order of items is not important"));
+        }
+        if (MouseUtil.isMouseOver(mouseX, mouseY, 8, 40, Minecraft.getInstance().font.width("(Hover)"), Minecraft.getInstance().font.lineHeight)&& recipe.getBaseEntity().startsWith("#")) {
+            return Arrays.asList(new TextComponent("Accept any : " + recipe.getBaseEntity()));
         }
         return Collections.emptyList();
     }
@@ -175,7 +185,12 @@ public class ShulkerItemInfusionRecipeCategory implements IRecipeCategory<Shulke
             ItemEntity itemEntity = (ItemEntity) e;
             builder.addSlot(RecipeIngredientRole.OUTPUT,135, 10).addIngredients(Ingredient.of(itemEntity.getItem())).setCustomRenderer(VanillaTypes.ITEM_STACK,new BigItemstackRenderer());
         }
-        builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addIngredients(Ingredient.of(ForgeRegistries.ITEMS.getValue(recipe.getBaseEntity())));
+        if (recipe.getBaseEntity().startsWith("#")){
+            for (EntityType<?> t : ForgeRegistries.ENTITIES.tags().getTag(ForgeRegistries.ENTITIES.tags().createTagKey(new ResourceLocation(recipe.getBaseEntity().substring(1)))).stream().toList())
+                builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addIngredients(Ingredient.of(ForgeRegistries.ITEMS.getValue(t.getRegistryName())));
+        } else {
+            builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addIngredients(Ingredient.of(ForgeRegistries.ITEMS.getValue(new ResourceLocation(recipe.getBaseEntity()))));
+        }
         builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT).addIngredients(Ingredient.of(ForgeRegistries.ITEMS.getValue(recipe.getResultEntity())));
     }
 

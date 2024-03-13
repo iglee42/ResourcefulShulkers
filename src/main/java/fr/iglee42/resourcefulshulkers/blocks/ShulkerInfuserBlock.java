@@ -7,14 +7,18 @@ import fr.iglee42.resourcefulshulkers.blocks.entites.ShulkerPedestalBlockEntity;
 import fr.iglee42.resourcefulshulkers.init.ModBlocks;
 import fr.iglee42.resourcefulshulkers.recipes.ShulkerItemInfusionRecipe;
 import fr.iglee42.resourcefulshulkers.recipes.ShulkerRecipeEnvironnement;
+import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
@@ -36,11 +40,13 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class ShulkerInfuserBlock extends BaseEntityBlock {
 
@@ -142,7 +148,10 @@ public class ShulkerInfuserBlock extends BaseEntityBlock {
                             pedestalIngredients.remove(pedestalIngredients.stream().filter(i->i.test(stack)).findFirst().get());
                     }
 
-                    boolean flag1 = r.getBaseEntity().equals(target.getType().getRegistryName());
+                    boolean flag1 = r.getBaseEntity().startsWith("#")?
+                            ForgeRegistries.ENTITIES.tags().getTag(ForgeRegistries.ENTITIES.tags().createTagKey(new ResourceLocation(r.getBaseEntity().substring(1)))).contains(target.getType()) :
+                            new ResourceLocation(r.getBaseEntity()).equals(target.getType().getRegistryName());
+                    //boolean flag1 = r.getBaseEntity().equals(target.getType().getRegistryName());
                     boolean flag2 = pedestalIngredients.isEmpty();
 
                     return flag && flag1 && flag2;
@@ -158,7 +167,10 @@ public class ShulkerInfuserBlock extends BaseEntityBlock {
                                 pedestalIngredients.remove(pedestalIngredients.stream().filter(i->i.test(stack)).findFirst().get());
                         }
 
-                        boolean flag1 = r.getBaseEntity().equals(target.getType().getRegistryName());
+                        boolean flag1 = r.getBaseEntity().startsWith("#")?
+                            ForgeRegistries.ENTITIES.tags().getTag(ForgeRegistries.ENTITIES.tags().createTagKey(new ResourceLocation(r.getBaseEntity().substring(1)))).contains(target.getType()) :
+                            new ResourceLocation(r.getBaseEntity()).equals(target.getType().getRegistryName());
+                        //boolean flag1 = r.getBaseEntity().equals(target.getType().getRegistryName());
                         boolean flag2 = pedestalIngredients.isEmpty();
 
                         return flag && flag1 && flag2;
