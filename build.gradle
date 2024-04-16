@@ -135,9 +135,7 @@ repositories {
 
     maven {
         name = "igleeRepoReleases"
-        url "http://iglee.fr:8080/releases"
-        allowInsecureProtocol = true
-
+        url "https://iglee.fr:8081/releases"
     }
 
         maven {
