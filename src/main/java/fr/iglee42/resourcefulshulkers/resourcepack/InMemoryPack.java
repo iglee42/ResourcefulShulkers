@@ -2,15 +2,21 @@ package fr.iglee42.resourcefulshulkers.resourcepack;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.datafixers.util.Pair;
 import fr.iglee42.resourcefulshulkers.resourcepack.generation.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
 import net.minecraft.server.packs.repository.PackRepository;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModLoader;
+import net.minecraft.server.packs.repository.PackSource;
+import net.minecraft.server.packs.resources.IoSupplier;
+import net.neoforged.fml.DistExecutor;
+import net.neoforged.fml.ModLoader;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -26,13 +32,14 @@ public class InMemoryPack implements PackResources {
 
     //STATIC FIELDS
     private static boolean hasGenerated = false;
+    public static final PackLocationInfo location = new PackLocationInfo("rs_incode_pack", Component.literal("RS Incode Pack"), PackSource.BUILT_IN,Optional.empty());;
 
     //RESOURCE PACK FIELDS
-    private final Path rootPath;
+    private final Path path;
 
     //CONSTRUCTOR
-    public InMemoryPack(Path rootPath) {
-        this.rootPath = rootPath;
+    public InMemoryPack(Path path) {
+        this.path = path;
         generateData();
     }
 
@@ -63,62 +70,56 @@ public class InMemoryPack implements PackResources {
     private static String getFullPath(PackType type, ResourceLocation location) {
         return String.format("%s/%s/%s", type.getDirectory(), location.getNamespace(), location.getPath());
     }
+
     @Nullable
     @Override
-    public InputStream getRootResource(String fileName) throws IOException {
-        Path resolved = rootPath.resolve(fileName);
-        return Files.newInputStream(resolved);
+    public IoSupplier<InputStream> getRootResource(String... p_252049_) {
+        Path resolved = path.resolve(p_252049_[0]);
+        return IoSupplier.create(resolved);
     }
 
     @Override
-    public InputStream getResource(PackType type, ResourceLocation location) throws IOException {
-        Path resolved = rootPath.resolve(getFullPath(type, location));
-        if (!Files.exists(resolved)){
-            throw new IOException("Resource does not exist");
-        }
-        return Files.newInputStream(resolved);
+    public IoSupplier<InputStream> getResource(PackType type, ResourceLocation location) {
+        Path resolved = path.resolve(getFullPath(type, location));
+        if (!Files.exists(resolved)) return null;
+        return IoSupplier.create(resolved);
     }
-
 
 
     @Override
-    public Collection<ResourceLocation> getResources(PackType type, String namespaceIn, String pathIn,int i, Predicate<String> filterIn) {
-        List<ResourceLocation> result = new ArrayList<>();
-        getChildResourceLocations(result, 0, 500, filterIn, rootPath.resolve(type.getDirectory() + "/" + namespaceIn + "/" + pathIn), namespaceIn, pathIn);
-        return result;
+    public void listResources(PackType p_10289_, String p_251379_, String p_251932_, ResourceOutput p_249347_) {
+        var result = new ArrayList<Pair<ResourceLocation, String>>();
+        getChildResourceLocations(result, 100, x -> true, path.resolve(p_10289_.getDirectory()).resolve(p_251379_).resolve(p_251932_), p_251379_, p_251932_);
+        for (Pair<ResourceLocation, String> row : result) {
+            p_249347_.accept(row.getFirst(), IoSupplier.create(Path.of(row.getSecond())));
+        }
     }
 
-    private void getChildResourceLocations(List<ResourceLocation> result, int depth, int maxDepth, Predicate<String> filter, Path current, String currentRLNS, String currentRLPath) {
-        if (depth >= maxDepth) {
-            return;
-        }
+    private void getChildResourceLocations(List<Pair<ResourceLocation, String>> result, int depth, Predicate<ResourceLocation> filter, Path current, String currentRLNS, String currentRLPath) {
         try {
             if (!Files.exists(current) || !Files.isDirectory(current)){
                 return;
             }
             Stream<Path> list = Files.list(current);
-            for (Path child : list.collect(Collectors.toList())) {
+            for (Path child : list.toList()) {
                 if (!Files.isDirectory(child)) {
-                    result.add(new ResourceLocation(currentRLNS, currentRLPath + "/" + child.getFileName()));
+                    result.add(new Pair<>(new ResourceLocation(currentRLNS, currentRLPath + "/" + child.getFileName()), child.toString()));
                     continue;
                 }
-                getChildResourceLocations(result, depth + 1, maxDepth, filter, child, currentRLNS, currentRLPath + "/" + child.getFileName());
+                getChildResourceLocations(result, depth + 1, filter, child, currentRLNS,  currentRLPath + "/" + child.getFileName());
             }
         } catch (IOException ignored) {
             ignored.printStackTrace();
         }
     }
-    @Override
-    public boolean hasResource(PackType type, ResourceLocation location) {
-        Path finalPath = rootPath.resolve(type.getDirectory() + "/" + location.getNamespace() + "/" + location.getPath());
-        return Files.exists(finalPath);
-    }
+
+
 
     @Override
-    public Set<String> getNamespaces(PackType type) {
+    public @NotNull Set<String> getNamespaces(PackType type) {
         Set<String> result = new HashSet<>();
         try {
-            Stream<Path> list = Files.list(rootPath.resolve(type.getDirectory()));
+            Stream<Path> list = Files.list(path.resolve(type.getDirectory()));
             for (Path resultingPath : list.collect(Collectors.toList())) {
                 result.add(resultingPath.getFileName().toString());
             }
@@ -129,14 +130,13 @@ public class InMemoryPack implements PackResources {
         return result;
     }
 
-
     @Nullable
     @Override
     public <T> T getMetadataSection(MetadataSectionSerializer<T> deserializer) throws IOException {
         JsonObject jsonobject = new JsonObject();
         JsonObject packObject = new JsonObject();
         packObject.addProperty("pack_format", 16);
-        packObject.addProperty("description", "RS Pack");
+        packObject.addProperty("description", "rs");
         jsonobject.add("pack", packObject);
         if (!jsonobject.has(deserializer.getMetadataSectionName())) {
             return null;
@@ -150,7 +150,12 @@ public class InMemoryPack implements PackResources {
     }
 
     @Override
-    public String getName() {
+    public PackLocationInfo location() {
+        return location;
+    }
+
+    @Override
+    public String packId() {
         return "RS InCode Pack";
     }
 

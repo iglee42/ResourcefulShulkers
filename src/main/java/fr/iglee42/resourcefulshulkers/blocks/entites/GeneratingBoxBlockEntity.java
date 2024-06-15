@@ -4,23 +4,23 @@ import fr.iglee42.igleelib.api.blockentities.SecondBlockEntity;
 import fr.iglee42.igleelib.api.utils.ModsUtils;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
 import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
-import fr.iglee42.resourcefulshulkers.blocks.GeneratingBoxBlock;
+import fr.iglee42.resourcefulshulkers.init.ModDataComponents;
 import fr.iglee42.resourcefulshulkers.init.ModItems;
 import fr.iglee42.resourcefulshulkers.item.UpgradeItem;
 import fr.iglee42.resourcefulshulkers.menu.GeneratingBoxMenu;
-import fr.iglee42.resourcefulshulkers.network.ModMessages;
-import fr.iglee42.resourcefulshulkers.network.packets.GeneratingTickSyncS2CPacket;
-import fr.iglee42.resourcefulshulkers.network.packets.GeneratorDurabilitySyncS2CPacket;
-import fr.iglee42.resourcefulshulkers.network.packets.ItemStackSyncS2CPacket;
+import fr.iglee42.resourcefulshulkers.network.data.GeneratingBoxSyncPayload;
+import fr.iglee42.resourcefulshulkers.network.data.ItemSyncPayload;
 import fr.iglee42.resourcefulshulkers.utils.ShulkerType;
 import fr.iglee42.resourcefulshulkers.utils.Upgrade;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -38,8 +38,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -50,10 +50,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -83,7 +81,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
         @Override
         protected void onContentsChanged(int slot) {
             if(!level.isClientSide()) {
-                ModMessages.sendToClients(new ItemStackSyncS2CPacket(getStackInSlot(slot),slot, worldPosition));
+                PacketDistributor.sendToPlayersInDimension((ServerLevel) level,new ItemSyncPayload(getBlockPos(),slot,getStackInSlot(slot)));
             }
         }
     };
@@ -110,9 +108,8 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
             return Upgrade.MAX;
         }
     };
-    private LazyOptional<ItemStackHandler> optionalInventory = LazyOptional.empty();
-    private LazyOptional<ItemStackHandler> optionalUpgrades = LazyOptional.empty();
-    private int remainingDurability;
+
+    private int durability;
     private int generatingTick;
     private boolean explosing;
 
@@ -129,16 +126,11 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     public static void tick(Level level, BlockPos blockPos, BlockState blockState,GeneratingBoxBlockEntity entity){
         SecondBlockEntity.tick(level,blockPos,blockState,entity);
         entity.updateAnimation(level,blockPos,blockState);
-        ModsUtils.debugSign(level,blockPos,entity.generatingTick+"",entity.inventory.getStackInSlot(1).getCount() + "",entity.getRemainingDurability() + "/"+ MAX_DURABILITY);
-/*        if (level.getBlockEntity(blockPos.west()) instanceof SignBlockEntity s){
-            s.setMessage(0,new TextComponent(entity.generatingTick + ""));
-            s.setMessage(1,new TextComponent(entity.inventory.getStackInSlot(1).getCount() + ""));
-            s.setMessage(2,new TextComponent(entity.getRemainingDurability() + "/"+ MAX_DURABILITY));
-        }*/
+        entity.applyComponents(entity.components(), DataComponentPatch.builder().set(ModDataComponents.DURABILITY.get(),entity.durability).build());
+        ModsUtils.debugSign(level,blockPos,entity.generatingTick+"",entity.inventory.getStackInSlot(1).getCount() + "",entity.getDurability() + "/"+ MAX_DURABILITY);
         if (!level.isClientSide && entity.getResourceGenerated() != null && entity.getResourceGenerated().getItem() != Items.AIR) {
-            ModMessages.sendToClients(new GeneratingTickSyncS2CPacket(entity.generatingTick, blockPos));
-            ModMessages.sendToClients(new GeneratorDurabilitySyncS2CPacket(entity.remainingDurability, blockPos));
-            if (entity.remainingDurability > 0 && !entity.isInventoryFull()){
+            PacketDistributor.sendToPlayersInDimension((ServerLevel) level,new GeneratingBoxSyncPayload(blockPos,entity.generatingTick, entity.durability));
+            if (entity.durability > 0 && !entity.isInventoryFull()){
                 int slotWithSpeed = Upgrade.getFirstInventoryIndexWithUpgrade(entity.upgrades,Upgrade.SPEED);
                 entity.generatingTick += (1 + (slotWithSpeed == -1 ? 0 : entity.upgrades.getStackInSlot(slotWithSpeed).getCount()));
             }
@@ -146,19 +138,19 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
                 entity.addItems();
                 entity.generatingTick = 0;
                 int slotWithDurability = Upgrade.getFirstInventoryIndexWithUpgrade(entity.upgrades,Upgrade.DURABILITY);
-                if (entity.remainingDurability > 0 && new Random().nextInt(5) < (5 - (slotWithDurability == -1 ? 0 : entity.upgrades.getStackInSlot(slotWithDurability).getCount()))){
-                    entity.remainingDurability--;
+                if (entity.durability > 0 && new Random().nextInt(5) < (5 - (slotWithDurability == -1 ? 0 : entity.upgrades.getStackInSlot(slotWithDurability).getCount()))){
+                    entity.durability--;
                 }
             }
             else if (entity.generatingTick / 20 > 5 && !entity.explosing){
-                AABB aabb = new AABB(blockPos.offset(-2,-2,-2),blockPos.offset(2,2,2));
-                level.getNearbyPlayers(TargetingConditions.forNonCombat(),null,aabb).forEach(p->p.displayClientMessage(new TextComponent("You change manually the time of generating box so it will explode in 3 seconds!").withStyle(ChatFormatting.RED),false));
+                AABB aabb = new AABB(Vec3.atLowerCornerOf(blockPos.offset(-2,-2,-2)),Vec3.atLowerCornerWithOffset(blockPos.offset(2,2,2),1,1,1));
+                level.getNearbyPlayers(TargetingConditions.forNonCombat(),null,aabb).forEach(p->p.displayClientMessage(Component.literal("You change manually the time of generating box so it will explode in 3 seconds!").withStyle(ChatFormatting.RED),false));
                 entity.explosing = true;
                 Timer timer = new Timer();
                 timer.schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        level.explode(null,blockPos.getX(),blockPos.getY(),blockPos.getZ(), 12,false, Explosion.BlockInteraction.DESTROY);
+                        level.explode(null,blockPos.getX(),blockPos.getY(),blockPos.getZ(), 12,false, Level.ExplosionInteraction.BLOCK);
                     }
                 },1);
 
@@ -170,9 +162,9 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     @Override
     protected void second(Level level, BlockPos blockPos, BlockState blockState, SecondBlockEntity be) {
         if (!level.isClientSide && getResourceGenerated() != null && getResourceGenerated().getItem() != Items.AIR){
-            if (remainingDurability <= (MAX_DURABILITY - SHELL_DURABILITY_ADDED)){
+            if (durability <= (MAX_DURABILITY - SHELL_DURABILITY_ADDED)){
                 if(!inventory.getStackInSlot(0).isEmpty()){
-                    remainingDurability = remainingDurability + SHELL_DURABILITY_ADDED;
+                    durability = durability + SHELL_DURABILITY_ADDED;
                     inventory.getStackInSlot(0).setCount(inventory.getStackInSlot(0).getCount() - 1);
                 }
             }
@@ -183,7 +175,16 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     private void addItems() {
         ShulkerType res = ShulkerType.getById(id);
         if (res != null) {
-            ItemStack stack = new ItemStack(res.getItem());
+            int slotWithQuantity = Upgrade.getFirstInventoryIndexWithUpgrade(upgrades,Upgrade.QUANTITY);
+            int count = 1;
+            if (slotWithQuantity != -1) count = switch (upgrades.getStackInSlot(slotWithQuantity).getCount()){
+                case 1 -> 2;
+                case 2 -> 4;
+                case 3 -> 6;
+                case 4 -> 8;
+                default -> 1;
+            };
+            ItemStack stack = new ItemStack(res.getItem(),count);
             int slot = getFirstSlotNotFull(stack.getItem());
             if (slot == -1) return;
             if (inventory.getStackInSlot(slot).isEmpty()) {
@@ -212,15 +213,10 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
         return -1;
     }
 
-    @NotNull
-    @Override
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        return cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? (side != Direction.UP ? optionalInventory.cast() : optionalUpgrades.cast()) : super.getCapability(cap,side);
-    }
 
     @Override
     public Component getDisplayName() {
-        return new TextComponent("Generating Box");
+        return getBlockState().getBlock().getName();
     }
 
     @Nullable
@@ -230,39 +226,25 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        optionalInventory.invalidate();
-        optionalUpgrades.invalidate();
-    }
-
-    @Override
-    public void onLoad() {
-        super.onLoad();
-        optionalInventory = LazyOptional.of(()->inventory);
-        optionalUpgrades = LazyOptional.of(()->upgrades);
-    }
-
-    @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
         this.id = ResourceLocation.tryParse(tag.getString("resourceId"));
-        this.inventory.deserializeNBT(tag.getCompound("inventory"));
-        this.upgrades.deserializeNBT(tag.getCompound("upgrades"));
-        this.remainingDurability = tag.getInt("remainingDurability");
+        this.inventory.deserializeNBT(provider,tag.getCompound("inventory"));
+        this.upgrades.deserializeNBT(provider,tag.getCompound("upgrades"));
+        applyComponents(components(), DataComponentPatch.builder().set(ModDataComponents.DURABILITY.get(),tag.getInt("durability")).build());
+        this.durability = tag.getInt("durability");
         this.generatingTick = tag.getInt("generatingTick");
         this.explosing = tag.getBoolean("isExplosing");
     }
 
-
-
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag,HolderLookup.Provider provider) {
+        super.saveAdditional(tag,provider);
         tag.putString("resourceId",this.id.toString());
-        tag.put("inventory", this.inventory.serializeNBT());
-        tag.put("upgrades", this.upgrades.serializeNBT());
-        tag.putInt("remainingDurability",this.remainingDurability);
+        tag.put("inventory", this.inventory.serializeNBT(provider));
+        tag.put("upgrades", this.upgrades.serializeNBT(provider));
+        applyComponents(components(), DataComponentPatch.builder().set(ModDataComponents.DURABILITY.get(),durability).build());
+        tag.putInt("durability",this.durability);
         tag.putInt("generatingTick", this.generatingTick);
         tag.putBoolean("isExplosing",this.explosing);
     }
@@ -298,21 +280,27 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     }
 
     public AABB getBoundingBox(BlockState p_59667_) {
-        return Shulker.getProgressAabb(Direction.UP, 0.5F * this.getProgress(1.0F));
+        return Shulker.getProgressAabb(1.0F,Direction.UP, 0.5F * this.getProgress(1.0F));
     }
 
     private void moveCollidedEntities(Level p_155684_, BlockPos p_155685_, BlockState p_155686_) {
-        if (p_155686_.getBlock() instanceof GeneratingBoxBlock) {
-            Direction direction = Direction.UP;
-            AABB aabb = Shulker.getProgressDeltaAabb(direction, this.progressOld, this.progress).move(p_155685_);
-            List<Entity> list = p_155684_.getEntities((Entity)null, aabb);
+        if (p_155686_.getBlock() instanceof ShulkerBoxBlock) {
+            Direction direction = p_155686_.getValue(ShulkerBoxBlock.FACING);
+            AABB aabb = Shulker.getProgressDeltaAabb(1.0F, direction, this.progressOld, this.progress).move(p_155685_);
+            List<Entity> list = p_155684_.getEntities(null, aabb);
             if (!list.isEmpty()) {
                 for (Entity entity : list) {
                     if (entity.getPistonPushReaction() != PushReaction.IGNORE) {
-                        entity.move(MoverType.SHULKER_BOX, new Vec3((aabb.getXsize() + 0.01D) * (double) direction.getStepX(), (aabb.getYsize() + 0.01D) * (double) direction.getStepY(), (aabb.getZsize() + 0.01D) * (double) direction.getStepZ()));
+                        entity.move(
+                                MoverType.SHULKER_BOX,
+                                new Vec3(
+                                        (aabb.getXsize() + 0.01) * (double)direction.getStepX(),
+                                        (aabb.getYsize() + 0.01) * (double)direction.getStepY(),
+                                        (aabb.getZsize() + 0.01) * (double)direction.getStepZ()
+                                )
+                        );
                     }
                 }
-
             }
         }
     }
@@ -389,8 +377,8 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
         return ShulkerType.getById(id);
     }
 
-    public int getRemainingDurability() {
-        return remainingDurability;
+    public int getDurability() {
+        return durability;
     }
 
     public ItemStackHandler getInventory() {
@@ -402,7 +390,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     }
 
     public void setDurability(int durability) {
-        this.remainingDurability = durability;
+        this.durability = durability;
     }
 
     public void dropContent() {
@@ -414,6 +402,10 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
             container.setItem((inventory.getSlots() -1) + i,upgrades.getStackInSlot(i));
         }
         Containers.dropContents(level,worldPosition,container);
+    }
+
+    public ItemStackHandler getUpgrades() {
+        return upgrades;
     }
 }
 

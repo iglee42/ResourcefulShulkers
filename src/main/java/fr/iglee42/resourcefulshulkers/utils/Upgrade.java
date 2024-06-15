@@ -2,16 +2,17 @@ package fr.iglee42.resourcefulshulkers.utils;
 
 import fr.iglee42.igleelib.api.utils.ModsUtils;
 import fr.iglee42.resourcefulshulkers.item.UpgradeItem;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
 
 public enum Upgrade {
     SPEED(),
     DURABILITY(),
+    QUANTITY(),
 
     ;
     public static final int MAX = 4;
@@ -22,7 +23,7 @@ public enum Upgrade {
 
     }
 
-    public static boolean inventoryContainsUpgrade(IItemHandler inventory,Upgrade upgrade){
+    public static boolean inventoryContainsUpgrade(IItemHandler inventory, Upgrade upgrade){
         for (int i = 0; i < inventory.getSlots(); i++){
             if (inventory.getStackInSlot(i).getItem() instanceof UpgradeItem upg){
                 if (upg.getUpgrade() == upgrade) return true;
@@ -47,7 +48,7 @@ public enum Upgrade {
     }
 
     public MutableComponent getDescription(){
-        return new TranslatableComponent("tooltip."+MODID+ "."+name().toLowerCase()+"_upgrade");
+        return Component.translatable("tooltip."+MODID+ "."+name().toLowerCase()+"_upgrade");
     }
 
 }

@@ -1,6 +1,5 @@
 package fr.iglee42.resourcefulshulkers.entity;
 
-import com.mojang.math.Vector3f;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -10,8 +9,9 @@ import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.game.ClientboundAddMobPacket;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -19,6 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
@@ -44,6 +45,7 @@ import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.animal.AbstractGolem;
 import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.DyeColor;
@@ -55,12 +57,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
+import org.joml.Vector3f;
 
 
 public abstract class CustomShulker extends AbstractGolem implements Enemy {
    private static final UUID COVERED_ARMOR_MODIFIER_UUID = UUID.fromString("7E0292F2-9434-48D5-A29F-9583AF7DF27F");
-   private static final AttributeModifier COVERED_ARMOR_MODIFIER = new AttributeModifier(COVERED_ARMOR_MODIFIER_UUID, "Covered armor bonus", 20.0D, AttributeModifier.Operation.ADDITION);
+   private static final AttributeModifier COVERED_ARMOR_MODIFIER = new AttributeModifier(COVERED_ARMOR_MODIFIER_UUID, "Covered armor bonus", 20.0D, AttributeModifier.Operation.ADD_VALUE);
    public static final EntityDataAccessor<Direction> DATA_ATTACH_FACE_ID = SynchedEntityData.defineId(CustomShulker.class, EntityDataSerializers.DIRECTION);
 
    protected static final EntityDataAccessor<Byte> DATA_PEEK_ID = SynchedEntityData.defineId(CustomShulker.class, EntityDataSerializers.BYTE);
@@ -117,13 +119,13 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
       return this.isClosed() ? SoundEvents.SHULKER_HURT_CLOSED : SoundEvents.SHULKER_HURT;
    }
 
-   protected void defineSynchedData() {
-      super.defineSynchedData();
-      this.entityData.define(DATA_ATTACH_FACE_ID, Direction.DOWN);
-      this.entityData.define(DATA_PEEK_ID, (byte)0);
-      this.entityData.define(DATA_COLOR_ID, (byte)16);
+   @Override
+   protected void defineSynchedData(SynchedEntityData.Builder p_326069_) {
+      super.defineSynchedData(p_326069_);
+      p_326069_.define(DATA_ATTACH_FACE_ID, Direction.DOWN);
+      p_326069_.define(DATA_PEEK_ID, (byte)0);
+      p_326069_.define(DATA_COLOR_ID, (byte)16);
    }
-
    public static AttributeSupplier.Builder createAttributes() {
       return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 30.0D);
    }
@@ -151,7 +153,7 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
 
    public void tick() {
       super.tick();
-      if (!this.level.isClientSide && !this.isPassenger() && !this.canStayAt(this.blockPosition(), this.getAttachFace())) {
+      if (!this.level().isClientSide && !this.isPassenger() && !this.canStayAt(this.blockPosition(), this.getAttachFace())) {
          this.findNewAttachment();
       }
 
@@ -160,7 +162,7 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
       }
 
 
-      if (this.level.isClientSide) {
+      if (this.level().isClientSide) {
          if (this.clientSideTeleportInterpolation > 0) {
             --this.clientSideTeleportInterpolation;
          } else {
@@ -214,7 +216,7 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
       Direction direction = this.getAttachFace().getOpposite();
       float f2 = f - f1;
       if (!(f2 <= 0.0F)) {
-         for(Entity entity : this.level.getEntities(this, getProgressDeltaAabb(direction, f1, f).move(this.getX() - 0.5D, this.getY(), this.getZ() - 0.5D), EntitySelector.NO_SPECTATORS.and((p_149771_) -> {
+         for(Entity entity : this.level().getEntities(this, getProgressDeltaAabb(direction, f1, f).move(this.getX() - 0.5D, this.getY(), this.getZ() - 0.5D), EntitySelector.NO_SPECTATORS.and((p_149771_) -> {
             return !p_149771_.isPassengerOfSameVehicle(this);
          }))) {
             if (!(entity instanceof CustomShulker) && !entity.noPhysics) {
@@ -235,13 +237,9 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
       return (new AABB(BlockPos.ZERO)).expandTowards((double)p_149794_.getStepX() * d0, (double)p_149794_.getStepY() * d0, (double)p_149794_.getStepZ() * d0).contract((double)(-p_149794_.getStepX()) * (1.0D + d1), (double)(-p_149794_.getStepY()) * (1.0D + d1), (double)(-p_149794_.getStepZ()) * (1.0D + d1));
    }
 
-   public double getMyRidingOffset() {
-      EntityType<?> entitytype = this.getVehicle().getType();
-      return entitytype != EntityType.BOAT && entitytype != EntityType.MINECART ? super.getMyRidingOffset() : 0.1875D - this.getVehicle().getPassengersRidingOffset();
-   }
 
    public boolean startRiding(Entity p_149773_, boolean p_149774_) {
-      if (this.level.isClientSide()) {
+      if (this.level().isClientSide()) {
          this.clientOldAttachPosition = null;
          this.clientSideTeleportInterpolation = 0;
       }
@@ -252,7 +250,7 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
 
    public void stopRiding() {
       super.stopRiding();
-      if (this.level.isClientSide) {
+      if (this.level().isClientSide) {
          this.clientOldAttachPosition = this.blockPosition();
       }
 
@@ -261,11 +259,12 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
    }
 
    @Nullable
-   public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_149780_, DifficultyInstance p_149781_, MobSpawnType p_149782_, @Nullable SpawnGroupData p_149783_, @Nullable CompoundTag p_149784_) {
+   @Override
+   public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_149780_, DifficultyInstance p_149781_, MobSpawnType p_149782_, @Nullable SpawnGroupData p_149783_) {
       this.setYRot(0.0F);
       this.yHeadRot = this.getYRot();
       this.setOldPosAndRot();
-      return super.finalizeSpawn(p_149780_, p_149781_, p_149782_, p_149783_, p_149784_);
+      return super.finalizeSpawn(p_149780_, p_149781_, p_149782_, p_149783_);
    }
 
    public void move(MoverType p_33424_, Vec3 p_33425_) {
@@ -297,7 +296,7 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
          if (!blockpos1.equals(blockpos)) {
             this.entityData.set(DATA_PEEK_ID, (byte)0);
             this.hasImpulse = true;
-            if (this.level.isClientSide && !this.isPassenger() && !blockpos1.equals(this.clientOldAttachPosition)) {
+            if (this.level().isClientSide && !this.isPassenger() && !blockpos1.equals(this.clientOldAttachPosition)) {
                this.clientOldAttachPosition = blockpos;
                this.clientSideTeleportInterpolation = 6;
                this.xOld = this.getX();
@@ -325,17 +324,17 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
          return false;
       } else {
          Direction direction = p_149787_.getOpposite();
-         if (!this.level.loadedAndEntityCanStandOnFace(p_149786_.relative(p_149787_), this, direction)) {
+         if (!this.level().loadedAndEntityCanStandOnFace(p_149786_.relative(p_149787_), this, direction)) {
             return false;
          } else {
             AABB aabb = getProgressAabb(direction, 1.0F).move(p_149786_).deflate(1.0E-6D);
-            return this.level.noCollision(this, aabb);
+            return this.level().noCollision(this, aabb);
          }
       }
    }
 
    private boolean isPositionBlocked(BlockPos p_149813_) {
-      BlockState blockstate = this.level.getBlockState(p_149813_);
+      BlockState blockstate = this.level().getBlockState(p_149813_);
       if (blockstate.isAir()) {
          return false;
       } else {
@@ -350,12 +349,12 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
 
          for(int i = 0; i < 5; ++i) {
             BlockPos blockpos1 = blockpos.offset(Mth.randomBetweenInclusive(this.random, -4, 4), Mth.randomBetweenInclusive(this.random, -4, 4), Mth.randomBetweenInclusive(this.random, -4, 4));
-            if (blockpos1.getY() > this.level.getMinBuildHeight() && this.level.isEmptyBlock(blockpos1) && this.level.getWorldBorder().isWithinBounds(blockpos1) && this.level.noCollision(this, (new AABB(blockpos1)).deflate(1.0E-6D))) {
+            if (blockpos1.getY() > this.level().getMinBuildHeight() && this.level().isEmptyBlock(blockpos1) && this.level().getWorldBorder().isWithinBounds(blockpos1) && this.level().noCollision(this, (new AABB(blockpos1)).deflate(1.0E-6D))) {
                Direction direction = this.findAttachableSurface(blockpos1);
                if (direction != null) {
-                  net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(this, blockpos1.getX(), blockpos1.getY(), blockpos1.getZ());
+                  net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = net.neoforged.neoforge.event.EventHooks.onEnderTeleport(this, blockpos1.getX(), blockpos1.getY(), blockpos1.getZ());
                   if (event.isCanceled()) direction = null;
-                  blockpos1 = new BlockPos(event.getTargetX(), event.getTargetY(), event.getTargetZ());
+                  blockpos1 = BlockPos.containing(event.getTargetX(), event.getTargetY(), event.getTargetZ());
                }
 
                if (direction != null) {
@@ -364,7 +363,7 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
                   this.playSound(SoundEvents.SHULKER_TELEPORT, 1.0F, 1.0F);
                   this.setPos((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY(), (double)blockpos1.getZ() + 0.5D);
                   this.entityData.set(DATA_PEEK_ID, (byte)0);
-                  this.setTarget((LivingEntity)null);
+                  this.setTarget(null);
                   return true;
                }
             }
@@ -392,19 +391,19 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
       if (!super.hurt(p_33421_, p_33422_)) {
          return false;
       } else {
-            if (p_33421_.isProjectile()) {
-               Entity entity1 = p_33421_.getDirectEntity();
-               if (entity1 != null && entity1.getType() == EntityType.SHULKER_BULLET) {
-                  hitByShulkerBullet();
-               }
+         if (p_33421_.is(DamageTypeTags.IS_PROJECTILE)) {
+            Entity entity1 = p_33421_.getDirectEntity();
+            if (entity1 != null && entity1.getType() == EntityType.SHULKER_BULLET) {
+               this.hitByShulkerBullet();
             }
+         }
             return true;
       }
    }
    @Override
    protected InteractionResult mobInteract(Player player, InteractionHand p_21473_) {
       if (player.isCrouching()){
-         player.addItem(new ItemStack(ForgeRegistries.ITEMS.getValue(this.getType().getRegistryName())));
+         player.addItem(new ItemStack(BuiltInRegistries.ITEM.get(BuiltInRegistries.ENTITY_TYPE.getKey(getType()))));
          this.remove(RemovalReason.KILLED);
          return InteractionResult.SUCCESS;
       }
@@ -414,7 +413,7 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
    @org.jetbrains.annotations.Nullable
    @Override
    public ItemStack getPickResult() {
-      return new ItemStack(ForgeRegistries.ITEMS.getValue(this.getType().getRegistryName()));
+      return new ItemStack(BuiltInRegistries.ITEM.get(BuiltInRegistries.ENTITY_TYPE.getKey(getType())));
    }
 
 
@@ -451,15 +450,15 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
    }
 
    void setRawPeekAmount(int p_33419_) {
-      if (!this.level.isClientSide) {
+      if (!this.level().isClientSide) {
          this.getAttribute(Attributes.ARMOR).removeModifier(COVERED_ARMOR_MODIFIER);
          if (p_33419_ == 0) {
             this.getAttribute(Attributes.ARMOR).addPermanentModifier(COVERED_ARMOR_MODIFIER);
             this.playSound(SoundEvents.SHULKER_CLOSE, 1.0F, 1.0F);
-            this.gameEvent(GameEvent.SHULKER_CLOSE);
+            this.gameEvent(GameEvent.CONTAINER_CLOSE);
          } else {
             this.playSound(SoundEvents.SHULKER_OPEN, 1.0F, 1.0F);
-            this.gameEvent(GameEvent.SHULKER_OPEN);
+            this.gameEvent(GameEvent.CONTAINER_OPEN);
          }
       }
 
@@ -474,7 +473,7 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
       return 0.5F;
    }
 
-   public void recreateFromPacket(ClientboundAddMobPacket p_149798_) {
+   public void recreateFromPacket(ClientboundAddEntityPacket p_149798_) {
       super.recreateFromPacket(p_149798_);
       this.yBodyRot = 0.0F;
       this.yBodyRotO = 0.0F;
@@ -544,20 +543,22 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
       protected void clampHeadRotationToBody() {
       }
 
+      @Override
       protected Optional<Float> getYRotD() {
          Direction direction = CustomShulker.this.getAttachFace().getOpposite();
-         Vector3f vector3f = CustomShulker.FORWARD.copy();
-         vector3f.transform(direction.getRotation());
+         Vector3f vector3f = direction.getRotation().transform(new Vector3f(CustomShulker.FORWARD));
          Vec3i vec3i = direction.getNormal();
          Vector3f vector3f1 = new Vector3f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
          vector3f1.cross(vector3f);
-         double d0 = this.wantedX - CustomShulker.this.getX();
-         double d1 = this.wantedY - CustomShulker.this.getEyeY();
-         double d2 = this.wantedZ - CustomShulker.this.getZ();
+         double d0 = this.wantedX - this.mob.getX();
+         double d1 = this.wantedY - this.mob.getEyeY();
+         double d2 = this.wantedZ - this.mob.getZ();
          Vector3f vector3f2 = new Vector3f((float)d0, (float)d1, (float)d2);
          float f = vector3f1.dot(vector3f2);
          float f1 = vector3f.dot(vector3f2);
-         return !(Math.abs(f) > 1.0E-5F) && !(Math.abs(f1) > 1.0E-5F) ? Optional.empty() : Optional.of((float)(Mth.atan2((double)(-f), (double)f1) * (double)(180F / (float)Math.PI)));
+         return !(Math.abs(f) > 1.0E-5F) && !(Math.abs(f1) > 1.0E-5F)
+                 ? Optional.empty()
+                 : Optional.of((float)(Mth.atan2((double)(-f), (double)f1) * 180.0F / (float)Math.PI));
       }
 
       protected Optional<Float> getXRotD() {

@@ -1,10 +1,11 @@
 package fr.iglee42.resourcefulshulkers.blocks.entites;
 
 import fr.iglee42.igleelib.api.blockentities.SecondBlockEntity;
+import fr.iglee42.igleelib.api.utils.ITickableRecipe;
 import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
-import fr.iglee42.resourcefulshulkers.recipes.ITickableRecipe;
 import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -115,15 +116,15 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
 
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag,provider);
         tag.putInt("progress",progress);
         tag.putBoolean("enabled",enabled);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag,provider);
         progress = tag.getInt("progress");
         enabled = tag.getBoolean("enabled");
     }

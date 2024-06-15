@@ -18,8 +18,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class CustomShulkerRenderer extends MobRenderer<CustomShulker, CustomShulkerModel<CustomShulker>> {
@@ -73,10 +73,12 @@ public class CustomShulkerRenderer extends MobRenderer<CustomShulker, CustomShul
       return p_174376_ == null ? DEFAULT_TEXTURE_LOCATION : TEXTURE_LOCATION[p_174376_.getId()];
    }
 
-   protected void setupRotations(CustomShulker p_115907_, PoseStack p_115908_, float p_115909_, float p_115910_, float p_115911_) {
-      super.setupRotations(p_115907_, p_115908_, p_115909_, p_115910_ + 180.0F, p_115911_);
-      p_115908_.translate(0.0D, 0.5D, 0.0D);
-      p_115908_.mulPose(p_115907_.getAttachFace().getOpposite().getRotation());
-      p_115908_.translate(0.0D, -0.5D, 0.0D);
+   @Override
+   protected void setupRotations(CustomShulker p_115317_, PoseStack p_115318_, float p_115319_, float p_115320_, float p_115321_, float p_320045_) {
+      super.setupRotations(p_115317_, p_115318_, p_115319_, p_115320_, p_115321_ + 180.0F, p_320045_);
+      p_115318_.translate(0.0D, 0.5D, 0.0D);
+      p_115318_.mulPose(p_115317_.getAttachFace().getOpposite().getRotation());
+      p_115318_.translate(0.0D, -0.5D, 0.0D);
    }
+
 }

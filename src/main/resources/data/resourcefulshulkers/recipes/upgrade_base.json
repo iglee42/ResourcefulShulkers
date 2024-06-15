@@ -14,7 +14,7 @@
     }
   },
   "result": {
-    "item": "resourcefulshulkers:upgrade_base",
+    "id": "resourcefulshulkers:upgrade_base",
     "count": 2
   }
 }

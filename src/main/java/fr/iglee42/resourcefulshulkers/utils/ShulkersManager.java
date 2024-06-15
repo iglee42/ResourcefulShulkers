@@ -4,16 +4,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import fr.iglee42.igleelib.api.utils.JsonHelper;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
-import fr.iglee42.resourcefulshulkers.init.ModBlocks;
-import fr.iglee42.resourcefulshulkers.init.ModEntities;
 import fr.iglee42.resourcefulshulkers.entity.CustomShulkerBullet;
 import fr.iglee42.resourcefulshulkers.entity.ResourceShulker;
+import fr.iglee42.resourcefulshulkers.init.ModBlocks;
+import fr.iglee42.resourcefulshulkers.init.ModEntities;
 import fr.iglee42.resourcefulshulkers.init.ModItems;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.Items;
-import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 
@@ -24,18 +23,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
+
 public class ShulkersManager {
 
 
     public static List<ShulkerType> TYPES = new ArrayList<>();
     public static Map<String, ResourceLocation> FILES = new HashMap<>();
-    public static Map<ResourceLocation, RegistryObject<EntityType<ResourceShulker>>> ENTITY_TYPES = new HashMap<>();
-    public static Map<ResourceLocation, RegistryObject<EntityType<CustomShulkerBullet>>> BULLET_TYPES = new HashMap<>();
+    public static Map<ResourceLocation, DeferredHolder<EntityType<?>,EntityType<ResourceShulker>>> ENTITY_TYPES = new HashMap<>();
+    public static Map<ResourceLocation, DeferredHolder<EntityType<?>,EntityType<CustomShulkerBullet>>> BULLET_TYPES = new HashMap<>();
 
     public static void init(){
-        //TYPES.add(new Resource(new ResourceLocation(ResourcefulShulkers.MODID,"wood"),Items.OAK_LOG,DyeColor.BROWN,0X612B02,null));
 
-        File dir = FMLPaths.CONFIGDIR.get().resolve(ResourcefulShulkers.MODID + "/shulkers/").toFile();
+        File dir = FMLPaths.CONFIGDIR.get().resolve(MODID + "/shulkers/").toFile();
         if (!dir.exists()) createShulkerDir(dir);
         if (dir.isDirectory()) {
             File[] files = dir.listFiles((FileFilter) FileFilterUtils.suffixFileFilter(".json"));
@@ -50,6 +50,7 @@ public class ShulkersManager {
                     json = parser.parse(reader).getAsJsonObject();
                     if (json.get("id").getAsString().isEmpty()) throw new NullPointerException("The id can't be empty ! (" + file.getName() + ")" );
                     ShulkerType r = JsonHelper.createRecordFromJson(ShulkerType.class,json);
+                    if (!TypesManager.isTierExist(r.type())) continue;
                     TYPES.add(r);
                     FILES.put(file.getPath().replace(dir.getPath(),""),r.id());
                     reader.close();

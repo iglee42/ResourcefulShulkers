@@ -1,6 +1,8 @@
 package fr.iglee42.resourcefulshulkers.item;
 
 import fr.iglee42.resourcefulshulkers.blocks.entites.GeneratingBoxBlockEntity;
+import fr.iglee42.resourcefulshulkers.init.ModDataComponents;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.BlockItem;
@@ -30,11 +32,9 @@ public class GeneratingBoxItem extends BlockItem {
         return Math.round((float)getDurability(stack) * 13.0F / (float)GeneratingBoxBlockEntity.MAX_DURABILITY);
     }
 
-    public int getDurability(ItemStack stack){
-        CompoundTag tags = stack.getOrCreateTag();
-        if (tags.contains("durability")) return tags.getInt("durability");
-        tags.putInt("durability",256);
-        stack.setTag(tags);
+    public static int getDurability(ItemStack stack){
+        if (stack.has(ModDataComponents.DURABILITY.get())) return stack.get(ModDataComponents.DURABILITY.get());
+        stack.set(ModDataComponents.DURABILITY.get(),256);
         return 256;
     }
 

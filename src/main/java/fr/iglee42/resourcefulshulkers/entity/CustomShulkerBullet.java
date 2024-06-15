@@ -9,6 +9,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -28,7 +29,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -109,12 +109,9 @@ public class CustomShulkerBullet extends Projectile {
         }
 
         if (p_37353_.contains("Target")) {
-            this.target = NbtUtils.readBlockPos(p_37353_.getCompound("Target"));
+            this.target = NbtUtils.readBlockPos(p_37353_,"Target").get();
         }
 
-    }
-
-    protected void defineSynchedData() {
     }
 
     @Nullable
@@ -143,32 +140,32 @@ public class CustomShulkerBullet extends Projectile {
             BlockPos blockpos1 = this.blockPosition();
             List<Direction> list = Lists.newArrayList();
             if (p_37349_ != Direction.Axis.X) {
-                if (blockpos1.getX() < blockpos.getX() && this.level.isEmptyBlock(blockpos1.east())) {
+                if (blockpos1.getX() < blockpos.getX() && this.level().isEmptyBlock(blockpos1.east())) {
                     list.add(Direction.EAST);
-                } else if (blockpos1.getX() > blockpos.getX() && this.level.isEmptyBlock(blockpos1.west())) {
+                } else if (blockpos1.getX() > blockpos.getX() && this.level().isEmptyBlock(blockpos1.west())) {
                     list.add(Direction.WEST);
                 }
             }
 
             if (p_37349_ != Direction.Axis.Y) {
-                if (blockpos1.getY() < blockpos.getY() && this.level.isEmptyBlock(blockpos1.above())) {
+                if (blockpos1.getY() < blockpos.getY() && this.level().isEmptyBlock(blockpos1.above())) {
                     list.add(Direction.UP);
-                } else if (blockpos1.getY() > blockpos.getY() && this.level.isEmptyBlock(blockpos1.below())) {
+                } else if (blockpos1.getY() > blockpos.getY() && this.level().isEmptyBlock(blockpos1.below())) {
                     list.add(Direction.DOWN);
                 }
             }
 
             if (p_37349_ != Direction.Axis.Z) {
-                if (blockpos1.getZ() < blockpos.getZ() && this.level.isEmptyBlock(blockpos1.south())) {
+                if (blockpos1.getZ() < blockpos.getZ() && this.level().isEmptyBlock(blockpos1.south())) {
                     list.add(Direction.SOUTH);
-                } else if (blockpos1.getZ() > blockpos.getZ() && this.level.isEmptyBlock(blockpos1.north())) {
+                } else if (blockpos1.getZ() > blockpos.getZ() && this.level().isEmptyBlock(blockpos1.north())) {
                     list.add(Direction.NORTH);
                 }
             }
 
             direction = Direction.getRandom(this.random);
             if (list.isEmpty()) {
-                for(int i = 5; !this.level.isEmptyBlock(blockpos1.relative(direction)) && i > 0; --i) {
+                for(int i = 5; !this.level().isEmptyBlock(blockpos1.relative(direction)) && i > 0; --i) {
                     direction = Direction.getRandom(this.random);
                 }
             } else {
@@ -200,16 +197,21 @@ public class CustomShulkerBullet extends Projectile {
     }
 
     public void checkDespawn() {
-        if (this.level.getDifficulty() == Difficulty.PEACEFUL) {
+        if (this.level().getDifficulty() == Difficulty.PEACEFUL) {
             this.discard();
         }
+
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder p_326003_) {
 
     }
 
     public void tick() {
         super.tick();
         Vec3 vec3;
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
 
             if (this.target == null) {
                 if (!this.isNoGravity()) {
@@ -223,9 +225,9 @@ public class CustomShulkerBullet extends Projectile {
                 this.setDeltaMovement(vec3.add((this.targetDeltaX - vec3.x) * 0.2, (this.targetDeltaY - vec3.y) * 0.2, (this.targetDeltaZ - vec3.z) * 0.2));
             }
 
-            HitResult hitresult = ProjectileUtil.getHitResult(this, this::canHitEntity);
-            if (hitresult.getType() != HitResult.Type.MISS && !ForgeEventFactory.onProjectileImpact(this, hitresult)) {
-                this.onHit(hitresult);
+            HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
+            if (hitresult.getType() != HitResult.Type.MISS && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult)) {
+                this.hitTargetOrDeflectSelf(hitresult);
             }
         }
 
@@ -233,8 +235,8 @@ public class CustomShulkerBullet extends Projectile {
         vec3 = this.getDeltaMovement();
         this.setPos(this.getX() + vec3.x, this.getY() + vec3.y, this.getZ() + vec3.z);
         ProjectileUtil.rotateTowardsMovement(this, 0.5F);
-        if (this.level.isClientSide) {
-            this.level.addParticle(ParticleTypes.END_ROD, this.getX() - vec3.x, this.getY() - vec3.y + 0.15, this.getZ() - vec3.z, 0.0, 0.0, 0.0);
+        if (this.level().isClientSide) {
+            this.level().addParticle(ParticleTypes.END_ROD, this.getX() - vec3.x, this.getY() - vec3.y + 0.15, this.getZ() - vec3.z, 0.0, 0.0, 0.0);
         } else if (this.target != null) {
             if (this.flightSteps > 0) {
                 --this.flightSteps;
@@ -246,7 +248,7 @@ public class CustomShulkerBullet extends Projectile {
             if (this.currentMoveDirection != null) {
                 BlockPos blockpos = this.blockPosition();
                 Direction.Axis direction$axis = this.currentMoveDirection.getAxis();
-                if (this.level.loadedAndEntityCanStandOn(blockpos.relative(this.currentMoveDirection), this)) {
+                if (this.level().loadedAndEntityCanStandOn(blockpos.relative(this.currentMoveDirection), this)) {
                     this.selectNextMoveDirection(direction$axis);
                 } else {
                     BlockPos blockpos1 = target;
@@ -280,7 +282,7 @@ public class CustomShulkerBullet extends Projectile {
         Entity entity = p_37345_.getEntity();
         Entity entity1 = this.getOwner();
         LivingEntity livingentity = entity1 instanceof LivingEntity ? (LivingEntity)entity1 : null;
-        boolean flag = entity.hurt(DamageSource.indirectMobAttack(this, livingentity).setProjectile(), 4.0F);
+        boolean flag = entity.hurt(this.damageSources().mobProjectile(this, livingentity), 4.0F);
         if (flag) {
             this.doEnchantDamageEffects(livingentity, entity);
             if (entity instanceof LivingEntity) {
@@ -292,7 +294,7 @@ public class CustomShulkerBullet extends Projectile {
 
     protected void onHitBlock(BlockHitResult p_37343_) {
         super.onHitBlock(p_37343_);
-        ((ServerLevel)this.level).sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(), this.getZ(), 2, 0.2, 0.2, 0.2, 0.0);
+        ((ServerLevel)this.level()).sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(), this.getZ(), 2, 0.2, 0.2, 0.2, 0.0);
         this.playSound(SoundEvents.SHULKER_BULLET_HIT, 1.0F, 1.0F);
     }
 
@@ -306,9 +308,9 @@ public class CustomShulkerBullet extends Projectile {
     }
 
     public boolean hurt(DamageSource p_37338_, float p_37339_) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.playSound(SoundEvents.SHULKER_BULLET_HURT, 1.0F, 1.0F);
-            ((ServerLevel)this.level).sendParticles(ParticleTypes.CRIT, this.getX(), this.getY(), this.getZ(), 15, 0.2, 0.2, 0.2, 0.0);
+            ((ServerLevel)this.level()).sendParticles(ParticleTypes.CRIT, this.getX(), this.getY(), this.getZ(), 15, 0.2, 0.2, 0.2, 0.0);
             this.discard();
         }
 

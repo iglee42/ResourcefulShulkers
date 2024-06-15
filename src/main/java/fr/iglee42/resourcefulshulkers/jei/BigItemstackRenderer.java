@@ -1,4 +1,4 @@
-package fr.iglee42.resourcefulshulkers.jei;
+/*package fr.iglee42.resourcefulshulkers.jei;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -132,4 +132,4 @@ public class BigItemstackRenderer implements IIngredientRenderer<ItemStack> {
     public int getHeight() {
         return 24;
     }
-}
+}*/

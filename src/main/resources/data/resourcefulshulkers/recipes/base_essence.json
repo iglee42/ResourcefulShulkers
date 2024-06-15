@@ -10,14 +10,14 @@
       "item": "minecraft:diamond"
     },
     "I": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     "S": {
-      "item": "igleelib:lava_shard"
+      "item": "igleelib:blaze_shard"
     }
   },
   "result": {
-    "item": "resourcefulshulkers:base_essence",
+    "id": "resourcefulshulkers:base_essence",
     "count": 2
   }
 }

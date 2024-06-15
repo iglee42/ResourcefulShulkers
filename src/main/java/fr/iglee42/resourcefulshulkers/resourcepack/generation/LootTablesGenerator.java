@@ -34,13 +34,9 @@ public class LootTablesGenerator {
                     "              \"source\": \"block_entity\"\n" +
                     "            },\n" +
                     "            {\n" +
-                    "              \"function\": \"minecraft:copy_nbt\",\n" +
-                    "              \"ops\": [\n" +
-                    "                {\n" +
-                    "                  \"op\": \"replace\",\n" +
-                    "                  \"source\": \"remainingDurability\",\n" +
-                    "                  \"target\": \"durability\"\n" +
-                    "                }\n" +
+                    "              \"function\": \"minecraft:copy_components\",\n" +
+                    "              \"include\": [\n" +
+                    "                \"resourcefulshulkers:durability\"\n" +
                     "              ],\n" +
                     "              \"source\": \"block_entity\"\n" +
                     "            }\n" +

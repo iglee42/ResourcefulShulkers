@@ -29,36 +29,35 @@ import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.client.gui.OverlayRegistry;
-import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.gui.GuiLayerManager;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.common.util.Lazy;
 
 import java.util.function.Supplier;
 
-import static net.minecraftforge.client.gui.ForgeIngameGui.HOTBAR_ELEMENT;
+import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
 
-@Mod.EventBusSubscriber(modid = ResourcefulShulkers.MODID,bus = Mod.EventBusSubscriber.Bus.MOD,value = Dist.CLIENT)
+@EventBusSubscriber(modid = MODID,bus = EventBusSubscriber.Bus.MOD,value = Dist.CLIENT)
 public class ClientEvents {
 
-    private static final ModelLayerLocation shulkerLayer = new ModelLayerLocation(new ResourceLocation(ResourcefulShulkers.MODID,"shulker_head"), "main");
+    private static final ModelLayerLocation shulkerLayer = new ModelLayerLocation(new ResourceLocation(MODID,"shulker_head"), "main");
 
     @SubscribeEvent
-    public static void onTextureStitch(TextureStitchEvent.Pre event)
+    public static void onTextureStitch(TextureAtlasStitchedEvent event)
     {
         if(event.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS))
         {
-            event.addSprite(BoxShellSlot.EMPTY_SHELL_SLOT);
-            event.addSprite(BoxUpgradeSlot.EMPTY_UPGRADE_SLOT);
+            //event.addSprite(BoxShellSlot.EMPTY_SHELL_SLOT);
+            //event.addSprite(BoxUpgradeSlot.EMPTY_UPGRADE_SLOT);
         }
     }
     @SubscribeEvent
-    public static void registerItemColors(ColorHandlerEvent.Item event){
+    public static void registerItemColors(RegisterColorHandlersEvent.Item event){
         ShulkersManager.TYPES.forEach(r-> event.getItemColors().register((p_92672_, p_92673_) -> r.getShellColor(), ModItems.getShellById(r.id())));
     }
 
@@ -69,7 +68,7 @@ public class ClientEvents {
     }
     @SubscribeEvent
     public static <T extends Entity> void clientSetup(FMLClientSetupEvent event) {
-        MenuScreens.register(ModBlockEntities.GENERATING_BOX_MENU.get(), GeneratingBoxScreen::new);
+        //MenuScreens.register(ModBlockEntities.GENERATING_BOX_MENU.get(), GeneratingBoxScreen::new);
         EntityRenderers.register(ModEntities.OVERWORLD_SHULKER.get(), CustomShulkerRenderer::new);
         EntityRenderers.register(ModEntities.SKY_SHULKER.get(), CustomShulkerRenderer::new);
         EntityRenderers.register(ModEntities.NETHER_SHULKER.get(), CustomShulkerRenderer::new);
@@ -86,7 +85,16 @@ public class ClientEvents {
             SkullBlockRenderer.SKIN_BY_TYPE.put(SkullTypes.SHULKER,new ResourceLocation("textures/entity/shulker/shulker.png"));
         });
 
-        OverlayRegistry.registerOverlayAbove(HOTBAR_ELEMENT,"aura", AuraOverlay.HUD_AURA);
+    }
+
+    @SubscribeEvent
+    public static void registerOverlay(RegisterGuiLayersEvent event){
+        event.registerAbove(VanillaGuiLayers.HOTBAR,new ResourceLocation(MODID,"aura"),AuraOverlay.HUD_AURA);
+    }
+
+    @SubscribeEvent
+    public static void registerMenu(RegisterMenuScreensEvent event){
+        event.register(ModBlockEntities.GENERATING_BOX_MENU.get(),GeneratingBoxScreen::new);
     }
 
     @SubscribeEvent

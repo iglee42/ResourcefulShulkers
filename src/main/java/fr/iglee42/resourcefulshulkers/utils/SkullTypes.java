@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 public enum SkullTypes implements SkullBlock.Type, StringRepresentable {
 
-    SHULKER(EntityType.SHULKER.delegate)
+    SHULKER(()->EntityType.SHULKER)
     ;
 
     private final Supplier<EntityType<?>> type;

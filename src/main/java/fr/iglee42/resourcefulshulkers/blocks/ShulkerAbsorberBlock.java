@@ -1,22 +1,22 @@
 package fr.iglee42.resourcefulshulkers.blocks;
 
-import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
 import fr.iglee42.resourcefulshulkers.blocks.entites.ShulkerAbsorberBlockEntity;
+import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -25,12 +25,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class ShulkerAbsorberBlock extends BaseEntityBlock {
+public class ShulkerAbsorberBlock extends Block implements EntityBlock {
 
 
 
     public ShulkerAbsorberBlock() {
-        super(Properties.of(Material.METAL).strength(1.5F,6.0F));
+        super(Properties.of().strength(1.5F,6.0F));
     }
 
     @Nullable
@@ -45,7 +45,7 @@ public class ShulkerAbsorberBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<T> type) {
-        return createTickerHelper(type, ModBlockEntities.SHULKER_ABSORBER_BLOCK_ENTITY.get(),ShulkerAbsorberBlockEntity::tick);
+        return type == ModBlockEntities.SHULKER_ABSORBER_BLOCK_ENTITY.get() ? (lvl,pos,blockState,be) -> ShulkerAbsorberBlockEntity.tick(lvl,pos,blockState, (ShulkerAbsorberBlockEntity) be) : null;
     }
 
     @Override
@@ -73,8 +73,8 @@ public class ShulkerAbsorberBlock extends BaseEntityBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<Component> components, TooltipFlag p_49819_) {
-        components.add(new TextComponent("Warning: Don't put too many in a chunk, it can produce lags !").withStyle(ChatFormatting.YELLOW));
+    public void appendHoverText(ItemStack p_49816_, @Nullable Item.TooltipContext p_49817_, List<Component> components, TooltipFlag p_49819_) {
+        components.add(Component.literal("Warning: Don't put too many in a chunk, it can produce lags !").withStyle(ChatFormatting.YELLOW));
         super.appendHoverText(p_49816_, p_49817_, components, p_49819_);
     }
 }

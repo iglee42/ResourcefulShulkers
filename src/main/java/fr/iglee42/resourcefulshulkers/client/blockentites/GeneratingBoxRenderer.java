@@ -14,8 +14,8 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.Direction;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class GeneratingBoxRenderer implements BlockEntityRenderer<GeneratingBoxBlockEntity> {
@@ -31,12 +31,12 @@ public class GeneratingBoxRenderer implements BlockEntityRenderer<GeneratingBoxB
 
       Material material = entity.getResourceGenerated().getBoxMaterial();
 
-      if (material.sprite() instanceof MissingTextureAtlasSprite){
+     /* if (material.sprite() instanceof MissingTextureAtlasSprite){
          material = entity.getResourceGenerated().getMaterial();
       }
       if (material.sprite() instanceof MissingTextureAtlasSprite){
          material = Sheets.SHULKER_TEXTURE_LOCATION.get(entity.getResourceGenerated().getColor().getId());
-      }
+      }*/
       p_112480_.pushPose();
       p_112480_.translate(0.5D, 0.5D, 0.5D);
       float f = 0.9995F;

@@ -16,7 +16,7 @@ public class UpgradeItem extends Item {
     private final Upgrade upgrade;
 
     public UpgradeItem(Upgrade upgrade) {
-        super(new Item.Properties().tab(ResourcefulShulkers.GROUP));
+        super(new Item.Properties());
         this.upgrade = upgrade;
     }
 
@@ -25,8 +25,9 @@ public class UpgradeItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack p_41421_, @Nullable Level p_41422_, List<Component> p_41423_, TooltipFlag p_41424_) {
-        p_41423_.add(upgrade.getDescription().withStyle(ChatFormatting.GREEN));
-        super.appendHoverText(p_41421_, p_41422_, p_41423_, p_41424_);
+    public void appendHoverText(ItemStack p_41421_, TooltipContext p_339594_, List<Component> p_41423_, TooltipFlag p_41424_) {
+        p_41423_.add(upgrade.getDescription());
+        super.appendHoverText(p_41421_, p_339594_, p_41423_, p_41424_);
     }
+
 }

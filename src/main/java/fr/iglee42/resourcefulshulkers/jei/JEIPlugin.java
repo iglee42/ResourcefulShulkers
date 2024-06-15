@@ -1,4 +1,4 @@
-package fr.iglee42.resourcefulshulkers.jei;
+/*package fr.iglee42.resourcefulshulkers.jei;
 
 import fr.iglee42.resourcefulshulkers.entity.ResourceShulker;
 import fr.iglee42.resourcefulshulkers.init.ModBlocks;
@@ -29,7 +29,7 @@ import java.util.Arrays;
 public class JEIPlugin implements IModPlugin {
     @Override
     public ResourceLocation getPluginUid() {
-        return new ResourceLocation("techresourcesmods","shulker");
+        return new ResourceLocation("techresourcesshulkers","jei");
     }
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
@@ -41,7 +41,7 @@ public class JEIPlugin implements IModPlugin {
 
     @Override
     public void registerRecipeCatalysts(@Nonnull IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.SHULKER_INFUSER.get()), new RecipeType<>(ShulkerEnvironnementInfusionRecipeCategory.UID, ShulkerRecipeEnvironnement.class),ShulkerItemInfusionRecipeCategory.RECIPE_TYPE);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.SHULKER_INFUSER.get()), ShulkerEnvironnementInfusionRecipeCategory.RECIPE_TYPE,ShulkerItemInfusionRecipeCategory.RECIPE_TYPE);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.SHULKER_PEDESTAL.get()), ShulkerItemInfusionRecipeCategory.RECIPE_TYPE);
     }
 
@@ -56,4 +56,4 @@ public class JEIPlugin implements IModPlugin {
         registration.getIngredientManager().removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK, Arrays.asList(new ItemStack(ModItems.SHULKER_KILLER.get())));
         ShulkersManager.TYPES.stream().filter(t->t.getItem() == Items.AIR).forEach(t-> registration.getIngredientManager().removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK,Arrays.asList(new ItemStack(ModItems.getShellById(t.id())), new ItemStack(ModBlocks.getBoxById(t.id())), new ItemStack(ModItems.getShulkerItemById(t.id())))));
     }
-}
+}*/

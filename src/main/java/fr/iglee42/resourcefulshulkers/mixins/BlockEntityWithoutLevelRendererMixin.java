@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import org.spongepowered.asm.mixin.Final;
@@ -27,7 +28,7 @@ public class BlockEntityWithoutLevelRendererMixin {
     @Shadow @Final private BlockEntityRenderDispatcher blockEntityRenderDispatcher;
 
     @Inject(method = "renderByItem", at = @At(value = "INVOKE",target = "Lnet/minecraft/world/item/BlockItem;getBlock()Lnet/minecraft/world/level/block/Block;",shift = At.Shift.AFTER,ordinal = 0),locals = LocalCapture.CAPTURE_FAILHARD)
-    private void inject(ItemStack p_108830_, ItemTransforms.TransformType p_108831_, PoseStack p_108832_, MultiBufferSource p_108833_, int p_108834_, int p_108835_, CallbackInfo ci,Item item) {
+    private void inject(ItemStack p_108830_, ItemDisplayContext p_270899_, PoseStack p_108832_, MultiBufferSource p_108833_, int p_108834_, int p_108835_, CallbackInfo ci, Item item) {
         Block block = ((BlockItem)item).getBlock();
         if (block instanceof GeneratingBoxBlock gb){
             blockEntityRenderDispatcher.renderItem(new GeneratingBoxBlockEntity(BlockPos.ZERO, ModBlocks.getBoxById(gb.getId()).defaultBlockState(),gb.getId()), p_108832_, p_108833_, p_108834_, p_108835_);

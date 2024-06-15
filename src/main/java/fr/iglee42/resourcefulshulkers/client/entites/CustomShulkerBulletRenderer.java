@@ -2,7 +2,7 @@ package fr.iglee42.resourcefulshulkers.client.entites;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import fr.iglee42.resourcefulshulkers.entity.CustomShulkerBullet;
 import net.minecraft.client.model.ShulkerBulletModel;
 import net.minecraft.client.model.geom.ModelLayers;
@@ -14,8 +14,8 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class CustomShulkerBulletRenderer extends EntityRenderer<CustomShulkerBullet> {
@@ -34,13 +34,13 @@ public class CustomShulkerBulletRenderer extends EntityRenderer<CustomShulkerBul
 
     public void render(CustomShulkerBullet p_115862_, float p_115863_, float p_115864_, PoseStack p_115865_, MultiBufferSource p_115866_, int p_115867_) {
         p_115865_.pushPose();
-        float $$6 = Mth.rotlerp(p_115862_.yRotO, p_115862_.getYRot(), p_115864_);
+        float $$6 = Mth.rotLerp(p_115862_.yRotO, p_115862_.getYRot(), p_115864_);
         float $$7 = Mth.lerp(p_115864_, p_115862_.xRotO, p_115862_.getXRot());
         float $$8 = (float)p_115862_.tickCount + p_115864_;
         p_115865_.translate(0.0, 0.15000000596046448, 0.0);
-        p_115865_.mulPose(Vector3f.YP.rotationDegrees(Mth.sin($$8 * 0.1F) * 180.0F));
-        p_115865_.mulPose(Vector3f.XP.rotationDegrees(Mth.cos($$8 * 0.1F) * 180.0F));
-        p_115865_.mulPose(Vector3f.ZP.rotationDegrees(Mth.sin($$8 * 0.15F) * 360.0F));
+        p_115865_.mulPose(Axis.YP.rotationDegrees(Mth.sin($$8 * 0.1F) * 180.0F));
+        p_115865_.mulPose(Axis.XP.rotationDegrees(Mth.cos($$8 * 0.1F) * 180.0F));
+        p_115865_.mulPose(Axis.ZP.rotationDegrees(Mth.sin($$8 * 0.15F) * 360.0F));
         p_115865_.scale(-0.5F, -0.5F, 0.5F);
         this.model.setupAnim(p_115862_, 0.0F, 0.0F, 0.0F, $$6, $$7);
         VertexConsumer $$9 = p_115866_.getBuffer(this.model.renderType(TEXTURE_LOCATION));
