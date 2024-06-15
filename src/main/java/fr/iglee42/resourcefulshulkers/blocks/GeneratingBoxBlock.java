@@ -76,7 +76,7 @@ public class GeneratingBoxBlock extends BaseEntityBlock {
             BlockEntity blockentity = p_56228_.getBlockEntity(p_56229_);
             if (blockentity instanceof GeneratingBoxBlockEntity) {
                 GeneratingBoxBlockEntity be = (GeneratingBoxBlockEntity)blockentity;
-                NetworkHooks.openGui((ServerPlayer) p_56230_,be,buf->buf.writeBlockPos(p_56229_));
+                NetworkHooks.openScreen((ServerPlayer) p_56230_,be,buf->buf.writeBlockPos(p_56229_));
                 PiglinAi.angerNearbyPiglins(p_56230_, true);
                 return InteractionResult.CONSUME;
             } else {

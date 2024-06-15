@@ -34,22 +34,22 @@ public class ModMessages {
         net.messageBuilder(ItemStackSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(ItemStackSyncS2CPacket::new)
                 .encoder(ItemStackSyncS2CPacket::toBytes)
-                .consumer(ItemStackSyncS2CPacket::handle)
+                .consumerMainThread(ItemStackSyncS2CPacket::handle)
                 .add();
         net.messageBuilder(GeneratingTickSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(GeneratingTickSyncS2CPacket::new)
                 .encoder(GeneratingTickSyncS2CPacket::toBytes)
-                .consumer(GeneratingTickSyncS2CPacket::handle)
+                .consumerMainThread(GeneratingTickSyncS2CPacket::handle)
                 .add();
         net.messageBuilder(GeneratorDurabilitySyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(GeneratorDurabilitySyncS2CPacket::new)
                 .encoder(GeneratorDurabilitySyncS2CPacket::toBytes)
-                .consumer(GeneratorDurabilitySyncS2CPacket::handle)
+                .consumerMainThread(GeneratorDurabilitySyncS2CPacket::handle)
                 .add();
         net.messageBuilder(ShulkerAuraSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(ShulkerAuraSyncS2CPacket::new)
                 .encoder(ShulkerAuraSyncS2CPacket::toBytes)
-                .consumer(ShulkerAuraSyncS2CPacket::handle)
+                .consumerMainThread(ShulkerAuraSyncS2CPacket::handle)
                 .add();
 
     }

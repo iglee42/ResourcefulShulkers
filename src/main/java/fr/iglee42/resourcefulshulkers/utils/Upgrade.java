@@ -2,8 +2,8 @@ package fr.iglee42.resourcefulshulkers.utils;
 
 import fr.iglee42.igleelib.api.utils.ModsUtils;
 import fr.iglee42.resourcefulshulkers.item.UpgradeItem;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 
@@ -47,7 +47,7 @@ public enum Upgrade {
     }
 
     public MutableComponent getDescription(){
-        return new TranslatableComponent("tooltip."+MODID+ "."+name().toLowerCase()+"_upgrade");
+        return Component.translatable("tooltip."+MODID+ "."+name().toLowerCase()+"_upgrade");
     }
 
 }

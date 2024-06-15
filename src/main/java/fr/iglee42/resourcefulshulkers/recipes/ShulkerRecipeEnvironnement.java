@@ -3,11 +3,13 @@ package fr.iglee42.resourcefulshulkers.recipes;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import fr.iglee42.igleelib.api.utils.ITickableRecipe;
 import fr.iglee42.igleelib.api.utils.JsonHelper;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
 import fr.iglee42.resourcefulshulkers.blocks.entites.ShulkerInfuserBlockEntity;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
@@ -65,8 +67,8 @@ public class ShulkerRecipeEnvironnement implements Recipe<SimpleContainer>, ITic
     }
 
     @Override
-    public ItemStack assemble(SimpleContainer p_44001_) {
-        return ItemStack.EMPTY;
+    public ItemStack assemble(SimpleContainer p_44001_, RegistryAccess p_267165_) {
+        return getResultItem(p_267165_);
     }
 
     @Override
@@ -75,7 +77,7 @@ public class ShulkerRecipeEnvironnement implements Recipe<SimpleContainer>, ITic
     }
 
     @Override
-    public ItemStack getResultItem() {
+    public ItemStack getResultItem(RegistryAccess p_267052_) {
         return ItemStack.EMPTY;
     }
 
@@ -177,7 +179,7 @@ public class ShulkerRecipeEnvironnement implements Recipe<SimpleContainer>, ITic
         Mob target = level.getNearestEntity(level.getEntitiesOfClass(Mob.class, be.WORKING_AREA.bounds()), TargetingConditions.DEFAULT, null, pos.getX(), pos.getY(), pos.getZ());
 
         Vec3 basePos = posi.add(0,1,0);
-        Entity newEntity = ForgeRegistries.ENTITIES.getValue(getResultEntity()).create(level);
+        Entity newEntity = ForgeRegistries.ENTITY_TYPES.getValue(getResultEntity()).create(level);
         newEntity.setPos(target.position());
         target.remove(Entity.RemovalReason.KILLED);
         level.addFreshEntity(newEntity);
@@ -209,7 +211,7 @@ public class ShulkerRecipeEnvironnement implements Recipe<SimpleContainer>, ITic
         public static final Type INSTANCE = new Type();
         public static final String ID = "shulker_environnement_infusion";
     }
-    public static class Serializer extends net.minecraftforge.registries.ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<ShulkerRecipeEnvironnement> {
+    public static class Serializer implements RecipeSerializer<ShulkerRecipeEnvironnement> {
         public ShulkerRecipeEnvironnement fromJson(ResourceLocation rs, JsonObject json) {
             JsonArray biomes = json.getAsJsonArray("biomes");
             if (biomes == null){

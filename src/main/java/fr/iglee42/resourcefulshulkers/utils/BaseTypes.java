@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
 
@@ -60,7 +61,7 @@ public enum BaseTypes {
         this.shellColor = shellColor;
     }
     BaseTypes(Item item, DyeColor color, String shellColor) {
-        this.item = item.getRegistryName().toString();
+        this.item = ForgeRegistries.ITEMS.getKey(item).toString();
         this.color = color.toString();
         this.shellColor = shellColor;
     }

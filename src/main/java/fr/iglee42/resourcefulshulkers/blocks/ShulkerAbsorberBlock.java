@@ -1,22 +1,21 @@
 package fr.iglee42.resourcefulshulkers.blocks;
 
-import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
 import fr.iglee42.resourcefulshulkers.blocks.entites.ShulkerAbsorberBlockEntity;
+import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -30,7 +29,7 @@ public class ShulkerAbsorberBlock extends BaseEntityBlock {
 
 
     public ShulkerAbsorberBlock() {
-        super(Properties.of(Material.METAL).strength(1.5F,6.0F));
+        super(Properties.copy(Blocks.BLAST_FURNACE).strength(1.5F,6.0F));
     }
 
     @Nullable
@@ -74,7 +73,7 @@ public class ShulkerAbsorberBlock extends BaseEntityBlock {
 
     @Override
     public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<Component> components, TooltipFlag p_49819_) {
-        components.add(new TextComponent("Warning: Don't put too many in a chunk, it can produce lags !").withStyle(ChatFormatting.YELLOW));
+        components.add(Component.literal("Warning: Don't put too many in a chunk, it can produce lags !").withStyle(ChatFormatting.YELLOW));
         super.appendHoverText(p_49816_, p_49817_, components, p_49819_);
     }
 }

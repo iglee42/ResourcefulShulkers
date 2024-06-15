@@ -5,7 +5,6 @@ import fr.iglee42.resourcefulshulkers.init.ModBlocks;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -31,7 +30,7 @@ public class ShulkerItem extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
-        Mob shulker = shulkerType != null ? (Mob)shulkerType.create(context.getLevel()) : (Mob)ForgeRegistries.ENTITIES.getValue(this.getRegistryName()).create(context.getLevel());
+        Mob shulker = shulkerType != null ? (Mob)shulkerType.create(context.getLevel()) : (Mob)ForgeRegistries.ENTITY_TYPES.getValue(ForgeRegistries.ITEMS.getKey(this)).create(context.getLevel());
         shulker.getEntityData().set(CustomShulker.DATA_ATTACH_FACE_ID,context.getClickedFace().getOpposite());
         shulker.setPos(pos.getX(),pos.getY(),pos.getZ());
         if (context.getLevel().getBlockState(context.getClickedPos()).is(ModBlocks.SHULKER_INFUSER.get()) && context.getClickedFace() == UP) shulker.setNoAi(true);
@@ -47,7 +46,7 @@ public class ShulkerItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack p_41421_, @Nullable Level p_41422_, List<Component> tooltips, TooltipFlag p_41424_) {
-        tooltips.add(new TranslatableComponent("tooltip.resourcefulshulkers.shulker_pickup").withStyle(ChatFormatting.DARK_PURPLE));
+        tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_pickup").withStyle(ChatFormatting.DARK_PURPLE));
         super.appendHoverText(p_41421_, p_41422_, tooltips, p_41424_);
     }
 }

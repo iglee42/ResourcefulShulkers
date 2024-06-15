@@ -8,7 +8,7 @@ public class ShellItem extends Item {
     private final ResourceLocation id;
 
     public ShellItem(ResourceLocation id) {
-        super(new Item.Properties().tab(ResourcefulShulkers.SHULKERS_GROUP));
+        super(new Item.Properties());
         this.id = id;
     }
 

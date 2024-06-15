@@ -2,7 +2,7 @@ package fr.iglee42.resourcefulshulkers.jei;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import fr.iglee42.igleelib.api.utils.MouseUtil;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
 import fr.iglee42.resourcefulshulkers.init.ModBlocks;
@@ -20,11 +20,10 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -57,16 +56,16 @@ public class ShulkerEnvironnementInfusionRecipeCategory implements IRecipeCatego
         this.arrowAnim = helper.createAnimatedDrawable(arrow,22, IDrawableAnimated.StartDirection.TOP,false);
     }
 
-    public static void renderEntity(PoseStack poseStack, int x, int y, double scale, double yaw, double pitch, LivingEntity livingEntity) {
+    public static void renderEntity(GuiGraphics poseStack, int x, int y, double scale, double yaw, double pitch, LivingEntity livingEntity) {
         PoseStack modelViewStack = RenderSystem.getModelViewStack();
         modelViewStack.pushPose();
-        modelViewStack.mulPoseMatrix(poseStack.last().pose());
+        modelViewStack.mulPoseMatrix(poseStack.pose().last().pose());
         modelViewStack.translate(x, y, 50.0F);
         modelViewStack.scale((float) -scale, (float) scale, (float) scale);
         PoseStack mobPoseStack = new PoseStack();
-        mobPoseStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
+        mobPoseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
 
-        mobPoseStack.mulPose(Vector3f.XN.rotationDegrees(((float) Math.atan((pitch / 40.0F))) * 20.0F));
+        mobPoseStack.mulPose(Axis.XN.rotationDegrees(((float) Math.atan((pitch / 40.0F))) * 20.0F));
         livingEntity.yo = (float) Math.atan(yaw / 40.0F) * 20.0F;
         float yRot = (float) Math.atan(yaw / 40.0F) * 40.0F;
         float xRot = -((float) Math.atan(pitch / 40.0F)) * 20.0F;
@@ -98,7 +97,7 @@ public class ShulkerEnvironnementInfusionRecipeCategory implements IRecipeCatego
 
     @Override
     public @NotNull Component getTitle() {
-        return new TextComponent("Shulker Environnement Infusion");
+        return Component.literal("Shulker Environnement Infusion");
     }
 
     @Override
@@ -112,56 +111,47 @@ public class ShulkerEnvironnementInfusionRecipeCategory implements IRecipeCatego
     }
 
     @Override
-    public void draw(ShulkerRecipeEnvironnement recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
+    public void draw(ShulkerRecipeEnvironnement recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
         RenderSystem.setShaderTexture(0, new ResourceLocation(ResourcefulShulkers.MODID,"textures/gui/arrow.png"));
-        Minecraft.getInstance().screen.blit(stack,52,35,0,0,60,15,60,15);
+        guiGraphics.blit( new ResourceLocation(ResourcefulShulkers.MODID,"textures/gui/arrow.png"),52,35,0,0,60,15,60,15);
         int y = 55;
         float scale = 22.5f, yaw = -25.0f, pitch = -29.0f;
-        if (ForgeRegistries.ENTITIES.getValue(recipe.getBaseEntity()).create(Minecraft.getInstance().level) instanceof LivingEntity e) {
-            renderEntity(stack, 20, y, scale, yaw, pitch, e);
+        if (ForgeRegistries.ENTITY_TYPES.getValue(recipe.getBaseEntity()).create(Minecraft.getInstance().level) instanceof LivingEntity e) {
+            renderEntity(guiGraphics, 20, y, scale, yaw, pitch, e);
         }
 
-        if (ForgeRegistries.ENTITIES.getValue(recipe.getResultEntity()).create(Minecraft.getInstance().level) instanceof LivingEntity e) {
-            renderEntity(stack, 155, y, scale, yaw, pitch, e);
+        if (ForgeRegistries.ENTITY_TYPES.getValue(recipe.getResultEntity()).create(Minecraft.getInstance().level) instanceof LivingEntity e) {
+            renderEntity(guiGraphics, 155, y, scale, yaw, pitch, e);
         }
 
-        Minecraft.getInstance().font.draw(stack, ChatFormatting.BLUE + "" + ChatFormatting.UNDERLINE + "Allowed Biomes", 52, y + 10, 0);
-        Minecraft.getInstance().font.draw(stack, ChatFormatting.GRAY + "(Hover)", 70, y + 20, 0);
+        guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "" + ChatFormatting.UNDERLINE + "Allowed Biomes", 52, y + 10, 0);
+        guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.GRAY + "(Hover)", 70, y + 20, 0);
         if (recipe.getMinY() > -64 || recipe.getMaxY() < 320) {
-            Minecraft.getInstance().font.draw(stack, ChatFormatting.BLUE + "Y : " + recipe.getMinY() + "   " + recipe.getMaxY(), 54, y - 50, 0);
-            Minecraft.getInstance().font.draw(stack, ChatFormatting.BLUE + "~", 91, y - 48, 0);
+            guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "Y : " + recipe.getMinY() + "   " + recipe.getMaxY(), 54, y - 50, 0);
+            guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "~", 91, y - 48, 0);
         } else {
-            Minecraft.getInstance().font.draw(stack, ChatFormatting.BLUE + "Y : Any", 70, y - 50, 0);
+            guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "Y : Any", 70, y - 50, 0);
         }
     }
+    
 
     @Override
     public List<Component> getTooltipStrings(ShulkerRecipeEnvironnement recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         if (MouseUtil.isMouseOver(mouseX, mouseY, 52, 65, Minecraft.getInstance().font.width("Allowed Biomes"), Minecraft.getInstance().font.lineHeight * 2)) {
             List<Component> biomes = new ArrayList<>();
             if (recipe.getAllowedBiomes().size() + recipe.getAllowedBiomesTags().size() == 0)
-                biomes.add(new TextComponent("There is no biome (This is a problem)").withStyle(ChatFormatting.RED));
+                biomes.add(Component.literal("There is no biome (This is a problem)").withStyle(ChatFormatting.RED));
             else {
                 for (ResourceLocation biomeLocation : recipe.getAllowedBiomes()) {
-                    biomes.add(new TextComponent("- ").append(new TranslatableComponent("biome." + biomeLocation.getNamespace() + "." + biomeLocation.getPath())));
+                    biomes.add(Component.literal("- ").append(Component.translatable("biome." + biomeLocation.getNamespace() + "." + biomeLocation.getPath())));
                 }
                 for (ResourceLocation tagLocation : recipe.getAllowedBiomesTags()) {
-                    biomes.add(new TextComponent("- ").append("#" + tagLocation.toString()));
+                    biomes.add(Component.literal("- ").append("#" + tagLocation.toString()));
                 }
             }
             return biomes;
         }
         return Collections.emptyList();
-    }
-
-    @Override
-    public ResourceLocation getUid() {
-        return UID;
-    }
-
-    @Override
-    public Class<? extends ShulkerRecipeEnvironnement> getRecipeClass() {
-        return ShulkerRecipeEnvironnement.class;
     }
 
 

@@ -1,20 +1,22 @@
 package fr.iglee42.resourcefulshulkers.menu;
 
+import fr.iglee42.resourcefulshulkers.blocks.entites.GeneratingBoxBlockEntity;
 import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
 import fr.iglee42.resourcefulshulkers.init.ModBlocks;
-import fr.iglee42.resourcefulshulkers.blocks.entites.GeneratingBoxBlockEntity;
 import fr.iglee42.resourcefulshulkers.menu.slot.BoxShellSlot;
 import fr.iglee42.resourcefulshulkers.menu.slot.BoxUpgradeSlot;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class GeneratingBoxMenu extends AbstractContainerMenu {
@@ -23,20 +25,20 @@ public class GeneratingBoxMenu extends AbstractContainerMenu {
     private final Level level;
 
     public GeneratingBoxMenu(int id, Inventory inv, FriendlyByteBuf extraData){
-        this(id,inv, inv.player.level.getBlockEntity(extraData.readBlockPos()));
+        this(id,inv, inv.player.level().getBlockEntity(extraData.readBlockPos()));
     }
 
     public GeneratingBoxMenu(int id, Inventory playerInv, BlockEntity entity) {
         super(ModBlockEntities.GENERATING_BOX_MENU.get(),id);
         this.blockEntity = (GeneratingBoxBlockEntity) entity;
-        this.level = playerInv.player.level;
+        this.level = playerInv.player.level();
         blockEntity.startOpen(playerInv.player);
-        blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP).ifPresent(h->{
+        blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.UP).ifPresent(h->{
             for (int u = 0; u < 4; ++u){
                 this.addSlot(new BoxUpgradeSlot(h,u,8+u*18,18*3));
             }
         });
-        blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h->{
+        blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(h->{
             this.addSlot(new BoxShellSlot(h,0,8+8*18,18*3,blockEntity.getResourceGenerated().id()));
             for(int l = 0; l < 9; ++l) {
                 this.addSlot(new SlotItemHandler(h, l + 1, 8 + l * 18, 18));

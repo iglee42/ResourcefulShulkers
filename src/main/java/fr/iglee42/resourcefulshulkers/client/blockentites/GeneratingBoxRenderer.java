@@ -31,12 +31,12 @@ public class GeneratingBoxRenderer implements BlockEntityRenderer<GeneratingBoxB
 
       Material material = entity.getResourceGenerated().getBoxMaterial();
 
-      if (material.sprite() instanceof MissingTextureAtlasSprite){
+      /*if (material.sprite() instanceof MissingTextureAtlasSprite){
          material = entity.getResourceGenerated().getMaterial();
       }
       if (material.sprite() instanceof MissingTextureAtlasSprite){
          material = Sheets.SHULKER_TEXTURE_LOCATION.get(entity.getResourceGenerated().getColor().getId());
-      }
+      }*/
       p_112480_.pushPose();
       p_112480_.translate(0.5D, 0.5D, 0.5D);
       float f = 0.9995F;

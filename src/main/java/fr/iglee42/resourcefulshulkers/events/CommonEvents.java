@@ -1,30 +1,23 @@
 package fr.iglee42.resourcefulshulkers.events;
 
-import fr.iglee42.resourcefulshulkers.init.ModEntities;
+import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
 import fr.iglee42.resourcefulshulkers.command.TRSCommand;
-import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
+import fr.iglee42.resourcefulshulkers.entity.CustomShulker;
+import fr.iglee42.resourcefulshulkers.init.ModEntities;
+import fr.iglee42.resourcefulshulkers.init.ModItems;
 import fr.iglee42.resourcefulshulkers.resourcepack.PackType;
 import fr.iglee42.resourcefulshulkers.resourcepack.TRSPackFinder;
-import fr.iglee42.resourcefulshulkers.entity.CustomShulker;
-import fr.iglee42.resourcefulshulkers.init.ModItems;
-import fr.iglee42.resourcefulshulkers.recipes.ShulkerItemInfusionRecipe;
-import fr.iglee42.resourcefulshulkers.recipes.ShulkerRecipeEnvironnement;
-import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
-import net.minecraft.core.Registry;
-import net.minecraft.server.commands.ReloadCommand;
+import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
 
@@ -43,11 +36,6 @@ public class CommonEvents {
                 event.put(ShulkersManager.ENTITY_TYPES.get(r.id()).get(),CustomShulker.createAttributes().build());
             });
         }
-        @SubscribeEvent
-        public static void registerRecipeTypes(final RegistryEvent.Register<RecipeSerializer<?>> event) {
-            Registry.register(Registry.RECIPE_TYPE, ShulkerRecipeEnvironnement.Type.ID, ShulkerRecipeEnvironnement.Type.INSTANCE);
-            Registry.register(Registry.RECIPE_TYPE, ShulkerItemInfusionRecipe.Type.ID, ShulkerItemInfusionRecipe.Type.INSTANCE);
-        }
 
 
     }
@@ -57,8 +45,8 @@ public class CommonEvents {
 
         @SubscribeEvent
         public static void entityInteract(PlayerInteractEvent.EntityInteract event) {
-            if (event.getTarget().getType() == EntityType.SHULKER && event.getPlayer().isCrouching()){
-                event.getPlayer().addItem(new ItemStack(ModItems.SHULKER_ITEM.get()));
+            if (event.getTarget().getType() == EntityType.SHULKER && event.getEntity().isCrouching()){
+                event.getEntity().addItem(new ItemStack(ModItems.SHULKER_ITEM.get()));
                 event.getTarget().remove(Entity.RemovalReason.KILLED);
             }
         }
@@ -69,15 +57,15 @@ public class CommonEvents {
         }
 
         @SubscribeEvent
-        public static void onWorldTick(TickEvent.WorldTickEvent event) {
-            if (event.world.isClientSide) {
+        public static void onWorldTick(TickEvent.LevelTickEvent event) {
+            if (event.level.isClientSide) {
                 return;
             }
             if (event.phase == TickEvent.Phase.START) {
                 return;
             }
-            ShulkerAuraManager manager = ShulkerAuraManager.get(event.world);
-            manager.tick(event.world);
+            ShulkerAuraManager manager = ShulkerAuraManager.get(event.level);
+            manager.tick(event.level);
         }
         @SubscribeEvent
         public static void commandRegister(RegisterCommandsEvent event){

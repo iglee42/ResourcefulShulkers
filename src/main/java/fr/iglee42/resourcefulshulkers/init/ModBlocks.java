@@ -13,10 +13,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SkullBlock;
+import net.minecraft.world.level.block.WallSkullBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.registries.DeferredRegister;
@@ -42,13 +44,13 @@ public class ModBlocks {
     public static final RegistryObject<Block> PURPUR_TARGET = createBlock("purpur_target", PurpurTargetBlock::new);
     //public static final RegistryObject<Block> GENERATING_BOX = createBlock("generating_box", () -> new GeneratingBoxBlock(id));
 
-    public static final RegistryObject<Block> SHULKER_HEAD = createBlockWithoutItem("shulker_head",()-> new SkullBlock(SkullTypes.SHULKER, BlockBehaviour.Properties.of(Material.DECORATION).strength(1.0f)){
+    public static final RegistryObject<Block> SHULKER_HEAD = createBlockWithoutItem("shulker_head",()-> new SkullBlock(SkullTypes.SHULKER, BlockBehaviour.Properties.copy(Blocks.CREEPER_HEAD).strength(1.0f)){
         @Override
         public VoxelShape getShape(BlockState p_56331_, BlockGetter p_56332_, BlockPos p_56333_, CollisionContext p_56334_) {
             return Block.box(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
         }
     });
-    public static final RegistryObject<Block> WALL_SHULKER_HEAD = createBlockWithoutItem("wall_shulker_head",()-> new WallSkullBlock(SkullTypes.SHULKER, BlockBehaviour.Properties.of(Material.DECORATION).strength(1.0f).lootFrom(SHULKER_HEAD)){
+    public static final RegistryObject<Block> WALL_SHULKER_HEAD = createBlockWithoutItem("wall_shulker_head",()-> new WallSkullBlock(SkullTypes.SHULKER, BlockBehaviour.Properties.copy(Blocks.CREEPER_WALL_HEAD).strength(1.0f).lootFrom(SHULKER_HEAD)){
         @Override
         public VoxelShape getShape(BlockState p_58114_, BlockGetter p_58115_, BlockPos p_58116_, CollisionContext p_58117_) {
             Map<Direction, VoxelShape> AABBS = Maps.newEnumMap(ImmutableMap.of(Direction.NORTH, Block.box(5.0, 4.0, 9.0, 11.0, 10.0, 15.0),
@@ -69,7 +71,7 @@ public class ModBlocks {
     public static RegistryObject<Block> createBlock(String name, Supplier<? extends Block> supplier)
     {
         RegistryObject<Block> block = BLOCKS.register(name, supplier);
-        ModItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties().tab(ResourcefulShulkers.GROUP)));
+        ModItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
         return block;
     }
     public static RegistryObject<Block> createBlockWithoutItem(String name, Supplier<? extends Block> supplier)
@@ -83,12 +85,10 @@ public class ModBlocks {
     }
     public static void createBox(ResourceLocation id){
         ShulkerType res = ShulkerType.getById(id);
-        createBlock(res.id().getPath()+ "_generating_box", ()->new GeneratingBoxBlock(id), new Item.Properties().tab(ResourcefulShulkers.SHULKERS_GROUP));
+        createBlock(res.id().getPath()+ "_generating_box", ()->new GeneratingBoxBlock(id), new Item.Properties());
     }
     public static Block[] getAllBox() {
-        List<RegistryObject<Block>> registries = BLOCKS.getEntries().stream().filter(r->r.getId().toString().endsWith("_generating_box")).toList();
-        List<Block> blocks = new ArrayList<>();
-        registries.forEach(r->blocks.add(r.get()));
-        return blocks.toArray(new Block[]{});
+        List<RegistryObject<Block>> registries = BLOCKS.getEntries().stream().filter(r->r.getId().toString().endsWith("_generating_box") && r.isPresent()).toList();
+        return registries.stream().map(RegistryObject::get).toList().toArray(new Block[]{});
     }
 }

@@ -33,17 +33,17 @@ public class BaseEssenceShulker extends CustomShulker{
         Vec3 newShulkerPos = this.position();
         AABB aabb = this.getBoundingBox();
         if (!this.isClosed()) {
-            int i = this.level.getEntities(this.getType(), aabb.inflate(8.0D), Entity::isAlive).size();
+            int i = this.level().getEntities(this.getType(), aabb.inflate(8.0D), Entity::isAlive).size();
             float f = (float)(i - 1) / 5.0F;
-            if (!(this.level.random.nextFloat() < f)) {
-                BaseEssenceShulker customShulker = (BaseEssenceShulker) this.getType().create(level);
+            if (!(this.level().random.nextFloat() < f)) {
+                BaseEssenceShulker customShulker = (BaseEssenceShulker) this.getType().create(level());
                 DyeColor dyecolor = this.getColor();
                 if (dyecolor != null) {
                     customShulker.setColor(dyecolor);
                 }
                 this.moveTo(newPos);
                 customShulker.moveTo(newShulkerPos);
-                this.level.addFreshEntity(customShulker);
+                this.level().addFreshEntity(customShulker);
             }
         }
     }
@@ -69,9 +69,9 @@ public class BaseEssenceShulker extends CustomShulker{
         @Override
         public void tick() {
             if (random.nextInt(50) < 2){
-                BaseEssenceShulker target = BaseEssenceShulker.this.level.getNearestEntity(BaseEssenceShulker.this.level.getEntitiesOfClass(BaseEssenceShulker.class, BaseEssenceShulker.this.getBoundingBox().inflate(8), (entity) -> entity.getUUID() != BaseEssenceShulker.this.getUUID() && !entity.hasEffect(MobEffects.LEVITATION)), TargetingConditions.DEFAULT, BaseEssenceShulker.this, BaseEssenceShulker.this.getX(), BaseEssenceShulker.this.getEyeY(), BaseEssenceShulker.this.getZ());
+                BaseEssenceShulker target = BaseEssenceShulker.this.level().getNearestEntity(BaseEssenceShulker.this.level().getEntitiesOfClass(BaseEssenceShulker.class, BaseEssenceShulker.this.getBoundingBox().inflate(8), (entity) -> entity.getUUID() != BaseEssenceShulker.this.getUUID() && !entity.hasEffect(MobEffects.LEVITATION)), TargetingConditions.DEFAULT, BaseEssenceShulker.this, BaseEssenceShulker.this.getX(), BaseEssenceShulker.this.getEyeY(), BaseEssenceShulker.this.getZ());
                 if (target != null) {
-                    BaseEssenceShulker.this.level.addFreshEntity(new ShulkerBullet(BaseEssenceShulker.this.level, BaseEssenceShulker.this, target, BaseEssenceShulker.this.getAttachFace().getAxis()));
+                    BaseEssenceShulker.this.level().addFreshEntity(new ShulkerBullet(BaseEssenceShulker.this.level(), BaseEssenceShulker.this, target, BaseEssenceShulker.this.getAttachFace().getAxis()));
                     BaseEssenceShulker.this.playSound(SoundEvents.SHULKER_SHOOT, 2.0F, (BaseEssenceShulker.this.random.nextFloat() - BaseEssenceShulker.this.random.nextFloat()) * 0.2F + 1.0F);
                 }
             }

@@ -16,7 +16,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class ModEntities {
 
-    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, ResourcefulShulkers.MODID);
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, ResourcefulShulkers.MODID);
 
     public static final RegistryObject<EntityType<BaseEssenceShulker>> OVERWORLD_SHULKER = ENTITIES.register("overworld_shulker", ()->EntityType.Builder.<BaseEssenceShulker>of((type, level) -> new BaseEssenceShulker(type,level, DyeColor.LIME), MobCategory.CREATURE).fireImmune().canSpawnFarFromPlayer().sized(1.0F, 1.0F).clientTrackingRange(10).build(new ResourceLocation(ResourcefulShulkers.MODID,"overworld_shulker").toString()));
     public static final RegistryObject<EntityType<BaseEssenceShulker>> SKY_SHULKER = ENTITIES.register("sky_shulker", ()->EntityType.Builder.<BaseEssenceShulker>of((type, level) -> new BaseEssenceShulker(type,level, DyeColor.LIGHT_BLUE), MobCategory.CREATURE).fireImmune().canSpawnFarFromPlayer().sized(1.0F, 1.0F).clientTrackingRange(10).build(new ResourceLocation(ResourcefulShulkers.MODID,"sky_shulker").toString()));
@@ -26,7 +26,7 @@ public class ModEntities {
     public static RegistryObject<EntityType<ResourceShulker>> createShulker(ResourceLocation id){
         ShulkerType res = ShulkerType.getById(id);
         RegistryObject<EntityType<ResourceShulker>> entity = ENTITIES.register(res.id().getPath()+"_shulker", ()->EntityType.Builder.<ResourceShulker>of((type1, level) -> new ResourceShulker(type1,level,id), MobCategory.CREATURE).fireImmune().canSpawnFarFromPlayer().sized(1.0F, 1.0F).clientTrackingRange(10).build(new ResourceLocation(ResourcefulShulkers.MODID,res.id().getPath()+"_shulker").toString()));
-        ModItems.ITEMS.register(res.id().getPath().toLowerCase()+"_shulker", () -> new ShulkerItem(new Item.Properties().tab(ResourcefulShulkers.SHULKERS_GROUP),null));
+        ModItems.ITEMS.register(res.id().getPath().toLowerCase()+"_shulker", () -> new ShulkerItem(new Item.Properties(),null));
         return entity;
     }
 

@@ -3,8 +3,8 @@ package fr.iglee42.resourcefulshulkers.blocks.entites;
 import fr.iglee42.igleelib.api.blockentities.SecondBlockEntity;
 import fr.iglee42.igleelib.api.utils.ModsUtils;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
-import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
 import fr.iglee42.resourcefulshulkers.blocks.GeneratingBoxBlock;
+import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
 import fr.iglee42.resourcefulshulkers.init.ModItems;
 import fr.iglee42.resourcefulshulkers.item.UpgradeItem;
 import fr.iglee42.resourcefulshulkers.menu.GeneratingBoxMenu;
@@ -19,7 +19,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -38,7 +37,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
@@ -51,8 +49,8 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -152,13 +150,13 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
             }
             else if (entity.generatingTick / 20 > 5 && !entity.explosing){
                 AABB aabb = new AABB(blockPos.offset(-2,-2,-2),blockPos.offset(2,2,2));
-                level.getNearbyPlayers(TargetingConditions.forNonCombat(),null,aabb).forEach(p->p.displayClientMessage(new TextComponent("You change manually the time of generating box so it will explode in 3 seconds!").withStyle(ChatFormatting.RED),false));
+                level.getNearbyPlayers(TargetingConditions.forNonCombat(),null,aabb).forEach(p->p.displayClientMessage(Component.literal("You change manually the time of generating box so it will explode in 3 seconds!").withStyle(ChatFormatting.RED),false));
                 entity.explosing = true;
                 Timer timer = new Timer();
                 timer.schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        level.explode(null,blockPos.getX(),blockPos.getY(),blockPos.getZ(), 12,false, Explosion.BlockInteraction.DESTROY);
+                        level.explode(null,blockPos.getX(),blockPos.getY(),blockPos.getZ(), 12,false, Level.ExplosionInteraction.BLOCK);
                     }
                 },1);
 
@@ -215,12 +213,12 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     @NotNull
     @Override
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        return cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? (side != Direction.UP ? optionalInventory.cast() : optionalUpgrades.cast()) : super.getCapability(cap,side);
+        return cap == ForgeCapabilities.ITEM_HANDLER ? (side != Direction.UP ? optionalInventory.cast() : optionalUpgrades.cast()) : super.getCapability(cap,side);
     }
 
     @Override
     public Component getDisplayName() {
-        return new TextComponent("Generating Box");
+        return Component.literal("Generating Box");
     }
 
     @Nullable

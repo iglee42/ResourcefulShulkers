@@ -1,9 +1,9 @@
 package fr.iglee42.resourcefulshulkers.blocks.entites;
 
 import fr.iglee42.igleelib.api.blockentities.SecondBlockEntity;
-import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
-import fr.iglee42.resourcefulshulkers.recipes.ITickableRecipe;
+import fr.iglee42.igleelib.api.utils.ITickableRecipe;
 import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
+import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;

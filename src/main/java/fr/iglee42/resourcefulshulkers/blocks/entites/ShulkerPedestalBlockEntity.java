@@ -16,8 +16,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,7 +47,7 @@ public class ShulkerPedestalBlockEntity extends BlockEntity {
     @NotNull
     @Override
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        return cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? optionalInventory.cast() : super.getCapability(cap, side);
+        return cap == ForgeCapabilities.ITEM_HANDLER ? optionalInventory.cast() : super.getCapability(cap, side);
     }
 
     @Override

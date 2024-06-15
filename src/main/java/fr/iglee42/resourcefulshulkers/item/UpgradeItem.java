@@ -16,7 +16,7 @@ public class UpgradeItem extends Item {
     private final Upgrade upgrade;
 
     public UpgradeItem(Upgrade upgrade) {
-        super(new Item.Properties().tab(ResourcefulShulkers.GROUP));
+        super(new Item.Properties());
         this.upgrade = upgrade;
     }
 

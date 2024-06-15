@@ -29,7 +29,7 @@ public class ResourceShulker extends CustomShulker{
     @Override
     public void tick() {
         super.tick();
-        if (!level.isClientSide()) {
+        if (!level().isClientSide()) {
             if (target == null) {
                 for (int x = -5; x <= 5; x++) {
                     for (int y = -5; y <= 5; y++) {
@@ -39,15 +39,15 @@ public class ResourceShulker extends CustomShulker{
                             int finalZ = z;
                             AABB searchBox = getBoundingBox().inflate(8);
                             BlockPos currentBlockPos = blockPosition();
-                            if (level.getBlockState(blockPosition().offset(x, y, z)).getBlock() instanceof PurpurTargetBlock) {
-                                if (level.getEntitiesOfClass(ResourceShulker.class, searchBox, r -> r.getUUID() != getUUID() && r.getBlockTarget() != null &&  r.getBlockTarget().equals(currentBlockPos.offset(finalX, finalY, finalZ))).isEmpty())
+                            if (level().getBlockState(blockPosition().offset(x, y, z)).getBlock() instanceof PurpurTargetBlock) {
+                                if (level().getEntitiesOfClass(ResourceShulker.class, searchBox, r -> r.getUUID() != getUUID() && r.getBlockTarget() != null &&  r.getBlockTarget().equals(currentBlockPos.offset(finalX, finalY, finalZ))).isEmpty())
                                     target = blockPosition().offset(x, y, z);
                             }
                         }
                     }
                 }
             } else {
-                if (!(level.getBlockState(target).getBlock() instanceof PurpurTargetBlock)) target = null;
+                if (!(level().getBlockState(target).getBlock() instanceof PurpurTargetBlock)) target = null;
             }
         }
     }
@@ -94,8 +94,8 @@ public class ResourceShulker extends CustomShulker{
         public void tick() {
             if (random.nextInt(100) < 2 && target != null) {
                 AABB searchBox = getBoundingBox().inflate(4);
-                if (level.getEntitiesOfClass(CustomShulkerBullet.class, searchBox, r -> r.getOwner().getUUID() == getUUID()).isEmpty()) {
-                    ResourceShulker.this.level.addFreshEntity(new CustomShulkerBullet(level, ResourceShulker.this, getBlockTarget(), getAttachFace().getAxis(), getTypeId()));
+                if (level().getEntitiesOfClass(CustomShulkerBullet.class, searchBox, r -> r.getOwner().getUUID() == getUUID()).isEmpty()) {
+                    ResourceShulker.this.level().addFreshEntity(new CustomShulkerBullet(level(), ResourceShulker.this, getBlockTarget(), getAttachFace().getAxis(), getTypeId()));
                     ResourceShulker.this.playSound(SoundEvents.SHULKER_SHOOT, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
                 }
             }
