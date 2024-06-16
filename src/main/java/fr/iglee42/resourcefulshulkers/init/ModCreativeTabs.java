@@ -15,6 +15,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
 
@@ -35,11 +36,11 @@ public class ModCreativeTabs {
     public static void addCreative(BuildCreativeModeTabContentsEvent event){
         List<RegistryObject<Item>> holders = new ArrayList<>(ModItems.ITEMS.getEntries());
         if (event.getTabKey() == SHULKERS.getKey()){
-            holders.stream().filter(h->h.get() instanceof ShellItem || h.get() instanceof ShulkerItem || h.get() instanceof GeneratingBoxItem).forEach(holder->{
+        holders.stream().filter(h->h.get() instanceof ShellItem || (h.get() instanceof ShulkerItem si && (si.getType() != null && !Objects.equals(si.getType(), "elemental"))) || h.get() instanceof GeneratingBoxItem).forEach(holder->{
                 event.accept(holder.get());
             });
         } else if (event.getTabKey() == MAIN.getKey()){
-            holders.stream().filter(h->!(h.get() instanceof ShellItem || h.get() instanceof ShulkerItem || h.get() instanceof GeneratingBoxItem)).forEach(h->event.accept(h.get()));
+            holders.stream().filter(h->!(h.get() instanceof ShellItem ||  (h.get() instanceof ShulkerItem si && (si.getType() != null && !Objects.equals(si.getType(), "elemental"))) || h.get() instanceof GeneratingBoxItem)).forEach(h->event.accept(h.get()));
         }
     }
 }

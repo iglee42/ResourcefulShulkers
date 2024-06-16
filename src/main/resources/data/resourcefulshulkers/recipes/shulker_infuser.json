@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " P ",
+    "RDR",
+    " E "
+  ],
+  "key": {
+    "E": {
+      "item": "minecraft:end_stone_bricks"
+    },
+    "R": {
+      "item": "minecraft:end_rod"
+    },
+    "D": {
+      "item": "minecraft:diamond_block"
+    },
+    "P": {
+      "item": "minecraft:purpur_slab"
+    }
+  },
+  "result": {
+    "item": "resourcefulshulkers:shulker_infuser"
+  }
+}

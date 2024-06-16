@@ -3,7 +3,7 @@
   "baseEntity": "minecraft:shulker",
   "resultEntity": "resourcefulshulkers:sky_shulker",
   "biomes": [
-    "#forge:is_overworld"
+    "#minecraft:is_overworld"
   ],
   "particleItem": "minecraft:light_blue_stained_glass",
   "minY": 192

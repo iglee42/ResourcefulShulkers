@@ -1,7 +1,7 @@
 package fr.iglee42.resourcefulshulkers.events;
 
 import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
-import fr.iglee42.resourcefulshulkers.command.TRSCommand;
+import fr.iglee42.resourcefulshulkers.command.RSCommand;
 import fr.iglee42.resourcefulshulkers.entity.CustomShulker;
 import fr.iglee42.resourcefulshulkers.init.ModEntities;
 import fr.iglee42.resourcefulshulkers.init.ModItems;
@@ -69,7 +69,7 @@ public class CommonEvents {
         }
         @SubscribeEvent
         public static void commandRegister(RegisterCommandsEvent event){
-            new TRSCommand(event.getDispatcher());
+            new RSCommand(event.getDispatcher());
         }
 
     }

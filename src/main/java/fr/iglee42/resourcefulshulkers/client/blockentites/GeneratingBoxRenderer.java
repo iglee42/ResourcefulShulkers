@@ -51,4 +51,5 @@ public class GeneratingBoxRenderer implements BlockEntityRenderer<GeneratingBoxB
       this.model.renderToBuffer(p_112480_, vertexconsumer, p_112482_, p_112483_, 1.0F, 1.0F, 1.0F, 1.0F);
       p_112480_.popPose();
    }
+
 }

@@ -8,6 +8,7 @@ import fr.iglee42.resourcefulshulkers.resourcepack.PackType;
 import fr.iglee42.resourcefulshulkers.resourcepack.PathConstant;
 import fr.iglee42.resourcefulshulkers.resourcepack.TRSPackFinder;
 import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
+import fr.iglee42.resourcefulshulkers.utils.TypesManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -38,14 +39,15 @@ public class ResourcefulShulkers {
 
     public ResourcefulShulkers() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        TypesManager.init();
         ShulkersManager.init();
 
         ModItems.ITEMS.register(bus);
         ModBlocks.BLOCKS.register(bus);
+        ModCreativeTabs.CREATIVE_TABS.register(bus);
         ModBlockEntities.BLOCK_ENTITIES.register(bus);
         ModBlockEntities.MENUS.register(bus);
         ModEntities.ENTITIES.register(bus);
-        ModCreativeTabs.CREATIVE_TABS.register(bus);
 
         ModMessages.register();
         ModRecipes.SERIALIZER.register(bus);
@@ -53,6 +55,7 @@ public class ResourcefulShulkers {
         PathConstant.init();
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModCreativeTabs::addCreative);
 
         MinecraftForge.EVENT_BUS.register(this);
         try {

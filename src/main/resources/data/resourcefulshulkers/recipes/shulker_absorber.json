@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RPR",
+    "PDP",
+    "GEG"
+  ],
+  "key": {
+    "E": {
+      "item": "minecraft:end_stone_bricks"
+    },
+    "R": {
+      "item": "minecraft:end_rod"
+    },
+    "D": {
+      "item": "minecraft:diamond_block"
+    },
+    "G": {
+      "item": "minecraft:gold_block"
+    },
+    "P": {
+      "item": "minecraft:purpur_slab"
+    }
+  },
+  "result": {
+    "item": "resourcefulshulkers:shulker_absorber"
+  }
+}

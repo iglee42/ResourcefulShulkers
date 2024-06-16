@@ -8,6 +8,7 @@ import fr.iglee42.resourcefulshulkers.init.ModBlocks;
 import fr.iglee42.resourcefulshulkers.recipes.ShulkerItemInfusionRecipe;
 import fr.iglee42.resourcefulshulkers.recipes.ShulkerRecipeEnvironnement;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -21,6 +22,7 @@ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -48,7 +50,7 @@ public class ShulkerInfuserBlock extends BaseEntityBlock {
 
 
     public ShulkerInfuserBlock() {
-        super(Properties.copy(Blocks.BLAST_FURNACE).noOcclusion().strength(1.5F,6.0F));
+        super(Properties.of().noOcclusion().strength(1.5F,6.0F));
     }
 
     @Nullable
@@ -139,9 +141,11 @@ public class ShulkerInfuserBlock extends BaseEntityBlock {
                     pedestalIngredients.removeIf(i->i==Ingredient.EMPTY);
                     for (int[] pedestalPos : ShulkerItemInfusionRecipe.PEDESTAL_POSITION){
                         if (!level.getBlockState(pos.offset(pedestalPos[0],pedestalPos[1],pedestalPos[2])).is(ModBlocks.SHULKER_PEDESTAL.get())) flag = false;
-                        ItemStack stack = ((ShulkerPedestalBlockEntity)level.getBlockEntity(pos.offset(pedestalPos[0],pedestalPos[1],pedestalPos[2]))).getStack();
-                        if (pedestalIngredients.stream().anyMatch(i->i.test(stack)))
-                            pedestalIngredients.remove(pedestalIngredients.stream().filter(i->i.test(stack)).findFirst().get());
+                        else {
+                            ItemStack stack = ((ShulkerPedestalBlockEntity) level.getBlockEntity(pos.offset(pedestalPos[0], pedestalPos[1], pedestalPos[2]))).getStack();
+                            if (pedestalIngredients.stream().anyMatch(i -> i.test(stack)))
+                                pedestalIngredients.remove(pedestalIngredients.stream().filter(i -> i.test(stack)).findFirst().get());
+                        }
                     }
 
                     boolean flag1 = r.getBaseEntity().startsWith("#")?
@@ -178,5 +182,11 @@ public class ShulkerInfuserBlock extends BaseEntityBlock {
         return super.use(state, level, pos, player, p_60507_, p_60508_);
     }
 
+    @Override
+    public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<Component> tooltips, TooltipFlag p_49819_) {
+        if (Screen.hasShiftDown()) tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_infuser"));
+        else tooltips.add(Component.translatable("tooltip.resourcefulshulkers.press_shift"));
+        super.appendHoverText(p_49816_, p_49817_, tooltips, p_49819_);
+    }
 }
 

@@ -3,7 +3,7 @@
   "baseEntity": "minecraft:shulker",
   "resultEntity": "resourcefulshulkers:end_shulker",
   "biomes": [
-    "#forge:is_end"
+    "#minecraft:is_end"
   ],
   "particleItem": "minecraft:end_stone"
 }

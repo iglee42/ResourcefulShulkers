@@ -26,7 +26,7 @@ public class ModEntities {
     public static RegistryObject<EntityType<ResourceShulker>> createShulker(ResourceLocation id){
         ShulkerType res = ShulkerType.getById(id);
         RegistryObject<EntityType<ResourceShulker>> entity = ENTITIES.register(res.id().getPath()+"_shulker", ()->EntityType.Builder.<ResourceShulker>of((type1, level) -> new ResourceShulker(type1,level,id), MobCategory.CREATURE).fireImmune().canSpawnFarFromPlayer().sized(1.0F, 1.0F).clientTrackingRange(10).build(new ResourceLocation(ResourcefulShulkers.MODID,res.id().getPath()+"_shulker").toString()));
-        ModItems.ITEMS.register(res.id().getPath().toLowerCase()+"_shulker", () -> new ShulkerItem(new Item.Properties(),null));
+        ModItems.ITEMS.register(res.id().getPath().toLowerCase()+"_shulker", () -> new ShulkerItem(new Item.Properties(),null,res.type()));
         return entity;
     }
 

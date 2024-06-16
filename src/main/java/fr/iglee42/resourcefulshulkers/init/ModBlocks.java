@@ -25,7 +25,6 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,11 +36,11 @@ public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, ResourcefulShulkers.MODID);
 
 
-    public static final RegistryObject<Block> SHULKER_INFUSER = createBlock("shulker_infuser", ShulkerInfuserBlock::new);
-    public static final RegistryObject<Block> SHULKER_PEDESTAL = createBlock("shulker_pedestal", ShulkerPedestalBlock::new);
-    public static final RegistryObject<Block> SHULKER_ABSORBER = createBlock("shulker_absorber", ShulkerAbsorberBlock::new);
+    public static final RegistryObject<Block> SHULKER_INFUSER = createGeneratingBlock("shulker_infuser", ShulkerInfuserBlock::new);
+    public static final RegistryObject<Block> SHULKER_PEDESTAL = createGeneratingBlock("shulker_pedestal", ShulkerPedestalBlock::new);
+    public static final RegistryObject<Block> SHULKER_ABSORBER = createGeneratingBlock("shulker_absorber", ShulkerAbsorberBlock::new);
 
-    public static final RegistryObject<Block> PURPUR_TARGET = createBlock("purpur_target", PurpurTargetBlock::new);
+    public static final RegistryObject<Block> PURPUR_TARGET = createGeneratingBlock("purpur_target", PurpurTargetBlock::new);
     //public static final RegistryObject<Block> GENERATING_BOX = createBlock("generating_box", () -> new GeneratingBoxBlock(id));
 
     public static final RegistryObject<Block> SHULKER_HEAD = createBlockWithoutItem("shulker_head",()-> new SkullBlock(SkullTypes.SHULKER, BlockBehaviour.Properties.copy(Blocks.CREEPER_HEAD).strength(1.0f)){
@@ -62,13 +61,12 @@ public class ModBlocks {
         }
     });
 
-    public static RegistryObject<Block> createBlock(String name, Supplier<? extends Block> supplier, Item.Properties itemProperties)
+    public static void createGeneratingBlock(String name, Supplier<? extends Block> supplier, Item.Properties itemProperties, ResourceLocation id)
     {
         RegistryObject<Block> block = BLOCKS.register(name, supplier);
-        ModItems.ITEMS.register(name, () -> name.endsWith("_generating_box")? new GeneratingBoxItem(block.get(), itemProperties) : new BlockItem(block.get(), itemProperties));
-        return block;
+        ModItems.ITEMS.register(name, () -> name.endsWith("_generating_box")? new GeneratingBoxItem(block.get(), itemProperties,id) : new BlockItem(block.get(), itemProperties));
     }
-    public static RegistryObject<Block> createBlock(String name, Supplier<? extends Block> supplier)
+    public static RegistryObject<Block> createGeneratingBlock(String name, Supplier<? extends Block> supplier)
     {
         RegistryObject<Block> block = BLOCKS.register(name, supplier);
         ModItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
@@ -85,7 +83,7 @@ public class ModBlocks {
     }
     public static void createBox(ResourceLocation id){
         ShulkerType res = ShulkerType.getById(id);
-        createBlock(res.id().getPath()+ "_generating_box", ()->new GeneratingBoxBlock(id), new Item.Properties());
+        createGeneratingBlock(res.id().getPath()+ "_generating_box", ()->new GeneratingBoxBlock(id), new Item.Properties(),res.id());
     }
     public static Block[] getAllBox() {
         List<RegistryObject<Block>> registries = BLOCKS.getEntries().stream().filter(r->r.getId().toString().endsWith("_generating_box") && r.isPresent()).toList();

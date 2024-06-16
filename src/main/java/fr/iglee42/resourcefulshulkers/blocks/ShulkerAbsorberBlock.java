@@ -3,6 +3,7 @@ package fr.iglee42.resourcefulshulkers.blocks;
 import fr.iglee42.resourcefulshulkers.blocks.entites.ShulkerAbsorberBlockEntity;
 import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -29,7 +30,7 @@ public class ShulkerAbsorberBlock extends BaseEntityBlock {
 
 
     public ShulkerAbsorberBlock() {
-        super(Properties.copy(Blocks.BLAST_FURNACE).strength(1.5F,6.0F));
+        super(Properties.of().strength(1.5F,6.0F));
     }
 
     @Nullable
@@ -72,8 +73,14 @@ public class ShulkerAbsorberBlock extends BaseEntityBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<Component> components, TooltipFlag p_49819_) {
-        components.add(Component.literal("Warning: Don't put too many in a chunk, it can produce lags !").withStyle(ChatFormatting.YELLOW));
-        super.appendHoverText(p_49816_, p_49817_, components, p_49819_);
+    public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<Component> tooltips, TooltipFlag p_49819_) {
+        tooltips.add(Component.literal("Warning: Don't put too many in a chunk, it can produce lags !").withStyle(ChatFormatting.YELLOW));
+        if (Screen.hasShiftDown()) {
+            tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_absorber"));
+            tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_absorber1"));
+        }
+        else tooltips.add(Component.translatable("tooltip.resourcefulshulkers.press_shift"));
+        super.appendHoverText(p_49816_, p_49817_, tooltips, p_49819_);
     }
+
 }

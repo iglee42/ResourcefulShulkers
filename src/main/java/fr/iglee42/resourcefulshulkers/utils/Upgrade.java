@@ -12,6 +12,7 @@ import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
 public enum Upgrade {
     SPEED(),
     DURABILITY(),
+    QUANTITY(),
 
     ;
     public static final int MAX = 4;

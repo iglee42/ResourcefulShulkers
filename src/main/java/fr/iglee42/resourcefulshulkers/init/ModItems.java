@@ -56,11 +56,11 @@ public class ModItems {
             super.appendHoverText(p_41421_, p_41422_, p_41423_, p_41424_);
         }
     });
-    public static final RegistryObject<Item> SHULKER_ITEM = ITEMS.register("shulker_item", () -> new ShulkerItem(new Item.Properties(), EntityType.SHULKER));
-    public static final RegistryObject<Item> OVERWORLD_SHULKER_ITEM = ITEMS.register("overworld_shulker", () -> new ShulkerItem(new Item.Properties(),null));
-    public static final RegistryObject<Item> SKY_SHULKER_ITEM = ITEMS.register("sky_shulker", () -> new ShulkerItem(new Item.Properties(),null));
-    public static final RegistryObject<Item> NETHER_SHULKER_ITEM = ITEMS.register("nether_shulker", () -> new ShulkerItem(new Item.Properties(),null));
-    public static final RegistryObject<Item> END_SHULKER_ITEM = ITEMS.register("end_shulker", () -> new ShulkerItem(new Item.Properties(),null));
+    public static final RegistryObject<Item> SHULKER_ITEM = ITEMS.register("shulker_item", () -> new ShulkerItem(new Item.Properties(), EntityType.SHULKER,null));
+    public static final RegistryObject<Item> OVERWORLD_SHULKER_ITEM = ITEMS.register("overworld_shulker", () -> new ShulkerItem(new Item.Properties(),null,"elemental"));
+    public static final RegistryObject<Item> SKY_SHULKER_ITEM = ITEMS.register("sky_shulker", () -> new ShulkerItem(new Item.Properties(),null,"elemental"));
+    public static final RegistryObject<Item> NETHER_SHULKER_ITEM = ITEMS.register("nether_shulker", () -> new ShulkerItem(new Item.Properties(),null,"elemental"));
+    public static final RegistryObject<Item> END_SHULKER_ITEM = ITEMS.register("end_shulker", () -> new ShulkerItem(new Item.Properties(),null,"elemental" ));
     public static final RegistryObject<Item> OVERWORLD_ESSENCE = ITEMS.register("overworld_essence", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> SKY_ESSENCE = ITEMS.register("sky_essence", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> NETHER_ESSENCE = ITEMS.register("nether_essence", () -> new Item(new Item.Properties()));
@@ -70,6 +70,7 @@ public class ModItems {
     public static final RegistryObject<Item> UPGRADE_BASE = ITEMS.register("upgrade_base", ()-> new Item(new Item.Properties()));
     public static final RegistryObject<Item> SPEED_UPGRADE = ITEMS.register("speed_upgrade", ()-> new UpgradeItem(Upgrade.SPEED));
     public static final RegistryObject<Item> DURABILITY_UPGRADE = ITEMS.register("durability_upgrade", ()-> new UpgradeItem(Upgrade.DURABILITY));
+    public static final RegistryObject<Item> QUANTITY_UPGRADE = ITEMS.register("quantity_upgrade", ()-> new UpgradeItem(Upgrade.QUANTITY));
     public static final RegistryObject<Item> SHULKER_HEAD = ITEMS.register("shulker_head", ()-> new StandingAndWallBlockItem(ModBlocks.SHULKER_HEAD.get(),ModBlocks.WALL_SHULKER_HEAD.get(), new Item.Properties(),Direction.DOWN){
         @Override
         public void onArmorTick(ItemStack stack, Level level, Player player) {
@@ -89,6 +90,12 @@ public class ModItems {
                 }
             }
             super.onArmorTick(stack, level, player);
+        }
+
+        @Override
+        public void appendHoverText(ItemStack p_40572_, @Nullable Level p_40573_, List<Component> tooltips, TooltipFlag p_40575_) {
+            tooltips.add(Component.literal("Try it on your head !").withStyle(ChatFormatting.LIGHT_PURPLE));
+            super.appendHoverText(p_40572_, p_40573_, tooltips, p_40575_);
         }
     });
 

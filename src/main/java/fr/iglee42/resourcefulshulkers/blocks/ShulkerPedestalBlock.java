@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ShulkerPedestalBlock extends BaseEntityBlock {
     public ShulkerPedestalBlock() {
-        super(BlockBehaviour.Properties.copy(Blocks.BLAST_FURNACE).noOcclusion().strength(1.5F,6.0F));
+        super(BlockBehaviour.Properties.of().noOcclusion().strength(1.5F,6.0F));
     }
 
     @Nullable

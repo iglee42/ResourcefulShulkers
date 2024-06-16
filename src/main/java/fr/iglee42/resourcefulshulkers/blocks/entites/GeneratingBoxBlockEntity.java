@@ -181,7 +181,16 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     private void addItems() {
         ShulkerType res = ShulkerType.getById(id);
         if (res != null) {
-            ItemStack stack = new ItemStack(res.getItem());
+            int slotWithQuantity = Upgrade.getFirstInventoryIndexWithUpgrade(upgrades,Upgrade.QUANTITY);
+            int count = 1;
+            if (slotWithQuantity != -1) count = switch (upgrades.getStackInSlot(slotWithQuantity).getCount()){
+                case 1 -> 2;
+                case 2 -> 4;
+                case 3 -> 6;
+                case 4 -> 8;
+                default -> 1;
+            };
+            ItemStack stack = new ItemStack(res.getItem(),count);
             int slot = getFirstSlotNotFull(stack.getItem());
             if (slot == -1) return;
             if (inventory.getStackInSlot(slot).isEmpty()) {
@@ -218,7 +227,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
 
     @Override
     public Component getDisplayName() {
-        return Component.literal("Generating Box");
+        return getBlockState().getBlock().getName();
     }
 
     @Nullable

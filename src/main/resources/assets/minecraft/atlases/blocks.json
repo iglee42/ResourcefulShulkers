@@ -1,0 +1,25 @@
+{
+  "replace": "false",
+  "sources": [
+    {
+      "type": "directory",
+      "source": "entity/boxes",
+      "prefix": "entity/boxes/"
+    },
+    {
+      "type": "directory",
+      "source": "entity/mod_base",
+      "prefix": "entity/mod_base/"
+    },
+    {
+      "type": "directory",
+      "source": "entity/base_essence",
+      "prefix": "entity/base_essence/"
+    },
+    {
+      "type": "directory",
+      "source": "entity/shulker",
+      "prefix": "entity/shulker/"
+    }
+  ]
+}

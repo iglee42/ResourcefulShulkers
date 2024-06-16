@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
 import fr.iglee42.resourcefulshulkers.aura.ShulkerAura;
 import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
@@ -16,16 +17,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 
-public class TRSCommand {
+public class RSCommand {
 
     private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(Component.literal("Aura can't be modified !"));
 
-    public TRSCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("resourcefulshulkers")
+    public RSCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
+        LiteralCommandNode<CommandSourceStack> command = dispatcher.register(Commands.literal("resourcefulshulkers")
                 .then(Commands.literal("aura").requires(c->c.hasPermission(4))
                         .then(Commands.literal("add").then(Commands.argument("amount", IntegerArgumentType.integer(1, ShulkerAura.MAX_AURA)).executes(this::addAura).then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(this::addAuraWithPos))))
                         .then(Commands.literal("remove").then(Commands.argument("amount", IntegerArgumentType.integer(1, ShulkerAura.MAX_AURA)).executes(this::removeAura).then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(this::removeAuraWithPos))))
                         .then(Commands.literal("get").executes(this::getAura).then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(this::getAuraWithPos)))));
+        dispatcher.register(Commands.literal("rs").requires(c->c.hasPermission(4)).redirect(command));
     }
 
     private int getAuraWithPos(CommandContext<CommandSourceStack> source) {

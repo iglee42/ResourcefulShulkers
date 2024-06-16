@@ -35,7 +35,7 @@ public class GeneratingBoxBlock extends BaseEntityBlock {
     private final ResourceLocation id;
 
     public GeneratingBoxBlock(ResourceLocation id) {
-        super(Properties.copy(Blocks.SHULKER_BOX));
+        super(Properties.of());
         this.id = id;
     }
 

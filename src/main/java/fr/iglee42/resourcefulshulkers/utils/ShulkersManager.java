@@ -50,6 +50,7 @@ public class ShulkersManager {
                     json = parser.parse(reader).getAsJsonObject();
                     if (json.get("id").getAsString().isEmpty()) throw new NullPointerException("The id can't be empty ! (" + file.getName() + ")" );
                     ShulkerType r = JsonHelper.createRecordFromJson(ShulkerType.class,json);
+                    if (!TypesManager.isTierExist(r.type())) continue;
                     TYPES.add(r);
                     FILES.put(file.getPath().replace(dir.getPath(),""),r.id());
                     reader.close();

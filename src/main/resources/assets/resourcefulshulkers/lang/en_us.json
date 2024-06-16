@@ -4,6 +4,7 @@
 
   "item.resourcefulshulkers.speed_upgrade": "Speed Upgrade",
   "item.resourcefulshulkers.durability_upgrade": "Durability Upgrade",
+  "item.resourcefulshulkers.quantity_upgrade": "Quantity Upgrade",
   "item.resourcefulshulkers.upgrade_base": "Upgrade Base",
   "item.resourcefulshulkers.shulker_killer": "Shulker Killer",
   "item.resourcefulshulkers.shulker_item": "Shulker",
@@ -28,7 +29,16 @@
   "block.resourcefulshulkers.shulker_head": "Shulker Head",
   "block.resourcefulshulkers.shulker_absorber": "Shulker Absorber",
 
-  "tooltip.resourcefulshulkers.speed_upgrade": "Increase Speed by 1",
-  "tooltip.resourcefulshulkers.durability_upgrade": "Reduces the chance of durability loss by 20%",
-  "tooltip.resourcefulshulkers.shulker_pickup": "Shulkers can be picked up with sneak + right click"
+  "tooltip.resourcefulshulkers.speed_upgrade": "\u00a75Increases \u00a7dSpeed \u00a75by \u00a7d1",
+  "tooltip.resourcefulshulkers.durability_upgrade": "\u00a75Reduces the \u00a7dchance of durability loss \u00a75by \u00a7d20%",
+  "tooltip.resourcefulshulkers.quantity_upgrade": "\u00a75Increases the \u00a7damount of items \u00a75generated",
+  "tooltip.resourcefulshulkers.shulker_pickup": "\u00a7dShulkers \u00a75can be \u00a7dpicked up \u00a75with \u00a7dsneak \u00a75+ \u00a7dright click",
+  "tooltip.resourcefulshulkers.type": "Type: %s",
+  "tooltip.resourcefulshulkers.press_shift": "\u00a75Press \u00a7dShift \u00a75for more informations",
+  "tooltip.resourcefulshulkers.purpur_target": "\u00a7dResource Shulkers \u00a75will \u00a7dautomatically \u00a75target this block",
+  "tooltip.resourcefulshulkers.purpur_target1": "When \u00a7dhit \u00a75by a \u00a7dResource Shulker\u00a75, it will drop a \u00a7dshulker shell",
+  "tooltip.resourcefulshulkers.purpur_target2": "Can be \u00a7dtargeted \u00a75by only \u00a7done shulker \u00a75at the same time",
+  "tooltip.resourcefulshulkers.shulker_infuser": "\u00a7dSneak \u00a75+ \u00a7dRight Click \u00a75to show \u00a7dpedestals positions",
+  "tooltip.resourcefulshulkers.shulker_absorber": "\u00a7dPlace \u00a75a \u00a7dshulker \u00a75on it to \u00a7dstart absorbing \u00a75it",
+  "tooltip.resourcefulshulkers.shulker_absorber1": "\u00a7dOne shulker \u00a75generates \u00a7d4096 aura"
 }
