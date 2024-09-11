@@ -66,6 +66,7 @@ public class ModItems {
     public static final RegistryObject<Item> NETHER_ESSENCE = ITEMS.register("nether_essence", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> END_ESSENCE = ITEMS.register("end_essence", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> BASE_ESSENCE = ITEMS.register("base_essence", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> OMNI_DYE = ITEMS.register("omni_dye", () -> new Item(new Item.Properties()));
 
     public static final RegistryObject<Item> UPGRADE_BASE = ITEMS.register("upgrade_base", ()-> new Item(new Item.Properties()));
     public static final RegistryObject<Item> SPEED_UPGRADE = ITEMS.register("speed_upgrade", ()-> new UpgradeItem(Upgrade.SPEED));

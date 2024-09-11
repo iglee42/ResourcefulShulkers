@@ -176,7 +176,7 @@ public class ShulkerRecipeEnvironnement implements Recipe<SimpleContainer>, ITic
     public void finish(Level level, BlockPos pos, BlockState state, ShulkerInfuserBlockEntity be) {
         Vec3 posi = Vec3.atBottomCenterOf(pos);
 
-        Mob target = level.getNearestEntity(level.getEntitiesOfClass(Mob.class, be.WORKING_AREA.bounds()), TargetingConditions.DEFAULT, null, pos.getX(), pos.getY(), pos.getZ());
+        Entity target = be.getCurrentTarget();
 
         Vec3 basePos = posi.add(0,1,0);
         Entity newEntity = ForgeRegistries.ENTITY_TYPES.getValue(getResultEntity()).create(level);
@@ -197,9 +197,7 @@ public class ShulkerRecipeEnvironnement implements Recipe<SimpleContainer>, ITic
 
     @Override
     public boolean canContinue(Level level, BlockPos pos, BlockState state,int progress,ShulkerInfuserBlockEntity be) {
-        Mob target = level.getNearestEntity(level.getEntitiesOfClass(Mob.class, be.WORKING_AREA.bounds()), TargetingConditions.DEFAULT, null, pos.getX(), pos.getY(), pos.getZ());
-
-        return target != null;
+        return be.getCurrentTarget() != null;
     }
 
     public int getAuraConsummed() {

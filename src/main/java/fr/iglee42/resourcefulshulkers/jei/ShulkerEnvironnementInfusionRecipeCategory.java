@@ -45,15 +45,10 @@ public class ShulkerEnvironnementInfusionRecipeCategory implements IRecipeCatego
             ShulkerRecipeEnvironnement.class);
     private final IDrawable background;
     private final IDrawable icon;
-    private final IDrawableStatic arrow;
-    private final IDrawableAnimated arrowAnim;
-
 
     public ShulkerEnvironnementInfusionRecipeCategory(IGuiHelper helper) {
         this.background = helper.createBlankDrawable(176, 92);
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.SHULKER_INFUSER.get()));
-        this.arrow = helper.createDrawable(ARROW,0,0,22,15);
-        this.arrowAnim = helper.createAnimatedDrawable(arrow,22, IDrawableAnimated.StartDirection.TOP,false);
     }
 
     public static void renderEntity(GuiGraphics poseStack, int x, int y, double scale, double yaw, double pitch, LivingEntity livingEntity) {
@@ -112,8 +107,7 @@ public class ShulkerEnvironnementInfusionRecipeCategory implements IRecipeCatego
 
     @Override
     public void draw(ShulkerRecipeEnvironnement recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-        RenderSystem.setShaderTexture(0, new ResourceLocation(ResourcefulShulkers.MODID,"textures/gui/arrow.png"));
-        guiGraphics.blit( new ResourceLocation(ResourcefulShulkers.MODID,"textures/gui/arrow.png"),52,35,0,0,60,15,60,15);
+        guiGraphics.blit(ARROW,57,35,0,0,60,15,60,15);
         int y = 55;
         float scale = 22.5f, yaw = -25.0f, pitch = -29.0f;
         if (ForgeRegistries.ENTITY_TYPES.getValue(recipe.getBaseEntity()).create(Minecraft.getInstance().level) instanceof LivingEntity e) {
@@ -124,14 +118,17 @@ public class ShulkerEnvironnementInfusionRecipeCategory implements IRecipeCatego
             renderEntity(guiGraphics, 155, y, scale, yaw, pitch, e);
         }
 
-        guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "" + ChatFormatting.UNDERLINE + "Allowed Biomes", 52, y + 10, 0);
-        guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.GRAY + "(Hover)", 70, y + 20, 0);
+        guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "" + ChatFormatting.UNDERLINE + "Allowed Biomes", 52, y + 10, 0,false);
+        guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.GRAY + "(Hover)", 70, y + 20, 0,false);
         if (recipe.getMinY() > -64 || recipe.getMaxY() < 320) {
-            guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "Y : " + recipe.getMinY() + "   " + recipe.getMaxY(), 54, y - 50, 0);
-            guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "~", 91, y - 48, 0);
+            guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "Y : " + recipe.getMinY() + "   " + recipe.getMaxY(), 54, y - 50, 0,false);
+            guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "~", 91, y - 48, 0,false);
         } else {
-            guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "Y : Any", 70, y - 50, 0);
+            guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "Y : Any", 70, y - 50, 0,false);
         }
+        int auraWidth = Minecraft.getInstance().font.width( "Aura : " + recipe.getAuraConsummed());
+        guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "Aura : " + recipe.getAuraConsummed(), 88 -auraWidth/2, y - 39, 0,false);
+
     }
     
 

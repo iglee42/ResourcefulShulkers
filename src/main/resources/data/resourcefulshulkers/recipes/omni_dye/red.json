@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "   ",
+    "D  ",
+    " DD"
+  ],
+  "key": {
+    "D": {
+      "item": "resourcefulshulkers:omni_dye"
+    }
+  },
+  "result": {
+    "item": "minecraft:red_dye",
+    "count": 8
+  }
+}

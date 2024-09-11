@@ -1,0 +1,24 @@
+{
+        "type": "resourcefulshulkers:shulker_item_infusion",
+        "baseEntity": "resourcefulshulkers:sky_shulker",
+        "resultEntity": "resourcefulshulkers:dye_shulker",
+        "pedestalsIngredients": [
+          {
+            "item": "resourcefulshulkers:sky_essence"
+          },{
+            "item": "resourcefulshulkers:sky_essence"
+          },{
+            "item": "resourcefulshulkers:sky_essence"
+          },{
+            "item": "resourcefulshulkers:sky_essence"
+          },{
+            "tag": "forge:dyes"
+          },{
+            "tag": "forge:dyes"
+          },{
+            "tag": "forge:dyes"
+          },{
+            "tag": "forge:dyes"
+          }
+        ]
+      }

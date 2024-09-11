@@ -5,6 +5,7 @@ import fr.iglee42.igleelib.api.utils.ModsUtils;
 import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
 import fr.iglee42.resourcefulshulkers.init.ModItems;
 import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
+import fr.iglee42.resourcefulshulkers.utils.CommonUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -33,14 +34,11 @@ public class ShulkerAbsorberBlockEntity extends SecondBlockEntity {
 
     public static final int MAX_PROGRESS = 32;
 
-    public final VoxelShape WORKING_AREA;
-
     private boolean enable;
     private int progress;
 
     public ShulkerAbsorberBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SHULKER_ABSORBER_BLOCK_ENTITY.get(),pos,state);
-        WORKING_AREA = Shapes.box(0,0,0,1,2,1).move(pos.getX(),pos.getY(),pos.getZ());
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, ShulkerAbsorberBlockEntity be){
@@ -87,8 +85,8 @@ public class ShulkerAbsorberBlockEntity extends SecondBlockEntity {
         }
     }
 
-    public LivingEntity getCurrentTarget(){
-        return level.getNearestEntity(level.getEntitiesOfClass(LivingEntity.class, WORKING_AREA.bounds()), TargetingConditions.DEFAULT, null, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());
+    public Entity getCurrentTarget(){
+        return CommonUtils.getEntityOnBlock(level,getBlockPos());
     }
 
     public int getProgress() {

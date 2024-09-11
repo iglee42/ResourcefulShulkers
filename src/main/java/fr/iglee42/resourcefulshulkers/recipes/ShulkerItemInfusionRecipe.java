@@ -130,7 +130,7 @@ public class ShulkerItemInfusionRecipe implements Recipe<SimpleContainer>, ITick
         }
         Vec3 posi = Vec3.atBottomCenterOf(pos);
 
-        LivingEntity target = level.getNearestEntity(level.getEntitiesOfClass(LivingEntity.class, be.WORKING_AREA.bounds()), TargetingConditions.DEFAULT, null, pos.getX(), pos.getY(), pos.getZ());
+        Entity target = be.getCurrentTarget();
 
         Vec3 basePos = posi.add(0,1,0);
         Entity newEntity = ForgeRegistries.ENTITY_TYPES.getValue(getResultEntity()).create(level);

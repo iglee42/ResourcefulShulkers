@@ -12,10 +12,10 @@ public class RecipesGenerator {
         ShulkersManager.TYPES.forEach(r->{
             if (r.item().startsWith("#")) {
                 generatingBoxWithTag(r.id().getPath().toLowerCase(),r.item().substring(1),r.type());
-                shulkerWithTag(r.id().getPath().toLowerCase(),r.item().substring(1),r.type());
+                if (!r.id().getPath().equals("dye"))shulkerWithTag(r.id().getPath().toLowerCase(),r.item().substring(1),r.type());
             } else{
                 generatingBox(r.id().getPath().toLowerCase(),r.type());
-                shulker(r.id().getPath().toLowerCase(),r.item(),r.type());
+                if (!r.id().getPath().equals("dye"))shulker(r.id().getPath().toLowerCase(),r.item(),r.type());
             }
         });
     }

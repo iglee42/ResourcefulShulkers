@@ -7,6 +7,7 @@ import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
 import fr.iglee42.resourcefulshulkers.init.ModBlocks;
 import fr.iglee42.resourcefulshulkers.recipes.ShulkerItemInfusionRecipe;
 import fr.iglee42.resourcefulshulkers.recipes.ShulkerRecipeEnvironnement;
+import fr.iglee42.resourcefulshulkers.utils.CommonUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -17,6 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
@@ -111,8 +113,7 @@ public class ShulkerInfuserBlock extends BaseEntityBlock {
                 }
                 return InteractionResult.SUCCESS;
             }
-                VoxelShape working = Shapes.box(0, 0, 0, 1, 2, 1).move(pos.getX(), pos.getY(), pos.getZ());
-                LivingEntity target = level.getNearestEntity(level.getEntitiesOfClass(LivingEntity.class, working.bounds()), TargetingConditions.DEFAULT, null, pos.getX(), pos.getY(), pos.getZ());
+                Entity target = CommonUtils.getEntityOnBlock(level, pos);
                 if (target == null) {
                     player.displayClientMessage(Component.literal("There is no entity on the infuser").withStyle(ChatFormatting.RED), true);
                     return InteractionResult.FAIL;
@@ -184,7 +185,11 @@ public class ShulkerInfuserBlock extends BaseEntityBlock {
 
     @Override
     public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<Component> tooltips, TooltipFlag p_49819_) {
-        if (Screen.hasShiftDown()) tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_infuser"));
+        if (Screen.hasShiftDown()){
+            tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_infuser"));
+            tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_infuser1"));
+            tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_infuser2"));
+        }
         else tooltips.add(Component.translatable("tooltip.resourcefulshulkers.press_shift"));
         super.appendHoverText(p_49816_, p_49817_, tooltips, p_49819_);
     }

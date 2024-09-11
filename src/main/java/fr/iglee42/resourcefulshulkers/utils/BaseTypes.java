@@ -2,6 +2,7 @@ package fr.iglee42.resourcefulshulkers.utils;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import fr.iglee42.resourcefulshulkers.init.ModItems;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -20,7 +21,7 @@ public enum BaseTypes {
     CONSTANTAN("#forge:ingots/constantan", DyeColor.ORANGE,"AA7030","sky"),
     COPPER(Items.COPPER_INGOT, DyeColor.ORANGE,"C26B4C","overworld"),
     DIAMOND(Items.DIAMOND, DyeColor.LIGHT_BLUE,"65F5E3","end"),
-    DYE(Items.WHITE_DYE, DyeColor.BLACK,"FFFFFF","sky"),
+    DYE(ModItems.OMNI_DYE.get(), DyeColor.BLACK,"FFFFFF","sky"),
     ELECTRUM("#forge:ingots/electrum", DyeColor.YELLOW,"C9B255","sky"),
     EMERALD(Items.EMERALD, DyeColor.LIME,"17DD62","end"),
     GOLD(Items.GOLD_INGOT, DyeColor.YELLOW,"FEE048","nether"),

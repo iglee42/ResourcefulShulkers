@@ -49,15 +49,10 @@ public class ShulkerItemInfusionRecipeCategory implements IRecipeCategory<Shulke
             ShulkerItemInfusionRecipe.class);
     private final IDrawable background;
     private final IDrawable icon;
-    private final IDrawableStatic arrow;
-    private final IDrawableAnimated arrowAnim;
-
 
     public ShulkerItemInfusionRecipeCategory(IGuiHelper helper) {
         this.background = helper.createBlankDrawable(176, 92);
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.SHULKER_INFUSER.get()));
-        this.arrow = helper.createDrawable(ARROW,0,0,22,15);
-        this.arrowAnim = helper.createAnimatedDrawable(arrow,22, IDrawableAnimated.StartDirection.TOP,false);
     }
 
     public static void renderEntity(GuiGraphics poseStack, int x, int y, double scale, double yaw, double pitch, Entity livingEntity) {
@@ -120,7 +115,7 @@ public class ShulkerItemInfusionRecipeCategory implements IRecipeCategory<Shulke
 
     @Override
     public void draw(ShulkerItemInfusionRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics stack, double mouseX, double mouseY) {
-        stack.blit(new ResourceLocation(ResourcefulShulkers.MODID,"textures/gui/arrow.png"),60,15,0,0,60,15,60,15);
+        stack.blit(ARROW,60,15,0,0,60,15,60,15);
         int y = 35;
         float scale = 27.5f, yaw = -25.0f, pitch = -29.0f;
         Entity en;
@@ -141,8 +136,10 @@ public class ShulkerItemInfusionRecipeCategory implements IRecipeCategory<Shulke
             renderEntity(stack, 155, y, scale, yaw, pitch, e);
         }
 
-        stack.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "" + ChatFormatting.UNDERLINE + "Ingredients", 60, y + 10, 0);
+        stack.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "" + ChatFormatting.UNDERLINE + "Ingredients", 60, y + 10, 0,false);
 
+        int auraWidth = Minecraft.getInstance().font.width( "Aura : " + recipe.getAuraConsummed());
+        stack.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "Aura : " + recipe.getAuraConsummed(), 88 -auraWidth/2, y - 29, 0,false);
 
     }
 

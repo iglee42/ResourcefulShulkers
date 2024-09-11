@@ -4,10 +4,12 @@ import fr.iglee42.igleelib.api.blockentities.SecondBlockEntity;
 import fr.iglee42.igleelib.api.utils.ITickableRecipe;
 import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
 import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
+import fr.iglee42.resourcefulshulkers.utils.CommonUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -17,12 +19,14 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import static fr.iglee42.igleelib.api.utils.ModsUtils.spawnParticle;
 
 public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
-
-    public final VoxelShape WORKING_AREA;
-
+    
     private int progress = 0;
 
     private boolean enabled;
@@ -32,7 +36,6 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
 
     public ShulkerInfuserBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SHULKER_INFUSER_BLOCK_ENTITY.get(),pos,state);
-        WORKING_AREA = Shapes.box(0,0,0,1,2,1).move(pos.getX(),pos.getY(),pos.getZ());
     }
 
 
@@ -73,7 +76,7 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
             
             //Freeze Target On the Infuser
 
-            LivingEntity target = level.getNearestEntity(level.getEntitiesOfClass(LivingEntity.class, WORKING_AREA.bounds()), TargetingConditions.DEFAULT, null, pos.getX(), pos.getY(), pos.getZ());
+            Entity target = getCurrentTarget();
 
             if (hasEnoughAura()){
 
@@ -94,9 +97,8 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
         }
     }
 
-    public LivingEntity getCurrentTarget(){
-        return level.getNearestEntity(level.getEntitiesOfClass(LivingEntity.class, WORKING_AREA.bounds()), TargetingConditions.DEFAULT, null, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());
-
+    public Entity getCurrentTarget(){
+        return CommonUtils.getEntityOnBlock(level,getBlockPos());
     }
 
     //START
