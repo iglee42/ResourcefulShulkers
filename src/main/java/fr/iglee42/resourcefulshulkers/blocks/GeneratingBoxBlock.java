@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
@@ -35,8 +36,17 @@ public class GeneratingBoxBlock extends BaseEntityBlock {
     private final ResourceLocation id;
 
     public GeneratingBoxBlock(ResourceLocation id) {
-        super(Properties.of());
+        super(Properties.of().noOcclusion().strength(2.0F).dynamicShape().isSuffocating(GeneratingBoxBlock::statePredicate).isViewBlocking(GeneratingBoxBlock::statePredicate).pushReaction(PushReaction.DESTROY).isRedstoneConductor((blockState, blockGetter, blockPos) -> true));
         this.id = id;
+    }
+
+    private static boolean statePredicate(BlockState blockState,BlockGetter blockGetter,BlockPos blockPos){
+        BlockEntity blockentity = blockGetter.getBlockEntity(blockPos);
+        if (blockentity instanceof GeneratingBoxBlockEntity be) {
+            return be.isClosed();
+        } else {
+            return true;
+        }
     }
 
     @Override

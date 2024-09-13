@@ -76,7 +76,7 @@ public class ShulkerPedestalBlock extends BaseEntityBlock {
                 be.setStack(copy);
                 player.getMainHandItem().setCount(player.getMainHandItem().getCount()-1);
                 level.sendBlockUpdated(pos,state,state,Block.UPDATE_CLIENTS);
-                if (baseStack.getCount() != player.getMainHandItem().getCount()) level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1.0F, 1.0F);
+                if (baseStack.getCount() != player.getMainHandItem().getCount()) level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.25F, 1.0F);
                 return InteractionResult.CONSUME;
             } else {
                 ItemEntity item = new ItemEntity(level, player.getX(), player.getY(), player.getZ(), be.getStack());

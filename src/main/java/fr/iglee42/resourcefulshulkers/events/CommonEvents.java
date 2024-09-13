@@ -1,6 +1,7 @@
 package fr.iglee42.resourcefulshulkers.events;
 
 import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
+import fr.iglee42.resourcefulshulkers.client.entites.CustomShulkerRenderer;
 import fr.iglee42.resourcefulshulkers.command.RSCommand;
 import fr.iglee42.resourcefulshulkers.entity.CustomShulker;
 import fr.iglee42.resourcefulshulkers.init.ModEntities;
@@ -8,6 +9,9 @@ import fr.iglee42.resourcefulshulkers.init.ModItems;
 import fr.iglee42.resourcefulshulkers.resourcepack.PackType;
 import fr.iglee42.resourcefulshulkers.resourcepack.TRSPackFinder;
 import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
+import fr.iglee42.resourcefulshulkers.utils.Type;
+import fr.iglee42.resourcefulshulkers.utils.TypesManager;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
@@ -28,10 +32,13 @@ public class CommonEvents {
 
         @SubscribeEvent
         public static void registerAttribute(EntityAttributeCreationEvent event) {
-            event.put(ModEntities.OVERWORLD_SHULKER.get(), CustomShulker.createAttributes().build());
-            event.put(ModEntities.SKY_SHULKER.get(), CustomShulker.createAttributes().build());
-            event.put(ModEntities.NETHER_SHULKER.get(), CustomShulker.createAttributes().build());
-            event.put(ModEntities.END_SHULKER.get(), CustomShulker.createAttributes().build());
+            //event.put(ModEntities.OVERWORLD_SHULKER.get(), CustomShulker.createAttributes().build());
+            //event.put(ModEntities.SKY_SHULKER.get(), CustomShulker.createAttributes().build());
+            //event.put(ModEntities.NETHER_SHULKER.get(), CustomShulker.createAttributes().build());
+            //event.put(ModEntities.END_SHULKER.get(), CustomShulker.createAttributes().build());
+            TypesManager.TYPES.stream().filter(Type::shouldCreateEntity).forEach(t->{
+                event.put(TypesManager.ENTITY_TYPES.get(t.id()).get(),  CustomShulker.createAttributes().build());
+            });
             ShulkersManager.TYPES.forEach(r->{
                 event.put(ShulkersManager.ENTITY_TYPES.get(r.id()).get(),CustomShulker.createAttributes().build());
             });

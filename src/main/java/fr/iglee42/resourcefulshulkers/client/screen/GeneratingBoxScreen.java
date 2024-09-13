@@ -49,11 +49,16 @@ public class GeneratingBoxScreen extends AbstractContainerScreen<GeneratingBoxMe
         graphics.blit(TEXTURE,x + 35,y +37,0,166,menu.getTile().getGeneratingTick(),8);
         renderTooltip(graphics, mouseX, mouseY);
         String generating = menu.getTile().getResourceGenerated().getItem() != Items.AIR ?"Generating : " + Component.translatable(menu.getTile().getResourceGenerated().getItem().getDescriptionId()).getString() : "Resource Not Found";
-        int xGeneratingPos = x + 78 + (generating.length() / 2);
-        graphics.drawCenteredString(font, generating, xGeneratingPos ,y + 40 , menu.getTile().getResourceGenerated().getItem()!= Items.AIR ? Color.GRAY.getRGB(): ChatFormatting.RED.getColor());
+        if (menu.getTile().isTimeInABottled()){
+            generating = "You can't time in bottle this block";
+        }
+        int xGeneratingPos = x + (imageWidth / 2);
+        graphics.drawCenteredString(font, generating, xGeneratingPos ,y + 40 , menu.getTile().getResourceGenerated().getItem()!= Items.AIR && !menu.getTile().isTimeInABottled() ? Color.GRAY.getRGB(): ChatFormatting.RED.getColor());
         String dura = menu.getTile().getRemainingDurability() > 0 ? "Durability : "  + menu.getTile().getRemainingDurability() + "/"+ GeneratingBoxBlockEntity.MAX_DURABILITY : "Reload Needed";
-        int xDuraPos = x + 78 + (dura.length() / 2);
-        graphics.drawCenteredString(font, dura, xDuraPos ,y + 5 ,menu.getTile().getRemainingDurability() > 0 ? Color.GRAY.getRGB() : ChatFormatting.RED.getColor());
+        int xDuraPos = x + (imageWidth / 2);
+        if (menu.getTile().isTimeInABottled())
+            dura = "CHEH !";
+        graphics.drawCenteredString(font, dura, xDuraPos ,y + 5 ,menu.getTile().getRemainingDurability() > 0 && !menu.getTile().isTimeInABottled()? Color.GRAY.getRGB() : ChatFormatting.RED.getColor());
     }
 
 

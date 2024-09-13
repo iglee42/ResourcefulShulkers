@@ -156,6 +156,12 @@ repositories {
         name "igleeRepoReleases"
         url "https://iglee.fr:8081/releases"
     }
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
 
 }
 
@@ -172,6 +178,8 @@ dependencies {
     runtimeOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}"))
 
     implementation fg.deobf("fr.iglee42:IgleeLib:${minecraft_version}-${lib_version}")
+
+    implementation fg.deobf("curse.maven:time-in-a-bottle-universal-895919:4744787")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }

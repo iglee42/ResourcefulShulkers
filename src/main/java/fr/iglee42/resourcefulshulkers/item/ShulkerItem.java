@@ -7,6 +7,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -24,9 +25,9 @@ import static net.minecraft.core.Direction.UP;
 
 public class ShulkerItem extends Item {
     private final EntityType shulkerType;
-    private final String type;
+    private final ResourceLocation type;
 
-    public ShulkerItem(Item.Properties props, EntityType shulkerType,String type) {
+    public ShulkerItem(Item.Properties props, EntityType shulkerType, ResourceLocation type) {
         super(props);
         this.shulkerType = shulkerType;
         this.type = type;
@@ -50,7 +51,7 @@ public class ShulkerItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack p_41421_, @Nullable Level p_41422_, List<Component> tooltips, TooltipFlag p_41424_) {
-        if (type != null && !type.isEmpty()){
+        if (type != null){
             tooltips.add(Component.translatable("tooltip.resourcefulshulkers.type", TypesManager.getTierDisplayName(type)).withStyle(ChatFormatting.GRAY));
         }
 
@@ -61,7 +62,7 @@ public class ShulkerItem extends Item {
         }        super.appendHoverText(p_41421_, p_41422_, tooltips, p_41424_);
     }
 
-    public String getType() {
+    public ResourceLocation getType() {
         return type;
     }
 }

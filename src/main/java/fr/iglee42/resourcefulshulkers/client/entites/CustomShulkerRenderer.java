@@ -3,7 +3,7 @@ package fr.iglee42.resourcefulshulkers.client.entites;
 import com.mojang.blaze3d.vertex.PoseStack;
 import javax.annotation.Nullable;
 
-import fr.iglee42.resourcefulshulkers.init.ModEntities;
+import fr.iglee42.resourcefulshulkers.entity.TypeShulker;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
 import fr.iglee42.resourcefulshulkers.entity.CustomShulker;
 import fr.iglee42.resourcefulshulkers.entity.ResourceShulker;
@@ -56,14 +56,15 @@ public class CustomShulkerRenderer extends MobRenderer<CustomShulker, CustomShul
 
    public static ResourceLocation getShulkerTexture(CustomShulker shulker) {
 
-      if (shulker.getType() == ModEntities.OVERWORLD_SHULKER.get()) return getBaseShulkerTexture("overworld");
-      if (shulker.getType() == ModEntities.SKY_SHULKER.get()) return getBaseShulkerTexture("sky");
-      if (shulker.getType() == ModEntities.NETHER_SHULKER.get()) return getBaseShulkerTexture("nether");
+      if (shulker instanceof TypeShulker) return getTypeShulkerTexture(shulker.getTypeId().getPath());
+      //if (shulker.getType() == ModEntities.OVERWORLD_SHULKER.get()) return getBaseShulkerTexture("overworld");
+      //if (shulker.getType() == ModEntities.SKY_SHULKER.get()) return getBaseShulkerTexture("sky");
+      //if (shulker.getType() == ModEntities.NETHER_SHULKER.get()) return getBaseShulkerTexture("nether");
       return shulker instanceof ResourceShulker ? getResourceTextureLocation(ShulkerType.getById(shulker.getTypeId())) : getTextureLocation(shulker.getColor());
    }
 
-   private static ResourceLocation getBaseShulkerTexture(String essence){
-      return new ResourceLocation(ResourcefulShulkers.MODID,"textures/entity/base_essence/"+essence+".png");
+   private static ResourceLocation getTypeShulkerTexture(String essence){
+      return new ResourceLocation(ResourcefulShulkers.MODID,"textures/entity/types/"+essence+".png");
    }
 
    public static ResourceLocation getResourceTextureLocation(ShulkerType r) {

@@ -21,7 +21,7 @@ public enum BaseTypes {
     CONSTANTAN("#forge:ingots/constantan", DyeColor.ORANGE,"AA7030","sky"),
     COPPER(Items.COPPER_INGOT, DyeColor.ORANGE,"C26B4C","overworld"),
     DIAMOND(Items.DIAMOND, DyeColor.LIGHT_BLUE,"65F5E3","end"),
-    DYE(ModItems.OMNI_DYE.get(), DyeColor.BLACK,"FFFFFF","sky"),
+    DYE(ModItems.OMNI_DYE.getId().toString(), DyeColor.BLACK,"FFFFFF","sky"),
     ELECTRUM("#forge:ingots/electrum", DyeColor.YELLOW,"C9B255","sky"),
     EMERALD(Items.EMERALD, DyeColor.LIME,"17DD62","end"),
     GOLD(Items.GOLD_INGOT, DyeColor.YELLOW,"FEE048","nether"),
@@ -77,7 +77,7 @@ public enum BaseTypes {
         obj.addProperty("shellItemColor",shellColor);
         obj.addProperty("texture",MODID + ":entity/mod_base/"+name().toLowerCase()+".png");
         obj.addProperty("boxTexture",MODID + ":entity/boxes/"+name().toLowerCase()+".png");
-        obj.addProperty("type",type);
+        obj.addProperty("type",MODID + ":"+ type);
         return new GsonBuilder().setPrettyPrinting().create().toJson(obj);
     }
 

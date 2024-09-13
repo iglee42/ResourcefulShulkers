@@ -75,8 +75,13 @@ public class CustomShulkerBullet extends Projectile {
         return target;
     }
 
+    public void setTarget(BlockPos target) {
+        this.target = target;
+    }
 
-
+    public void setCurrentMoveDirection(@Nullable Direction currentMoveDirection) {
+        this.currentMoveDirection = currentMoveDirection;
+    }
 
     public SoundSource getSoundSource() {
         return SoundSource.HOSTILE;
@@ -200,7 +205,7 @@ public class CustomShulkerBullet extends Projectile {
     }
 
     public void checkDespawn() {
-        if (this.level().getDifficulty() == Difficulty.PEACEFUL) {
+        if (getOwner().isRemoved()) {
             this.discard();
         }
 

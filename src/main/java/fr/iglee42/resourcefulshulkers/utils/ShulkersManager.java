@@ -11,7 +11,6 @@ import fr.iglee42.resourcefulshulkers.entity.ResourceShulker;
 import fr.iglee42.resourcefulshulkers.init.ModItems;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.Items;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.io.IOUtils;
@@ -50,7 +49,7 @@ public class ShulkersManager {
                     json = parser.parse(reader).getAsJsonObject();
                     if (json.get("id").getAsString().isEmpty()) throw new NullPointerException("The id can't be empty ! (" + file.getName() + ")" );
                     ShulkerType r = JsonHelper.createRecordFromJson(ShulkerType.class,json);
-                    if (!TypesManager.isTierExist(r.type())) continue;
+                    if (!TypesManager.doesTierExist(r.type())) continue;
                     TYPES.add(r);
                     FILES.put(file.getPath().replace(dir.getPath(),""),r.id());
                     reader.close();

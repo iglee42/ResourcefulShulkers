@@ -3,6 +3,7 @@ package fr.iglee42.resourcefulshulkers.blocks.entites;
 import fr.iglee42.igleelib.api.blockentities.SecondBlockEntity;
 import fr.iglee42.igleelib.api.utils.ModsUtils;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
+import fr.iglee42.resourcefulshulkers.ResourcefulShulkersConfig;
 import fr.iglee42.resourcefulshulkers.blocks.GeneratingBoxBlock;
 import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
 import fr.iglee42.resourcefulshulkers.init.ModItems;
@@ -13,12 +14,16 @@ import fr.iglee42.resourcefulshulkers.network.packets.GeneratingTickSyncS2CPacke
 import fr.iglee42.resourcefulshulkers.network.packets.GeneratorDurabilitySyncS2CPacket;
 import fr.iglee42.resourcefulshulkers.network.packets.ItemStackSyncS2CPacket;
 import fr.iglee42.resourcefulshulkers.utils.ShulkerType;
+import fr.iglee42.resourcefulshulkers.utils.TIABUtils;
 import fr.iglee42.resourcefulshulkers.utils.Upgrade;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -51,6 +56,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -68,6 +74,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     private ShulkerBoxBlockEntity.AnimationStatus animationStatus = ShulkerBoxBlockEntity.AnimationStatus.CLOSED;
     private float progress;
     private float progressOld;
+    private boolean isTimeinBottled;
 
     private ResourceLocation id;
 
@@ -127,15 +134,15 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     public static void tick(Level level, BlockPos blockPos, BlockState blockState,GeneratingBoxBlockEntity entity){
         SecondBlockEntity.tick(level,blockPos,blockState,entity);
         entity.updateAnimation(level,blockPos,blockState);
-        ModsUtils.debugSign(level,blockPos,entity.generatingTick+"",entity.inventory.getStackInSlot(1).getCount() + "",entity.getRemainingDurability() + "/"+ MAX_DURABILITY);
-/*        if (level.getBlockEntity(blockPos.west()) instanceof SignBlockEntity s){
-            s.setMessage(0,new TextComponent(entity.generatingTick + ""));
-            s.setMessage(1,new TextComponent(entity.inventory.getStackInSlot(1).getCount() + ""));
-            s.setMessage(2,new TextComponent(entity.getRemainingDurability() + "/"+ MAX_DURABILITY));
-        }*/
+        //ModsUtils.debugSign(level,blockPos,entity.generatingTick+"",entity.inventory.getStackInSlot(1).getCount() + "",entity.getRemainingDurability() + "/"+ MAX_DURABILITY);
         if (!level.isClientSide && entity.getResourceGenerated() != null && entity.getResourceGenerated().getItem() != Items.AIR) {
-            ModMessages.sendToClients(new GeneratingTickSyncS2CPacket(entity.generatingTick, blockPos));
-            ModMessages.sendToClients(new GeneratorDurabilitySyncS2CPacket(entity.remainingDurability, blockPos));
+            //ModMessages.sendToClients(new GeneratingTickSyncS2CPacket(entity.generatingTick, blockPos));
+            //ModMessages.sendToClients(new GeneratorDurabilitySyncS2CPacket(entity.remainingDurability, blockPos));
+            level.sendBlockUpdated(blockPos,blockState,blockState, GeneratingBoxBlock.UPDATE_CLIENTS);
+            if (ModList.get().isLoaded("tiab") && ResourcefulShulkersConfig.TIAB_PROTECTION.get()){
+                entity.isTimeinBottled = TIABUtils.checkTIAB(level,blockPos);
+            }
+            if (entity.isTimeinBottled) return;
             if (entity.remainingDurability > 0 && !entity.isInventoryFull()){
                 int slotWithSpeed = Upgrade.getFirstInventoryIndexWithUpgrade(entity.upgrades,Upgrade.SPEED);
                 entity.generatingTick += (1 + (slotWithSpeed == -1 ? 0 : entity.upgrades.getStackInSlot(slotWithSpeed).getCount()));
@@ -259,6 +266,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
         this.remainingDurability = tag.getInt("remainingDurability");
         this.generatingTick = tag.getInt("generatingTick");
         this.explosing = tag.getBoolean("isExplosing");
+        this.isTimeinBottled = tag.getBoolean("isTimeinBottled");
     }
 
 
@@ -266,12 +274,29 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
+        save(tag);
+    }
+
+    public void save(CompoundTag tag){
         tag.putString("resourceId",this.id.toString());
         tag.put("inventory", this.inventory.serializeNBT());
         tag.put("upgrades", this.upgrades.serializeNBT());
         tag.putInt("remainingDurability",this.remainingDurability);
         tag.putInt("generatingTick", this.generatingTick);
         tag.putBoolean("isExplosing",this.explosing);
+        tag.putBoolean("isTimeinBottled",this.isTimeinBottled);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        CompoundTag tag = new CompoundTag();
+        save(tag);
+        return tag;
+    }
+
+    @Override
+    public @Nullable Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     private void updateAnimation(Level p_155680_, BlockPos p_155681_, BlockState p_155682_) {
@@ -421,6 +446,14 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
             container.setItem((inventory.getSlots() -1) + i,upgrades.getStackInSlot(i));
         }
         Containers.dropContents(level,worldPosition,container);
+    }
+
+    public boolean isClosed(){
+        return animationStatus == ShulkerBoxBlockEntity.AnimationStatus.CLOSED;
+    }
+
+    public boolean isTimeInABottled() {
+        return isTimeinBottled;
     }
 }
 

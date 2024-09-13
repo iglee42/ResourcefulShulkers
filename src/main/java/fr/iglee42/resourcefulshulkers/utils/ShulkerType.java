@@ -14,7 +14,7 @@ import net.minecraftforge.registries.tags.ITagManager;
 
 import static net.minecraft.client.renderer.Sheets.SHULKER_SHEET;
 
-public record ShulkerType(ResourceLocation id, @DefaultParameter(stringValue = "minecraft:stone") String item, @DefaultParameter(stringValue = "black") String color, String shellItemColor, @DefaultParameter(stringValue = "minecraft:entity/shulker/shulker") String texture, @DefaultParameter(stringValue = "minecraft:entity/shulker/shulker") String boxTexture,@DefaultParameter(stringValue = "overworld") String type) {
+public record ShulkerType(ResourceLocation id, @DefaultParameter(stringValue = "minecraft:stone") String item, @DefaultParameter(stringValue = "black") String color, String shellItemColor, @DefaultParameter(stringValue = "minecraft:entity/shulker/shulker") String texture, @DefaultParameter(stringValue = "minecraft:entity/shulker/shulker") String boxTexture,ResourceLocation type) {
 
     public static ShulkerType getById(ResourceLocation id){
         return ShulkersManager.TYPES.stream().filter(r->r.id.equals(id)).findFirst().orElse(null);

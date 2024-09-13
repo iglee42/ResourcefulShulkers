@@ -2,6 +2,7 @@ package fr.iglee42.resourcefulshulkers.blocks.entites;
 
 import fr.iglee42.igleelib.api.blockentities.SecondBlockEntity;
 import fr.iglee42.igleelib.api.utils.ModsUtils;
+import fr.iglee42.resourcefulshulkers.ResourcefulShulkersConfig;
 import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
 import fr.iglee42.resourcefulshulkers.init.ModItems;
 import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
@@ -70,7 +71,7 @@ public class ShulkerAbsorberBlockEntity extends SecondBlockEntity {
             progress++;
             ((Shulker)getCurrentTarget()).setNoAi(true);
             level.sendBlockUpdated(blockPos,blockState,blockState,Block.UPDATE_CLIENTS);
-            ShulkerAuraManager.get(level).insertAura(blockPos, 128);
+            ShulkerAuraManager.get(level).insertAura(blockPos, ResourcefulShulkersConfig.ABSORBER_AURA.get() / MAX_PROGRESS);
             if (progress == MAX_PROGRESS){
                 getCurrentTarget().remove(Entity.RemovalReason.KILLED);
                 Block.popResource(level,blockPos.above(),new ItemStack(ModItems.SHULKER_HEAD.get()));

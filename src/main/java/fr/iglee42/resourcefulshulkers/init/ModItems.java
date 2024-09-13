@@ -57,14 +57,14 @@ public class ModItems {
         }
     });
     public static final RegistryObject<Item> SHULKER_ITEM = ITEMS.register("shulker_item", () -> new ShulkerItem(new Item.Properties(), EntityType.SHULKER,null));
-    public static final RegistryObject<Item> OVERWORLD_SHULKER_ITEM = ITEMS.register("overworld_shulker", () -> new ShulkerItem(new Item.Properties(),null,"elemental"));
-    public static final RegistryObject<Item> SKY_SHULKER_ITEM = ITEMS.register("sky_shulker", () -> new ShulkerItem(new Item.Properties(),null,"elemental"));
-    public static final RegistryObject<Item> NETHER_SHULKER_ITEM = ITEMS.register("nether_shulker", () -> new ShulkerItem(new Item.Properties(),null,"elemental"));
-    public static final RegistryObject<Item> END_SHULKER_ITEM = ITEMS.register("end_shulker", () -> new ShulkerItem(new Item.Properties(),null,"elemental" ));
-    public static final RegistryObject<Item> OVERWORLD_ESSENCE = ITEMS.register("overworld_essence", () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> SKY_ESSENCE = ITEMS.register("sky_essence", () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> NETHER_ESSENCE = ITEMS.register("nether_essence", () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> END_ESSENCE = ITEMS.register("end_essence", () -> new Item(new Item.Properties()));
+    //public static final RegistryObject<Item> OVERWORLD_SHULKER_ITEM = ITEMS.register("overworld_shulker", () -> new ShulkerItem(new Item.Properties(),null,"elemental"));
+    //public static final RegistryObject<Item> SKY_SHULKER_ITEM = ITEMS.register("sky_shulker", () -> new ShulkerItem(new Item.Properties(),null,"elemental"));
+    //public static final RegistryObject<Item> NETHER_SHULKER_ITEM = ITEMS.register("nether_shulker", () -> new ShulkerItem(new Item.Properties(),null,"elemental"));
+    //public static final RegistryObject<Item> END_SHULKER_ITEM = ITEMS.register("end_shulker", () -> new ShulkerItem(new Item.Properties(),null,"elemental" ));
+    //public static final RegistryObject<Item> OVERWORLD_ESSENCE = ITEMS.register("overworld_essence", () -> new Item(new Item.Properties()));
+    //public static final RegistryObject<Item> SKY_ESSENCE = ITEMS.register("sky_essence", () -> new Item(new Item.Properties()));
+    //public static final RegistryObject<Item> NETHER_ESSENCE = ITEMS.register("nether_essence", () -> new Item(new Item.Properties()));
+    //public static final RegistryObject<Item> END_ESSENCE = ITEMS.register("end_essence", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> BASE_ESSENCE = ITEMS.register("base_essence", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> OMNI_DYE = ITEMS.register("omni_dye", () -> new Item(new Item.Properties()));
 
@@ -108,6 +108,10 @@ public class ModItems {
     public static Item getShellById(ResourceLocation resourceId) {
         Optional<RegistryObject<Item>> item = ITEMS.getEntries().stream().filter(r->r.get() instanceof ShellItem s && s.getId() == resourceId).findFirst();
         return item.map(RegistryObject::get).orElse(Items.SHULKER_SHELL);
+    }
+
+    public static void createEssence(ResourceLocation id){
+        ITEMS.register(id.getPath()+"_essence", () -> new Item(new Item.Properties()));
     }
     public static void createShell(ResourceLocation id){
         ShulkerType res = ShulkerType.getById(id);

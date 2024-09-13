@@ -14,6 +14,8 @@ import fr.iglee42.resourcefulshulkers.menu.slot.BoxShellSlot;
 import fr.iglee42.resourcefulshulkers.menu.slot.BoxUpgradeSlot;
 import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
 import fr.iglee42.resourcefulshulkers.utils.SkullTypes;
+import fr.iglee42.resourcefulshulkers.utils.Type;
+import fr.iglee42.resourcefulshulkers.utils.TypesManager;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.model.SkullModel;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -73,10 +75,13 @@ public class ClientEvents {
     @SubscribeEvent
     public static <T extends Entity> void clientSetup(FMLClientSetupEvent event) {
         MenuScreens.register(ModBlockEntities.GENERATING_BOX_MENU.get(), GeneratingBoxScreen::new);
-        EntityRenderers.register(ModEntities.OVERWORLD_SHULKER.get(), CustomShulkerRenderer::new);
-        EntityRenderers.register(ModEntities.SKY_SHULKER.get(), CustomShulkerRenderer::new);
-        EntityRenderers.register(ModEntities.NETHER_SHULKER.get(), CustomShulkerRenderer::new);
-        EntityRenderers.register(ModEntities.END_SHULKER.get(), CustomShulkerRenderer::new);
+        //EntityRenderers.register(ModEntities.OVERWORLD_SHULKER.get(), CustomShulkerRenderer::new);
+        //EntityRenderers.register(ModEntities.SKY_SHULKER.get(), CustomShulkerRenderer::new);
+        //EntityRenderers.register(ModEntities.NETHER_SHULKER.get(), CustomShulkerRenderer::new);
+        //EntityRenderers.register(ModEntities.END_SHULKER.get(), CustomShulkerRenderer::new);
+        TypesManager.TYPES.stream().filter(Type::shouldCreateEntity).forEach(t->{
+            EntityRenderers.register(TypesManager.ENTITY_TYPES.get(t.id()).get(),CustomShulkerRenderer::new);
+        });
         ShulkersManager.TYPES.forEach(r->{
             EntityRenderers.register(ShulkersManager.ENTITY_TYPES.get(r.id()).get(), CustomShulkerRenderer::new);
             EntityRenderers.register(ShulkersManager.BULLET_TYPES.get(r.id()).get(), CustomShulkerBulletRenderer::new);

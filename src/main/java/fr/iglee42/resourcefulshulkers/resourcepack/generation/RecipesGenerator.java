@@ -11,11 +11,11 @@ public class RecipesGenerator {
     public static void generate() {
         ShulkersManager.TYPES.forEach(r->{
             if (r.item().startsWith("#")) {
-                generatingBoxWithTag(r.id().getPath().toLowerCase(),r.item().substring(1),r.type());
-                if (!r.id().getPath().equals("dye"))shulkerWithTag(r.id().getPath().toLowerCase(),r.item().substring(1),r.type());
+                generatingBoxWithTag(r.id().getPath().toLowerCase(),r.item().substring(1),r.type().getPath());
+                if (!r.id().getPath().equals("dye"))shulkerWithTag(r.id().getPath().toLowerCase(),r.item().substring(1),r.type().getPath());
             } else{
-                generatingBox(r.id().getPath().toLowerCase(),r.type());
-                if (!r.id().getPath().equals("dye"))shulker(r.id().getPath().toLowerCase(),r.item(),r.type());
+                generatingBox(r.id().getPath().toLowerCase(),r.type().getPath());
+                if (!r.id().getPath().equals("dye"))shulker(r.id().getPath().toLowerCase(),r.item(),r.type().getPath());
             }
         });
     }

@@ -13,8 +13,8 @@
     },
     {
       "type": "directory",
-      "source": "entity/base_essence",
-      "prefix": "entity/base_essence/"
+      "source": "entity/types",
+      "prefix": "entity/types/"
     },
     {
       "type": "directory",
