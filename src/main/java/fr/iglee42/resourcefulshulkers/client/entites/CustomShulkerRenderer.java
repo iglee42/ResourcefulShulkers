@@ -56,6 +56,7 @@ public class CustomShulkerRenderer extends MobRenderer<CustomShulker, CustomShul
 
    public static ResourceLocation getShulkerTexture(CustomShulker shulker) {
 
+      if (shulker.hasCustomName() && shulker.getCustomName().getString().equalsIgnoreCase("MLDEG")) return getTypeShulkerTexture("mldeg");
       if (shulker instanceof TypeShulker) return getTypeShulkerTexture(shulker.getTypeId().getPath());
       //if (shulker.getType() == ModEntities.OVERWORLD_SHULKER.get()) return getBaseShulkerTexture("overworld");
       //if (shulker.getType() == ModEntities.SKY_SHULKER.get()) return getBaseShulkerTexture("sky");
