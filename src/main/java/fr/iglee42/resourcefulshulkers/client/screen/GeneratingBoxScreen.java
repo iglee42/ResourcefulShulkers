@@ -59,6 +59,8 @@ public class GeneratingBoxScreen extends AbstractContainerScreen<GeneratingBoxMe
         if (menu.getTile().isTimeInABottled())
             dura = "CHEH !";
         graphics.drawCenteredString(font, dura, xDuraPos ,y + 5 ,menu.getTile().getRemainingDurability() > 0 && !menu.getTile().isTimeInABottled()? Color.GRAY.getRGB() : ChatFormatting.RED.getColor());
+        String duraAdded = "+"+menu.getTile().calculateAddedDurability();
+        graphics.drawString(font,duraAdded , x+150 - font.width(duraAdded) ,y + 58 , Color.GRAY.getRGB());
     }
 
 

@@ -72,6 +72,7 @@ public class ModItems {
     public static final RegistryObject<Item> SPEED_UPGRADE = ITEMS.register("speed_upgrade", ()-> new UpgradeItem(Upgrade.SPEED));
     public static final RegistryObject<Item> DURABILITY_UPGRADE = ITEMS.register("durability_upgrade", ()-> new UpgradeItem(Upgrade.DURABILITY));
     public static final RegistryObject<Item> QUANTITY_UPGRADE = ITEMS.register("quantity_upgrade", ()-> new UpgradeItem(Upgrade.QUANTITY));
+    public static final RegistryObject<Item> SHELL_UPGRADE = ITEMS.register("shell_upgrade", ()-> new UpgradeItem(Upgrade.SHELL));
     public static final RegistryObject<Item> SHULKER_HEAD = ITEMS.register("shulker_head", ()-> new StandingAndWallBlockItem(ModBlocks.SHULKER_HEAD.get(),ModBlocks.WALL_SHULKER_HEAD.get(), new Item.Properties(),Direction.DOWN){
         @Override
         public void onArmorTick(ItemStack stack, Level level, Player player) {

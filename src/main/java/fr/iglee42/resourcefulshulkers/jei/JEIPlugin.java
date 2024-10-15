@@ -1,5 +1,6 @@
 package fr.iglee42.resourcefulshulkers.jei;
 
+import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
 import fr.iglee42.resourcefulshulkers.init.ModBlocks;
 import fr.iglee42.resourcefulshulkers.init.ModItems;
 import fr.iglee42.resourcefulshulkers.jei.recipes.InputOutputRecipe;
@@ -61,11 +62,13 @@ public class JEIPlugin implements IModPlugin {
                 new ArrayList<>(rm.getAllRecipesFor(ShulkerItemInfusionRecipe.Type.INSTANCE)));
         registration.getIngredientManager().removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK, Arrays.asList(new ItemStack(ModItems.SHULKER_KILLER.get())));
         ShulkersManager.TYPES.stream().filter(t->t.getItem() == Items.AIR).forEach(t-> registration.getIngredientManager().removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK,Arrays.asList(new ItemStack(ModItems.getShellById(t.id())), new ItemStack(ModBlocks.getBoxById(t.id())), new ItemStack(ModItems.getShulkerItemById(t.id())))));
-        List<IJeiInputOutputRecipe> shulkersOutputRecipes = new ArrayList<>();
-        ShulkersManager.TYPES.forEach(s->{
-            if (s.getItem() != Items.AIR)shulkersOutputRecipes.add(new InputOutputRecipe(Ingredient.of(ModBlocks.getBoxById(s.id())),Ingredient.of(s.getItem())));
-        });
-        registration.addRecipes(BoxOutputRecipeCategory.RECIPE_TYPE,shulkersOutputRecipes);
+        if (registration.getJeiHelpers().getRecipeType(new ResourceLocation(ResourcefulShulkers.MODID, "box_output")).isPresent()){
+            List<IJeiInputOutputRecipe> shulkersOutputRecipes = new ArrayList<>();
+            ShulkersManager.TYPES.forEach(s->{
+                if (s.getItem() != Items.AIR)shulkersOutputRecipes.add(new InputOutputRecipe(Ingredient.of(ModBlocks.getBoxById(s.id())),Ingredient.of(s.getItem())));
+            });
+            registration.addRecipes(BoxOutputRecipeCategory.RECIPE_TYPE,shulkersOutputRecipes);
+        }
         List<IJeiInputOutputRecipe> shellOutputRecipes = new ArrayList<>();
         ShulkersManager.TYPES.forEach(s->{
             if (s.getItem() != Items.AIR)shellOutputRecipes.add(new InputOutputRecipe(Ingredient.of(ModItems.getShulkerItemById(s.id())),Ingredient.of(ModItems.getShellById(s.id()))));

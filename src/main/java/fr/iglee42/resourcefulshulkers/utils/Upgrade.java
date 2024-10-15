@@ -13,6 +13,7 @@ public enum Upgrade {
     SPEED(),
     DURABILITY(),
     QUANTITY(),
+    SHELL(),
 
     ;
     public static final int MAX = 4;

@@ -175,14 +175,28 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     @Override
     protected void second(Level level, BlockPos blockPos, BlockState blockState, SecondBlockEntity be) {
         if (!level.isClientSide && getResourceGenerated() != null && getResourceGenerated().getItem() != Items.AIR){
-            if (remainingDurability <= (MAX_DURABILITY - SHELL_DURABILITY_ADDED)){
+            int addedDurability = calculateAddedDurability();
+            if (remainingDurability <= (MAX_DURABILITY - addedDurability)){
                 if(!inventory.getStackInSlot(0).isEmpty()){
-                    remainingDurability = remainingDurability + SHELL_DURABILITY_ADDED;
+                    remainingDurability = remainingDurability + addedDurability;
                     inventory.getStackInSlot(0).setCount(inventory.getStackInSlot(0).getCount() - 1);
                 }
             }
         }
 
+    }
+
+    public int calculateAddedDurability(){
+        if ( getResourceGenerated() == null || getResourceGenerated().getItem() == Items.AIR) return SHELL_DURABILITY_ADDED;
+        int slotWithUpgrade = Upgrade.getFirstInventoryIndexWithUpgrade(upgrades,Upgrade.SHELL);
+        if ( slotWithUpgrade == -1 )return SHELL_DURABILITY_ADDED;
+        return (int) (SHELL_DURABILITY_ADDED * switch (upgrades.getStackInSlot(slotWithUpgrade).getCount()){
+            case 1 -> 1.5;
+            case 2 -> 2;
+            case 3 -> 2.5;
+            case 4 -> 3;
+            default -> 1;
+        });
     }
 
     private void addItems() {
