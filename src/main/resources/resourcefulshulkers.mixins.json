@@ -5,7 +5,6 @@
   "refmap": "resourcefulshulkers.refmap.json",
   "mixins": [
     "LevelMixin",
-    "ResourcePackLoaderMixin",
     "SheetsMixin"
   ],
   "client": [

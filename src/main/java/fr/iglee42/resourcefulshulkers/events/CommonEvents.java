@@ -1,27 +1,24 @@
 package fr.iglee42.resourcefulshulkers.events;
 
 import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
-import fr.iglee42.resourcefulshulkers.client.entites.CustomShulkerRenderer;
 import fr.iglee42.resourcefulshulkers.command.RSCommand;
 import fr.iglee42.resourcefulshulkers.entity.CustomShulker;
-import fr.iglee42.resourcefulshulkers.init.ModEntities;
 import fr.iglee42.resourcefulshulkers.init.ModItems;
-import fr.iglee42.resourcefulshulkers.resourcepack.PackType;
-import fr.iglee42.resourcefulshulkers.resourcepack.TRSPackFinder;
+import fr.iglee42.resourcefulshulkers.resourcepack.RSPackFinder;
 import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
 import fr.iglee42.resourcefulshulkers.utils.Type;
 import fr.iglee42.resourcefulshulkers.utils.TypesManager;
-import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.server.ServerAboutToStartEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
 
@@ -44,10 +41,16 @@ public class CommonEvents {
             });
         }
 
+        @SubscribeEvent
+        public static void registerPackRepo(AddPackFindersEvent event){
+            if (event.getPackType() == PackType.CLIENT_RESOURCES) event.addRepositorySource(new RSPackFinder(fr.iglee42.resourcefulshulkers.resourcepack.PackType.RESOURCE));
+            else event.addRepositorySource(new RSPackFinder(fr.iglee42.resourcefulshulkers.resourcepack.PackType.DATA));
+        }
+
 
     }
 
-    @EventBusSubscriber(modid = MODID,bus = EventBusSubscriber.Bus.FORGE)
+    @EventBusSubscriber(modid = MODID,bus = EventBusSubscriber.Bus.GAME)
     public static class Forge{
 
         @SubscribeEvent
@@ -59,20 +62,11 @@ public class CommonEvents {
         }
 
         @SubscribeEvent
-        public static void onServerStart(final ServerAboutToStartEvent event) {
-            event.getServer().getPackRepository().addPackFinder(new TRSPackFinder(PackType.DATA));
-        }
-
-        @SubscribeEvent
-        public static void onWorldTick(TickEvent.LevelTickEvent event) {
-            if (event.level.isClientSide) {
+        public static void onWorldTick(LevelTickEvent.Post event) {
+            if (event.getLevel().isClientSide)
                 return;
-            }
-            if (event.phase == TickEvent.Phase.START) {
-                return;
-            }
-            ShulkerAuraManager manager = ShulkerAuraManager.get(event.level);
-            manager.tick(event.level);
+            ShulkerAuraManager manager = ShulkerAuraManager.get(event.getLevel());
+            manager.tick(event.getLevel());
         }
         @SubscribeEvent
         public static void commandRegister(RegisterCommandsEvent event){

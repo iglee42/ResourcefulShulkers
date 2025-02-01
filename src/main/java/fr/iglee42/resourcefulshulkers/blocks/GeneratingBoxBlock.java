@@ -1,11 +1,12 @@
 package fr.iglee42.resourcefulshulkers.blocks;
 
-import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
 import fr.iglee42.resourcefulshulkers.blocks.entites.GeneratingBoxBlockEntity;
+import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
+import fr.iglee42.resourcefulshulkers.init.ModComponents;
+import fr.iglee42.resourcefulshulkers.item.GeneratingBoxItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.piglin.PiglinAi;
@@ -13,13 +14,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
@@ -27,10 +28,9 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
-public class GeneratingBoxBlock extends BaseEntityBlock {
+public class GeneratingBoxBlock extends Block implements EntityBlock {
 
 
     private final ResourceLocation id;
@@ -55,16 +55,18 @@ public class GeneratingBoxBlock extends BaseEntityBlock {
         if (level.isClientSide) return;
         if (stack == null) return;
         if (level.getBlockEntity(pos) instanceof GeneratingBoxBlockEntity be) {
-            be.setDurability(stack.getOrCreateTag().getInt("durability"));
+            be.setDurability(GeneratingBoxItem.getDurability(stack));
         }
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
         ItemStack stack = super.getCloneItemStack(state, target, level, pos, player);
-        if (level.getBlockEntity(pos) instanceof GeneratingBoxBlockEntity be) stack.getOrCreateTag().putInt("durability",be.getRemainingDurability());
+        if (level.getBlockEntity(pos) instanceof GeneratingBoxBlockEntity be) stack.set(ModComponents.DURABILITY.get(),be.getRemainingDurability());
         return stack;
     }
+
+
 
     @Override
     public PushReaction getPistonPushReaction(BlockState p_60584_) {
@@ -77,7 +79,7 @@ public class GeneratingBoxBlock extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState p_56227_, Level p_56228_, BlockPos p_56229_, Player p_56230_, InteractionHand p_56231_, BlockHitResult p_56232_) {
+    protected InteractionResult useWithoutItem(BlockState p_56227_, Level p_56228_, BlockPos p_56229_, Player p_56230_, BlockHitResult p_56232_) {
         if (p_56228_.isClientSide) {
             return InteractionResult.SUCCESS;
         } else if (p_56230_.isSpectator()) {
@@ -86,7 +88,7 @@ public class GeneratingBoxBlock extends BaseEntityBlock {
             BlockEntity blockentity = p_56228_.getBlockEntity(p_56229_);
             if (blockentity instanceof GeneratingBoxBlockEntity) {
                 GeneratingBoxBlockEntity be = (GeneratingBoxBlockEntity)blockentity;
-                NetworkHooks.openScreen((ServerPlayer) p_56230_,be,buf->buf.writeBlockPos(p_56229_));
+                ((ServerPlayer)p_56230_).openMenu(be,w->w.writeBlockPos(p_56229_));
                 PiglinAi.angerNearbyPiglins(p_56230_, true);
                 return InteractionResult.CONSUME;
             } else {
@@ -94,9 +96,6 @@ public class GeneratingBoxBlock extends BaseEntityBlock {
             }
         }
     }
-
-
-
 
     @Nullable
     @Override
@@ -110,7 +109,7 @@ public class GeneratingBoxBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<T> type) {
-        return createTickerHelper(type, ModBlockEntities.GENERATING_BOX_BLOCK_ENTITY.get(),GeneratingBoxBlockEntity::tick);
+        return type.equals(ModBlockEntities.GENERATING_BOX_BLOCK_ENTITY.get()) ? ((level, blockPos, blockState, t) -> ((GeneratingBoxBlockEntity)t).tick(level,blockPos,blockState)) : null;
     }
 
 

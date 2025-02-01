@@ -1,11 +1,13 @@
 package fr.iglee42.resourcefulshulkers.item;
 
 import fr.iglee42.resourcefulshulkers.blocks.entites.GeneratingBoxBlockEntity;
+import fr.iglee42.resourcefulshulkers.init.ModComponents;
 import fr.iglee42.resourcefulshulkers.utils.ShulkerType;
 import fr.iglee42.resourcefulshulkers.utils.TypesManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.BlockItem;
@@ -43,17 +45,16 @@ public class GeneratingBoxItem extends BlockItem {
         return Math.round((float)getDurability(stack) * 13.0F / (float)GeneratingBoxBlockEntity.MAX_DURABILITY);
     }
 
-    public int getDurability(ItemStack stack){
-        CompoundTag tags = stack.getOrCreateTag();
-        if (tags.contains("durability")) return tags.getInt("durability");
-        tags.putInt("durability",256);
-        stack.setTag(tags);
+    public static int getDurability(ItemStack stack){
+        if (stack.has(ModComponents.DURABILITY.get())) return stack.get(ModComponents.DURABILITY.get()).intValue();
+        stack.set(ModComponents.DURABILITY.get(),GeneratingBoxBlockEntity.MAX_DURABILITY);
         return 256;
     }
 
     @Override
-    public void appendHoverText(ItemStack p_41421_, @Nullable Level p_41422_, List<Component> tooltips, TooltipFlag p_41424_) {
+    public void appendHoverText(ItemStack p_41421_, @Nullable TooltipContext p_41422_, List<Component> tooltips, TooltipFlag p_41424_) {
         tooltips.add(Component.translatable("tooltip.resourcefulshulkers.type", TypesManager.getTierDisplayName(ShulkerType.getById(id).type())).withStyle(ChatFormatting.GRAY));
+        tooltips.add(Component.translatable("tooltip.resourcefulshulkers.remaining_durability",Component.literal(String.valueOf(getDurability(p_41421_))).withStyle(Style.EMPTY.withColor(getBarColor(p_41421_))),GeneratingBoxBlockEntity.MAX_DURABILITY).withStyle(ChatFormatting.GRAY));
         super.appendHoverText(p_41421_, p_41422_, tooltips, p_41424_);
     }
 

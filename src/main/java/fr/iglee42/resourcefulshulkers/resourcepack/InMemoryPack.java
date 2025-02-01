@@ -3,16 +3,18 @@ package fr.iglee42.resourcefulshulkers.resourcepack;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Pair;
+import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
 import fr.iglee42.resourcefulshulkers.resourcepack.generation.*;
-import net.minecraft.client.Minecraft;
+import net.minecraft.SharedConstants;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
-import net.minecraft.server.packs.repository.PackRepository;
+import net.minecraft.server.packs.repository.KnownPack;
+import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,10 +33,12 @@ public class InMemoryPack implements PackResources {
     private static boolean hasGenerated = false;
 
     //RESOURCE PACK FIELDS
+    private final PackType type;
     private final Path path;
 
     //CONSTRUCTOR
-    public InMemoryPack(Path rootPath) {
+    public InMemoryPack(PackType type,Path rootPath) {
+        this.type = type;
         this.path = rootPath;
         generateData();
     }
@@ -42,9 +46,6 @@ public class InMemoryPack implements PackResources {
     //STATIC METHODS
     public static void generateData() {
         if (!hasGenerated) {
-            if (!ModLoader.isLoadingStateValid()) {
-                return;
-            }
             ModelsGenerator.generate();
             BlockStatesGenerator.generate();
             LangsGenerator.generate();
@@ -56,11 +57,6 @@ public class InMemoryPack implements PackResources {
         }
     }
 
-    public static void injectDatapackFinder(PackRepository resourcePacks) {
-        if (DistExecutor.unsafeRunForDist(() -> () -> resourcePacks != Minecraft.getInstance().getResourcePackRepository(), () -> () -> true)) {
-            resourcePacks.addPackFinder(new TRSPackFinder(fr.iglee42.resourcefulshulkers.resourcepack.PackType.DATA));
-        }
-    }
 
     //RESOURCE PACK METHODS
 
@@ -101,7 +97,7 @@ public class InMemoryPack implements PackResources {
             Stream<Path> list = Files.list(current);
             for (Path child : list.toList()) {
                 if (!Files.isDirectory(child)) {
-                    result.add(new Pair<>(new ResourceLocation(currentRLNS, currentRLPath + "/" + child.getFileName()), child.toString()));
+                    result.add(new Pair<>(ResourceLocation.fromNamespaceAndPath(currentRLNS, currentRLPath + "/" + child.getFileName()), child.toString()));
                     continue;
                 }
                 getChildResourceLocations(result, depth + 1, filter, child, currentRLNS,  currentRLPath + "/" + child.getFileName());
@@ -157,5 +153,17 @@ public class InMemoryPack implements PackResources {
     @Override
     public void close() {
 
+    }
+
+
+    public static PackLocationInfo getPackInfo(PackType type){
+        return new PackLocationInfo(
+                "rs_"+type.getDirectory().toLowerCase(), Component.literal("RS Builtin Pack"), PackSource.BUILT_IN, Optional.of(new KnownPack(ResourcefulShulkers.MODID,type.getDirectory().toLowerCase(), SharedConstants.getCurrentVersion().getId()))
+        );
+    }
+
+    @Override
+    public PackLocationInfo location() {
+        return getPackInfo(type);
     }
 }

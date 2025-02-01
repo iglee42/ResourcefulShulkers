@@ -7,6 +7,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.Nullable;
@@ -28,10 +29,12 @@ public class BigItemstackRenderer implements IIngredientRenderer<ItemStack> {
 
     }
 
+
+
     public List<Component> getTooltip(ItemStack ingredient, TooltipFlag tooltipFlag) {
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
-        return ingredient.getTooltipLines(player, tooltipFlag);
+        return ingredient.getTooltipLines(Item.TooltipContext.of(player.level()),player, tooltipFlag);
     }
 
     public Font getFontRenderer(Minecraft minecraft, ItemStack ingredient) {

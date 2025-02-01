@@ -6,6 +6,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
@@ -32,7 +33,7 @@ public class PurpurTargetBlock extends TargetBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack p_49816_, BlockGetter p_49817_, List<Component> tooltips, TooltipFlag p_49819_) {
+    public void appendHoverText(ItemStack p_49816_, Item.TooltipContext p_49817_, List<Component> tooltips, TooltipFlag p_49819_) {
 
         if (Screen.hasShiftDown()){
             tooltips.add(Component.translatable("tooltip.resourcefulshulkers.purpur_target").withStyle(ChatFormatting.DARK_PURPLE));

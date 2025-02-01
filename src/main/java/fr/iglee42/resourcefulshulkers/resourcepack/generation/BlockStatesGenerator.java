@@ -19,13 +19,14 @@ public class BlockStatesGenerator {
     private static void generatingBox(String name){
         try {
             FileWriter writer = new FileWriter(new File(PathConstant.BLOCK_STATES_PATH.toFile(), name+"_generating_box.json"));
-            writer.write("{\n" +
-                    "  \"variants\": {\n" +
-                    "    \"\": {\n" +
-                    "      \"model\": \"minecraft:block/shulker_box\"\n" +
-                    "    }\n" +
-                    "  }\n" +
-                    "}");
+            writer.write("""
+                    {
+                      "variants": {
+                        "": {
+                          "model": "minecraft:block/shulker_box"
+                        }
+                      }
+                    }""");
             writer.close();
         } catch (Exception exception){
             ResourcefulShulkers.LOGGER.error("An error was detected when blockstates generating",exception);

@@ -18,17 +18,15 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class CustomShulkerRenderer extends MobRenderer<CustomShulker, CustomShulkerModel<CustomShulker>> {
-   private static final ResourceLocation DEFAULT_TEXTURE_LOCATION = new ResourceLocation("textures/" + Sheets.DEFAULT_SHULKER_TEXTURE_LOCATION.texture().getPath() + ".png");
+   private static final ResourceLocation DEFAULT_TEXTURE_LOCATION = ResourceLocation.withDefaultNamespace("textures/" + Sheets.DEFAULT_SHULKER_TEXTURE_LOCATION.texture().getPath() + ".png");
    public static final ResourceLocation[] TEXTURE_LOCATION = Sheets.SHULKER_TEXTURE_LOCATION.stream().map((p_115919_) -> {
-      return new ResourceLocation("textures/" + p_115919_.texture().getPath() + ".png");
-   }).toArray((p_115877_) -> {
-      return new ResourceLocation[p_115877_];
-   });
+      return ResourceLocation.withDefaultNamespace("textures/" + p_115919_.texture().getPath() + ".png");
+   }).toArray(ResourceLocation[]::new);
 
    public CustomShulkerRenderer(EntityRendererProvider.Context p_174370_) {
       super(p_174370_, new CustomShulkerModel<>(p_174370_.bakeLayer(ModelLayers.SHULKER)), 0.0F);
@@ -65,20 +63,22 @@ public class CustomShulkerRenderer extends MobRenderer<CustomShulker, CustomShul
    }
 
    private static ResourceLocation getTypeShulkerTexture(String essence){
-      return new ResourceLocation(ResourcefulShulkers.MODID,"textures/entity/types/"+essence+".png");
+      return ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID,"textures/entity/types/"+essence+".png");
    }
 
    public static ResourceLocation getResourceTextureLocation(ShulkerType r) {
-      return new ResourceLocation(ResourcefulShulkers.MODID,"textures/"+r.getTexture().getPath());
+      return ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID,"textures/"+r.getTexture().getPath());
    }
    public static ResourceLocation getTextureLocation(@Nullable DyeColor p_174376_) {
       return p_174376_ == null ? DEFAULT_TEXTURE_LOCATION : TEXTURE_LOCATION[p_174376_.getId()];
    }
 
-   protected void setupRotations(CustomShulker p_115907_, PoseStack p_115908_, float p_115909_, float p_115910_, float p_115911_) {
-      super.setupRotations(p_115907_, p_115908_, p_115909_, p_115910_ + 180.0F, p_115911_);
-      p_115908_.translate(0.0D, 0.5D, 0.0D);
-      p_115908_.mulPose(p_115907_.getAttachFace().getOpposite().getRotation());
-      p_115908_.translate(0.0D, -0.5D, 0.0D);
+   @Override
+   protected void setupRotations(CustomShulker p_115317_, PoseStack p_115318_, float p_115319_, float p_115320_, float p_115321_, float p_320045_) {
+      super.setupRotations(p_115317_, p_115318_, p_115319_, p_115320_, p_115321_, p_320045_);
+      p_115318_.translate(0.0D, 0.5D, 0.0D);
+      p_115318_.mulPose(p_115317_.getAttachFace().getOpposite().getRotation());
+      p_115318_.translate(0.0D, -0.5D, 0.0D);
    }
+
 }

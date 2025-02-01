@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " D ",
+    "ISI",
+    " D "
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "I": {
+      "tag": "c:ingots/iron"
+    },
+    "S": {
+      "item": "igleelib:blaze_shard"
+    }
+  },
+  "result": {
+    "id": "resourcefulshulkers:base_essence",
+    "count": 2
+  }
+}

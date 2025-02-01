@@ -3,14 +3,17 @@ package fr.iglee42.resourcefulshulkers.utils;
 import fr.iglee42.igleelib.api.utils.DefaultParameter;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
 import net.minecraft.client.resources.model.Material;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.tags.ITag;
-import net.minecraftforge.registries.tags.ITagManager;
+
+
+import java.util.List;
 
 import static net.minecraft.client.renderer.Sheets.SHULKER_SHEET;
 
@@ -21,10 +24,10 @@ public record ShulkerType(ResourceLocation id, @DefaultParameter(stringValue = "
     }
 
     public Material getMaterial(){
-        return new Material(SHULKER_SHEET,new ResourceLocation(ResourcefulShulkers.MODID,getTexture().getPath().replace(".png","")));
+        return new Material(SHULKER_SHEET,ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID,getTexture().getPath().replace(".png","")));
     }
     public Material getBoxMaterial(){
-        return new Material(SHULKER_SHEET,new ResourceLocation(ResourcefulShulkers.MODID,getBoxTexture().getPath().replace(".png","")));
+        return new Material(SHULKER_SHEET,ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID,getBoxTexture().getPath().replace(".png","")));
     }
 
     public DyeColor getColor() {
@@ -34,23 +37,22 @@ public record ShulkerType(ResourceLocation id, @DefaultParameter(stringValue = "
         return Integer.parseInt(shellItemColor,16);
     }
 
-    public Item getItem(){
+    public List<Item> getItems(){
         if (item.startsWith("#")){
-            ITagManager<Item> tagManager = ForgeRegistries.ITEMS.tags();
-            TagKey<Item> tagKey = tagManager.createTagKey(new ResourceLocation(item.substring(1)));
-            ITag<Item> tag = tagManager.getTag(tagKey);
-            return tag.isEmpty() ? Items.AIR : tag.stream().toList().get(0);
+            TagKey<Item> tagKey = TagKey.create(BuiltInRegistries.ITEM.key(),ResourceLocation.parse(item.substring(1)));
+            HolderSet.Named<Item> tag = BuiltInRegistries.ITEM.getOrCreateTag(tagKey);
+            return tag.stream().count() == 0 ? List.of(Items.AIR) : tag.stream().map(Holder::value).toList();
         } else {
-            return ForgeRegistries.ITEMS.getValue(new ResourceLocation(item));
+            return List.of(BuiltInRegistries.ITEM.get(ResourceLocation.parse(item)));
         }
     }
 
     public ResourceLocation getTexture(){
-        return texture != null ? new ResourceLocation(texture) : new ResourceLocation(ResourcefulShulkers.MODID,"entity/mod_base/"+id.getPath().toLowerCase()+".png");
+        return texture != null ? ResourceLocation.parse(texture) : ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID,"entity/mod_base/"+id.getPath().toLowerCase()+".png");
     }
 
     public ResourceLocation getBoxTexture(){
-        return boxTexture != null ? new ResourceLocation(boxTexture) : new ResourceLocation(ResourcefulShulkers.MODID,"entity/boxes/"+id.getPath().toLowerCase()+".png");
+        return boxTexture != null ? ResourceLocation.parse(boxTexture) : ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID,"entity/boxes/"+id.getPath().toLowerCase()+".png");
     }
 
 }

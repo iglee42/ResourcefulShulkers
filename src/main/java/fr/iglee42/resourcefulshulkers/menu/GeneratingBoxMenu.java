@@ -16,8 +16,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import org.jetbrains.annotations.NotNull;
 
 public class GeneratingBoxMenu extends AbstractContainerMenu {
 
@@ -33,17 +35,16 @@ public class GeneratingBoxMenu extends AbstractContainerMenu {
         this.blockEntity = (GeneratingBoxBlockEntity) entity;
         this.level = playerInv.player.level();
         blockEntity.startOpen(playerInv.player);
-        blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.UP).ifPresent(h->{
-            for (int u = 0; u < 4; ++u){
-                this.addSlot(new BoxUpgradeSlot(h,u,8+u*18,18*3));
-            }
-        });
-        blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(h->{
-            this.addSlot(new BoxShellSlot(h,0,8+8*18,18*3,blockEntity.getResourceGenerated().id()));
-            for(int l = 0; l < 9; ++l) {
-                this.addSlot(new SlotItemHandler(h, l + 1, 8 + l * 18, 18));
-            }
-        });
+        IItemHandler upgrades = blockEntity.getUpgrades();
+        for (int u = 0; u < 4; ++u){
+            this.addSlot(new BoxUpgradeSlot(upgrades,u,8+u*18,18*3));
+        }
+        IItemHandler items = blockEntity.getInventory();
+
+        this.addSlot(new BoxShellSlot(items,0,8+8*18,18*3,blockEntity.getResourceGenerated().id()));
+        for(int l = 0; l < 9; ++l) {
+            this.addSlot(new SlotItemHandler(items, l + 1, 8 + l * 18, 18));
+        }
 
         for(int i1 = 0; i1 < 3; ++i1) {
             for(int k1 = 0; k1 < 9; ++k1) {
@@ -70,16 +71,19 @@ public class GeneratingBoxMenu extends AbstractContainerMenu {
 
 
     @Override
-    public ItemStack quickMoveStack(Player playerIn, int index) {
+    public @NotNull ItemStack quickMoveStack(Player playerIn, int index) {
         Slot sourceSlot = slots.get(index);
-        if (sourceSlot == null || !sourceSlot.hasItem()) return ItemStack.EMPTY;  //EMPTY_ITEM
+        if (!sourceSlot.hasItem()) return ItemStack.EMPTY;  //EMPTY_ITEM
         ItemStack sourceStack = sourceSlot.getItem();
         ItemStack copyOfSourceStack = sourceStack.copy();
 
-        if (index < TE_INVENTORY_FIRST_SLOT_INDEX + TE_EXTRACTABLE_INVENTORY_SLOT_COUNT){
+        //MOVE FROM BE
+        if (index >= TE_INVENTORY_FIRST_SLOT_INDEX && index < VANILLA_FIRST_SLOT_INDEX){
             if (!moveItemStackTo(sourceStack,VANILLA_FIRST_SLOT_INDEX, VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT,false))
                 return ItemStack.EMPTY;
-        } else if (index >= VANILLA_FIRST_SLOT_INDEX && index < VANILLA_FIRST_SLOT_INDEX+VANILLA_SLOT_COUNT) {
+        }
+        //MOVE TO BE
+        else if (index >= VANILLA_FIRST_SLOT_INDEX && index < VANILLA_FIRST_SLOT_INDEX+VANILLA_SLOT_COUNT) {
             if (!moveItemStackTo(sourceStack,TE_INVENTORY_FIRST_SLOT_INDEX, TE_INVENTORY_FIRST_SLOT_INDEX + TE_INSERTABLE_INVENTORY_SLOT_COUNT,false))
                 return ItemStack.EMPTY;
         } else {
@@ -88,14 +92,14 @@ public class GeneratingBoxMenu extends AbstractContainerMenu {
         }
 
 
-        // If stack size == 0 (the entire stack was moved) set slot contents to null
+        // If stack size == 0 (the entire stack was moved) set aura contents to null
         if (sourceStack.getCount() == 0) {
             sourceSlot.set(ItemStack.EMPTY);
         } else {
             sourceSlot.setChanged();
         }
         sourceSlot.onTake(playerIn, sourceStack);
-        return copyOfSourceStack;
+        return ItemStack.EMPTY;
     }
 
 

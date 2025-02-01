@@ -1,0 +1,11 @@
+{
+  "type": "resourcefulshulkers:shulker_environment_infusion",
+  "baseEntity": "minecraft:shulker",
+  "resultEntity": "resourcefulshulkers:end_shulker",
+  "biomes": [
+    "#minecraft:is_end"
+  ],
+  "particle": {
+    "item": "minecraft:end_stone"
+  }
+}

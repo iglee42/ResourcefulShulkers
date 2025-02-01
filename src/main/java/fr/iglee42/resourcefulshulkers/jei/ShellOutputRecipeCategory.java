@@ -17,19 +17,19 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class ShellOutputRecipeCategory implements IRecipeCategory<IJeiInputOutputRecipe> {
 
     public static final RecipeType<IJeiInputOutputRecipe> RECIPE_TYPE = RecipeType.create(ResourcefulShulkers.MODID, "shell_output",
             InputOutputRecipe.class);
 
-    public final static ResourceLocation ARROW = new ResourceLocation(ResourcefulShulkers.MODID, "textures/gui/arrow.png");
+    public final static ResourceLocation ARROW =  ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID, "textures/gui/arrow.png");
 
     private final IDrawable background;
     private final IDrawable icon;
@@ -67,8 +67,8 @@ public class ShellOutputRecipeCategory implements IRecipeCategory<IJeiInputOutpu
     public void draw(IJeiInputOutputRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
         guiGraphics.blit(ARROW,52,2,5,0,55,15,60,15);
         float scale = 16f, yaw = -25.0f, pitch = -29.0f;
-        if (ForgeRegistries.ENTITY_TYPES.getValue(ForgeRegistries.ITEMS.getKey(recipe.getInput().getItems()[0].getItem())).create(Minecraft.getInstance().level) instanceof LivingEntity e) {
-            ShulkerEnvironnementInfusionRecipeCategory.renderEntity(guiGraphics, 38, 17, scale, yaw, pitch, e);
+        if (BuiltInRegistries.ENTITY_TYPE.get(BuiltInRegistries.ITEM.getKey(recipe.getInput().getItems()[0].getItem())).create(Minecraft.getInstance().level) instanceof LivingEntity e) {
+            ShulkerEnvironmentInfusionRecipeCategory.renderEntity(guiGraphics, 38, 17, scale, yaw, pitch, e);
         }
     }
 

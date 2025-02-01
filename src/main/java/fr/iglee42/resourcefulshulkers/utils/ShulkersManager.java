@@ -11,8 +11,8 @@ import fr.iglee42.resourcefulshulkers.entity.ResourceShulker;
 import fr.iglee42.resourcefulshulkers.init.ModItems;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 
@@ -28,8 +28,8 @@ public class ShulkersManager {
 
     public static List<ShulkerType> TYPES = new ArrayList<>();
     public static Map<String, ResourceLocation> FILES = new HashMap<>();
-    public static Map<ResourceLocation, RegistryObject<EntityType<ResourceShulker>>> ENTITY_TYPES = new HashMap<>();
-    public static Map<ResourceLocation, RegistryObject<EntityType<CustomShulkerBullet>>> BULLET_TYPES = new HashMap<>();
+    public static Map<ResourceLocation, DeferredHolder<EntityType<?>,EntityType<ResourceShulker>>> ENTITY_TYPES = new HashMap<>();
+    public static Map<ResourceLocation, DeferredHolder<EntityType<?>,EntityType<CustomShulkerBullet>>> BULLET_TYPES = new HashMap<>();
 
     public static void init(){
         //TYPES.add(new Resource(new ResourceLocation(ResourcefulShulkers.MODID,"wood"),Items.OAK_LOG,DyeColor.BROWN,0X612B02,null));

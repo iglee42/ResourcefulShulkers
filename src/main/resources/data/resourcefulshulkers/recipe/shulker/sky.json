@@ -1,0 +1,12 @@
+{
+  "type": "resourcefulshulkers:shulker_environment_infusion",
+  "baseEntity": "minecraft:shulker",
+  "resultEntity": "resourcefulshulkers:sky_shulker",
+  "biomes": [
+    "#minecraft:is_overworld"
+  ],
+  "particle": {
+    "item": "minecraft:light_blue_stained_glass"
+  },
+  "minY": 192
+}

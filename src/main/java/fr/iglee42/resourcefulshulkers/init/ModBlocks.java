@@ -9,6 +9,7 @@ import fr.iglee42.resourcefulshulkers.utils.ShulkerType;
 import fr.iglee42.resourcefulshulkers.utils.SkullTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -21,9 +22,9 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
 
 import java.util.List;
 import java.util.Map;
@@ -33,23 +34,23 @@ import java.util.function.Supplier;
 public class ModBlocks {
 
 
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, ResourcefulShulkers.MODID);
+    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, ResourcefulShulkers.MODID);
 
 
-    public static final RegistryObject<Block> SHULKER_INFUSER = createGeneratingBlock("shulker_infuser", ShulkerInfuserBlock::new);
-    public static final RegistryObject<Block> SHULKER_PEDESTAL = createGeneratingBlock("shulker_pedestal", ShulkerPedestalBlock::new);
-    public static final RegistryObject<Block> SHULKER_ABSORBER = createGeneratingBlock("shulker_absorber", ShulkerAbsorberBlock::new);
+    public static final DeferredHolder<Block,Block> SHULKER_INFUSER = createGeneratingBlock("shulker_infuser",ShulkerInfuserBlock::new);
+    public static final DeferredHolder<Block,Block> SHULKER_PEDESTAL = createGeneratingBlock("shulker_pedestal", ShulkerPedestalBlock::new);
+    public static final DeferredHolder<Block,Block> SHULKER_ABSORBER = createGeneratingBlock("shulker_absorber", ShulkerAbsorberBlock::new);
 
-    public static final RegistryObject<Block> PURPUR_TARGET = createGeneratingBlock("purpur_target", PurpurTargetBlock::new);
+    public static final DeferredHolder<Block,Block> PURPUR_TARGET = createGeneratingBlock("purpur_target", PurpurTargetBlock::new);
     //public static final RegistryObject<Block> GENERATING_BOX = createBlock("generating_box", () -> new GeneratingBoxBlock(id));
 
-    public static final RegistryObject<Block> SHULKER_HEAD = createBlockWithoutItem("shulker_head",()-> new SkullBlock(SkullTypes.SHULKER, BlockBehaviour.Properties.copy(Blocks.CREEPER_HEAD).strength(1.0f)){
+    public static final DeferredHolder<Block,Block> SHULKER_HEAD = createBlockWithoutItem("shulker_head",()-> new SkullBlock(SkullTypes.SHULKER, BlockBehaviour.Properties.ofFullCopy(Blocks.CREEPER_HEAD).strength(1.0f)){
         @Override
         public VoxelShape getShape(BlockState p_56331_, BlockGetter p_56332_, BlockPos p_56333_, CollisionContext p_56334_) {
             return Block.box(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
         }
     });
-    public static final RegistryObject<Block> WALL_SHULKER_HEAD = createBlockWithoutItem("wall_shulker_head",()-> new WallSkullBlock(SkullTypes.SHULKER, BlockBehaviour.Properties.copy(Blocks.CREEPER_WALL_HEAD).strength(1.0f).lootFrom(SHULKER_HEAD)){
+    public static final DeferredHolder<Block,Block> WALL_SHULKER_HEAD = createBlockWithoutItem("wall_shulker_head",()-> new WallSkullBlock(SkullTypes.SHULKER, BlockBehaviour.Properties.ofFullCopy(Blocks.CREEPER_WALL_HEAD).strength(1.0f).lootFrom(SHULKER_HEAD)){
         @Override
         public VoxelShape getShape(BlockState p_58114_, BlockGetter p_58115_, BlockPos p_58116_, CollisionContext p_58117_) {
             Map<Direction, VoxelShape> AABBS = Maps.newEnumMap(ImmutableMap.of(Direction.NORTH, Block.box(5.0, 4.0, 9.0, 11.0, 10.0, 15.0),
@@ -63,30 +64,30 @@ public class ModBlocks {
 
     public static void createGeneratingBlock(String name, Supplier<? extends Block> supplier, Item.Properties itemProperties, ResourceLocation id)
     {
-        RegistryObject<Block> block = BLOCKS.register(name, supplier);
+        DeferredHolder<Block,Block> block = BLOCKS.register(name, supplier);
         ModItems.ITEMS.register(name, () -> name.endsWith("_generating_box")? new GeneratingBoxItem(block.get(), itemProperties,id) : new BlockItem(block.get(), itemProperties));
     }
-    public static RegistryObject<Block> createGeneratingBlock(String name, Supplier<? extends Block> supplier)
+    public static DeferredHolder<Block,Block> createGeneratingBlock(String name, Supplier<? extends Block> supplier)
     {
-        RegistryObject<Block> block = BLOCKS.register(name, supplier);
+        DeferredHolder<Block,Block> block = BLOCKS.register(name, supplier);
         ModItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
         return block;
     }
-    public static RegistryObject<Block> createBlockWithoutItem(String name, Supplier<? extends Block> supplier)
+    public static DeferredHolder<Block,Block> createBlockWithoutItem(String name, Supplier<? extends Block> supplier)
     {
-        RegistryObject<Block> block = BLOCKS.register(name, supplier);
+        DeferredHolder<Block,Block> block = BLOCKS.register(name, supplier);
         return block;
     }
     public static Block getBoxById(ResourceLocation id){
-        Optional<RegistryObject<Block>> block = BLOCKS.getEntries().stream().filter(r->r.get() instanceof GeneratingBoxBlock b && b.getId() == id).findFirst();
-        return block.map(RegistryObject::get).orElse(Blocks.AIR);
+        Optional<DeferredHolder<Block,? extends Block>> block = BLOCKS.getEntries().stream().filter(r->r.get() instanceof GeneratingBoxBlock b && b.getId() == id).findFirst();
+        return block.map(h->BuiltInRegistries.BLOCK.get(h.getId())).orElse(Blocks.AIR);
     }
     public static void createBox(ResourceLocation id){
         ShulkerType res = ShulkerType.getById(id);
         createGeneratingBlock(res.id().getPath()+ "_generating_box", ()->new GeneratingBoxBlock(id), new Item.Properties(),res.id());
     }
     public static Block[] getAllBox() {
-        List<RegistryObject<Block>> registries = BLOCKS.getEntries().stream().filter(r->r.getId().toString().endsWith("_generating_box") && r.isPresent()).toList();
-        return registries.stream().map(RegistryObject::get).toList().toArray(new Block[]{});
+        List<DeferredHolder<Block,? extends Block>> registries = BLOCKS.getEntries().stream().filter(r->r.getId().toString().endsWith("_generating_box") && r.asOptional().isPresent()).toList();
+        return registries.stream().map(h->BuiltInRegistries.BLOCK.get(h.getId())).toList().toArray(new Block[]{});
     }
 }

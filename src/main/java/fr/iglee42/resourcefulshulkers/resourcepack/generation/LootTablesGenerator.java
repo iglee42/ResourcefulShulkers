@@ -39,7 +39,7 @@ public class LootTablesGenerator {
                     "                {\n" +
                     "                  \"op\": \"replace\",\n" +
                     "                  \"source\": \"remainingDurability\",\n" +
-                    "                  \"target\": \"durability\"\n" +
+                    "                  \"target\": \"aura\"\n" +
                     "                }\n" +
                     "              ],\n" +
                     "              \"source\": \"block_entity\"\n" +

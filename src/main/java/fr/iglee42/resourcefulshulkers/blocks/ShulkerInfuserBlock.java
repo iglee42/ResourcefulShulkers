@@ -6,31 +6,32 @@ import fr.iglee42.resourcefulshulkers.blocks.entites.ShulkerPedestalBlockEntity;
 import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
 import fr.iglee42.resourcefulshulkers.init.ModBlocks;
 import fr.iglee42.resourcefulshulkers.recipes.ShulkerItemInfusionRecipe;
-import fr.iglee42.resourcefulshulkers.recipes.ShulkerRecipeEnvironnement;
+import fr.iglee42.resourcefulshulkers.recipes.ShulkerRecipeEnvironment;
 import fr.iglee42.resourcefulshulkers.utils.CommonUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -41,14 +42,12 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class ShulkerInfuserBlock extends BaseEntityBlock {
+public class ShulkerInfuserBlock extends Block implements EntityBlock {
 
 
     public ShulkerInfuserBlock() {
@@ -64,7 +63,7 @@ public class ShulkerInfuserBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return createTickerHelper(type, ModBlockEntities.SHULKER_INFUSER_BLOCK_ENTITY.get(), ShulkerInfuserBlockEntity::tick);
+        return type.equals(ModBlockEntities.SHULKER_INFUSER_BLOCK_ENTITY.get()) ? (lvl,pos,st,be)->((ShulkerInfuserBlockEntity)be).tickEntity(lvl,pos,st) : null;
     }
 
     @Override
@@ -103,8 +102,9 @@ public class ShulkerInfuserBlock extends BaseEntityBlock {
 
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand p_60507_, BlockHitResult p_60508_) {
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult p_60508_) {
         if (level.isClientSide) return InteractionResult.sidedSuccess(true);
+        Registry<Biome> biomeRegistry = level.registryAccess().registryOrThrow(Registries.BIOME);
         if (player.getMainHandItem().is(Items.AIR)) {
             if (player.isCrouching()){
                 for (int[] pedestalPos : ShulkerItemInfusionRecipe.PEDESTAL_POSITION) {
@@ -113,22 +113,22 @@ public class ShulkerInfuserBlock extends BaseEntityBlock {
                 }
                 return InteractionResult.SUCCESS;
             }
-                Entity target = CommonUtils.getEntityOnBlock(level, pos);
+                Entity target = CommonUtils.getEntityOnBlock((ServerLevel) level, pos);
                 if (target == null) {
                     player.displayClientMessage(Component.literal("There is no entity on the infuser").withStyle(ChatFormatting.RED), true);
                     return InteractionResult.FAIL;
                 }
-                if (level.getRecipeManager().getAllRecipesFor(ShulkerRecipeEnvironnement.Type.INSTANCE).stream().anyMatch(r -> {
-                    boolean flag = r.getBaseEntity().equals(ForgeRegistries.ENTITY_TYPES.getKey(target.getType()));
+                if (level.getRecipeManager().getAllRecipesFor(ShulkerRecipeEnvironment.Type.INSTANCE).stream().map(RecipeHolder::value).anyMatch(r -> {
+                    boolean flag = r.getBaseEntity().equals(BuiltInRegistries.ENTITY_TYPE.getKey(target.getType()));
                     Biome b = level.getBiomeManager().getBiome(pos).value();
-                    boolean flag1 = r.getAllowedBiomes().contains(ForgeRegistries.BIOMES.getKey(b)) || r.getAllowedBiomesTags().stream().anyMatch(bt -> level.getBiomeManager().getBiome(pos).containsTag(new TagKey<>(Registries.BIOME,bt)));
+                    boolean flag1 = r.getAllowedBiomes().contains(biomeRegistry.getKey(b)) || r.getAllowedBiomesTags().stream().anyMatch(bt -> level.getBiomeManager().getBiome(pos).is(new TagKey<>(Registries.BIOME,bt)));
                     boolean flag2 = pos.getY() >= r.getMinY() && pos.getY() <= r.getMaxY();
                     return flag && flag1 && flag2;
                 })) {
-                    ShulkerRecipeEnvironnement recipe = level.getRecipeManager().getAllRecipesFor(ShulkerRecipeEnvironnement.Type.INSTANCE).stream().filter(r -> {
-                        boolean flag = r.getBaseEntity().equals(ForgeRegistries.ENTITY_TYPES.getKey(target.getType()));
+                    ShulkerRecipeEnvironment recipe = level.getRecipeManager().getAllRecipesFor(ShulkerRecipeEnvironment.Type.INSTANCE).stream().map(RecipeHolder::value).filter(r -> {
+                        boolean flag = r.getBaseEntity().equals(BuiltInRegistries.ENTITY_TYPE.getKey(target.getType()));
                         Biome b = level.getBiomeManager().getBiome(pos).value();
-                        boolean flag1 = r.getAllowedBiomes().contains(ForgeRegistries.BIOMES.getKey(b)) || r.getAllowedBiomesTags().stream().anyMatch(bt -> level.getBiomeManager().getBiome(pos).containsTag(new TagKey<>(Registries.BIOME,bt)));
+                        boolean flag1 = r.getAllowedBiomes().contains(biomeRegistry.getKey(b)) || r.getAllowedBiomesTags().stream().anyMatch(bt -> level.getBiomeManager().getBiome(pos).is(new TagKey<>(Registries.BIOME,bt)));
                         boolean flag2 = pos.getY() >= r.getMinY() && pos.getY() <= r.getMaxY();
                         return flag && flag1 && flag2;
                     }).findFirst().get();
@@ -136,9 +136,9 @@ public class ShulkerInfuserBlock extends BaseEntityBlock {
 
                 }
 
-                if (level.getRecipeManager().getAllRecipesFor(ShulkerItemInfusionRecipe.Type.INSTANCE).stream().anyMatch(r -> {
+                if (level.getRecipeManager().getAllRecipesFor(ShulkerItemInfusionRecipe.Type.INSTANCE).stream().map(RecipeHolder::value).anyMatch(r -> {
                     boolean flag = true;
-                    List<Ingredient> pedestalIngredients = new ArrayList<>(Arrays.stream(r.getPedestalsIngredients()).toList());
+                    List<Ingredient> pedestalIngredients = new ArrayList<>(r.getPedestalsIngredients());
                     pedestalIngredients.removeIf(i->i==Ingredient.EMPTY);
                     for (int[] pedestalPos : ShulkerItemInfusionRecipe.PEDESTAL_POSITION){
                         if (!level.getBlockState(pos.offset(pedestalPos[0],pedestalPos[1],pedestalPos[2])).is(ModBlocks.SHULKER_PEDESTAL.get())) flag = false;
@@ -150,16 +150,16 @@ public class ShulkerInfuserBlock extends BaseEntityBlock {
                     }
 
                     boolean flag1 = r.getBaseEntity().startsWith("#")?
-                            ForgeRegistries.ENTITY_TYPES.tags().getTag(ForgeRegistries.ENTITY_TYPES.tags().createTagKey(new ResourceLocation(r.getBaseEntity().substring(1)))).contains(target.getType()) :
-                            new ResourceLocation(r.getBaseEntity()).equals(ForgeRegistries.ENTITY_TYPES.getKey(target.getType()));
+                            BuiltInRegistries.ENTITY_TYPE.getTag(TagKey.create(Registries.ENTITY_TYPE,ResourceLocation.parse(r.getBaseEntity().substring(1)))).get().stream().anyMatch(h->h.value().equals(target.getType())) :
+                            ResourceLocation.parse(r.getBaseEntity()).equals(BuiltInRegistries.ENTITY_TYPE.getKey(target.getType()));
                     //boolean flag1 = r.getBaseEntity().equals(target.getType().getRegistryName());
                     boolean flag2 = pedestalIngredients.isEmpty();
 
                     return flag && flag1 && flag2;
                 })) {
-                    ShulkerItemInfusionRecipe recipe = level.getRecipeManager().getAllRecipesFor(ShulkerItemInfusionRecipe.Type.INSTANCE).stream().filter(r -> {
+                    ShulkerItemInfusionRecipe recipe = level.getRecipeManager().getAllRecipesFor(ShulkerItemInfusionRecipe.Type.INSTANCE).stream().map(RecipeHolder::value).filter(r -> {
                         boolean flag = true;
-                        List<Ingredient> pedestalIngredients = new ArrayList<>(Arrays.stream(r.getPedestalsIngredients()).toList());
+                        List<Ingredient> pedestalIngredients = new ArrayList<>(r.getPedestalsIngredients());
                         pedestalIngredients.removeIf(i->i==Ingredient.EMPTY);
                         for (int[] pedestalPos : ShulkerItemInfusionRecipe.PEDESTAL_POSITION){
                             if (!level.getBlockState(pos.offset(pedestalPos[0],pedestalPos[1],pedestalPos[2])).is(ModBlocks.SHULKER_PEDESTAL.get())) flag = false;
@@ -169,8 +169,8 @@ public class ShulkerInfuserBlock extends BaseEntityBlock {
                         }
 
                         boolean flag1 = r.getBaseEntity().startsWith("#")?
-                            ForgeRegistries.ENTITY_TYPES.tags().getTag(ForgeRegistries.ENTITY_TYPES.tags().createTagKey(new ResourceLocation(r.getBaseEntity().substring(1)))).contains(target.getType()) :
-                            new ResourceLocation(r.getBaseEntity()).equals(ForgeRegistries.ENTITY_TYPES.getKey(target.getType()));
+                            BuiltInRegistries.ENTITY_TYPE.getTag(TagKey.create(Registries.ENTITY_TYPE,ResourceLocation.parse(r.getBaseEntity().substring(1)))).get().stream().anyMatch(h->h.value().equals(target.getType())) :
+                            ResourceLocation.parse(r.getBaseEntity()).equals(BuiltInRegistries.ENTITY_TYPE.getKey(target.getType()));
                         //boolean flag1 = r.getBaseEntity().equals(target.getType().getRegistryName());
                         boolean flag2 = pedestalIngredients.isEmpty();
 
@@ -180,11 +180,12 @@ public class ShulkerInfuserBlock extends BaseEntityBlock {
 
             }
         }
-        return super.use(state, level, pos, player, p_60507_, p_60508_);
+        return super.useWithoutItem(state, level, pos, player, p_60508_);
     }
+    
 
     @Override
-    public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<Component> tooltips, TooltipFlag p_49819_) {
+    public void appendHoverText(ItemStack p_49816_, @Nullable Item.TooltipContext p_49817_, List<Component> tooltips, TooltipFlag p_49819_) {
         if (Screen.hasShiftDown()){
             tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_infuser"));
             tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_infuser1"));

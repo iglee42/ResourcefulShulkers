@@ -18,7 +18,6 @@
   "item.resourcefulshulkers.nether_shulker": "Nether Shulker",
   "item.resourcefulshulkers.end_shulker": "End Shulker",
   "item.resourcefulshulkers.base_essence": "Base Essence",
-  "item.resourcefulshulkers.omni_dye": "Omni dye",
 
   "entity.resourcefulshulkers.overworld_shulker": "Overworld Shulker",
   "entity.resourcefulshulkers.sky_shulker": "Sky Shulker",
@@ -37,6 +36,7 @@
   "tooltip.resourcefulshulkers.shell_upgrade": "\u00a75Increases the \u00a7dgiven durability \u00a75when \u00a7drepairing \u00a75the box",
   "tooltip.resourcefulshulkers.shulker_pickup": "\u00a7dShulkers \u00a75can be \u00a7dpicked up \u00a75with \u00a7dsneak \u00a75+ \u00a7dright click",
   "tooltip.resourcefulshulkers.type": "Type: %s",
+  "tooltip.resourcefulshulkers.remaining_durability": "Remaining Durability: %s/%s",
   "tooltip.resourcefulshulkers.press_shift": "\u00a75Press \u00a7dShift \u00a75for more informations",
   "tooltip.resourcefulshulkers.purpur_target": "\u00a7dResource Shulkers \u00a75will \u00a7dautomatically \u00a75target this block",
   "tooltip.resourcefulshulkers.purpur_target1": "When \u00a7dhit \u00a75by a \u00a7dResource Shulker\u00a75, it drops a \u00a7dshulker shell",

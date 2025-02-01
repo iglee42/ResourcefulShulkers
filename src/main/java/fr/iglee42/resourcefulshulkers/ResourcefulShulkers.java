@@ -2,30 +2,25 @@ package fr.iglee42.resourcefulshulkers;
 
 import com.google.common.collect.ImmutableSet;
 import fr.iglee42.resourcefulshulkers.init.*;
-import fr.iglee42.resourcefulshulkers.network.ModMessages;
 import fr.iglee42.resourcefulshulkers.recipes.ModRecipes;
 import fr.iglee42.resourcefulshulkers.resourcepack.PackType;
 import fr.iglee42.resourcefulshulkers.resourcepack.PathConstant;
-import fr.iglee42.resourcefulshulkers.resourcepack.TRSPackFinder;
+import fr.iglee42.resourcefulshulkers.resourcepack.RSPackFinder;
 import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
 import fr.iglee42.resourcefulshulkers.utils.TypesManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,8 +34,7 @@ public class ResourcefulShulkers {
 
 
 
-    public ResourcefulShulkers() {
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+    public ResourcefulShulkers(IEventBus bus, ModContainer container) {
         TypesManager.init();
         ShulkersManager.init();
 
@@ -50,21 +44,20 @@ public class ResourcefulShulkers {
         ModBlockEntities.BLOCK_ENTITIES.register(bus);
         ModBlockEntities.MENUS.register(bus);
         ModEntities.ENTITIES.register(bus);
+        ModComponents.COMPONENTS.register(bus);
 
-        ModMessages.register();
         ModRecipes.SERIALIZER.register(bus);
 
         PathConstant.init();
 
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModCreativeTabs::addCreative);
+        bus.addListener(this::commonSetup);
+        bus.addListener(ModCreativeTabs::addCreative);
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON,ResourcefulShulkersConfig.SPEC,"resourcefulshulkers/common.toml");
+        container.registerConfig(ModConfig.Type.COMMON,ResourcefulShulkersConfig.SPEC,"resourcefulshulkers/common.toml");
 
-        MinecraftForge.EVENT_BUS.register(this);
         try {
             if (FMLEnvironment.dist == Dist.CLIENT) {
-                Minecraft.getInstance().getResourcePackRepository().addPackFinder(new TRSPackFinder(PackType.RESOURCE));
+                Minecraft.getInstance().getResourcePackRepository().addPackFinder(new RSPackFinder(PackType.RESOURCE));
             }
         } catch (Exception ignored) {
         }

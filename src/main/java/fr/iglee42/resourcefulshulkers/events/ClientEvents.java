@@ -1,5 +1,6 @@
 package fr.iglee42.resourcefulshulkers.events;
 
+import cpw.mods.util.Lazy;
 import fr.iglee42.resourcefulshulkers.aura.AuraOverlay;
 import fr.iglee42.resourcefulshulkers.client.blockentites.GeneratingBoxRenderer;
 import fr.iglee42.resourcefulshulkers.client.blockentites.ShulkerPedestalRenderer;
@@ -31,40 +32,32 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.RegisterColorHandlersEvent;
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
-import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
+import java.awt.*;
 import java.util.function.Supplier;
 
 import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
 
-@Mod.EventBusSubscriber(modid = MODID,bus = Mod.EventBusSubscriber.Bus.MOD,value = Dist.CLIENT)
+@EventBusSubscriber(modid = MODID,bus = EventBusSubscriber.Bus.MOD,value = Dist.CLIENT)
 public class ClientEvents {
 
-    private static final ModelLayerLocation shulkerLayer = new ModelLayerLocation(new ResourceLocation(MODID,"shulker_head"), "main");
-
-    @SubscribeEvent
-    public static void onTextureStitch(TextureStitchEvent event)
-    {
-        if(event.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS))
-        {
-           // event.addSprite(BoxShellSlot.EMPTY_SHELL_SLOT);
-           // event.addSprite(BoxUpgradeSlot.EMPTY_UPGRADE_SLOT);
-        }
-    }
+    private static final ModelLayerLocation shulkerLayer = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(MODID,"shulker_head"), "main");
+    
     @SubscribeEvent
     public static void registerItemColors(RegisterColorHandlersEvent.Item event){
-        ShulkersManager.TYPES.forEach(r-> event.getItemColors().register((p_92672_, p_92673_) -> r.getShellColor(), ModItems.getShellById(r.id())));
+        ShulkersManager.TYPES.forEach(r-> event.register((stack,index)->index == 0 ? FastColor.ARGB32.color(255,new Color(r.getShellColor()).getRed(),new Color(r.getShellColor()).getGreen(),new Color(r.getShellColor()).getBlue()): 0xffffff, ModItems.getShellById(r.id())));
     }
 
     @SubscribeEvent
@@ -72,9 +65,13 @@ public class ClientEvents {
         EntityModelSet modelSet = event.getEntityModelSet();
         event.registerSkullModel(SkullTypes.SHULKER,new SkullModel(modelSet.bakeLayer(shulkerLayer)));
     }
+
+    @SubscribeEvent
+    public static void registerMenus(RegisterMenuScreensEvent event){
+        event.register(ModBlockEntities.GENERATING_BOX_MENU.get(),GeneratingBoxScreen::new);
+    }
     @SubscribeEvent
     public static <T extends Entity> void clientSetup(FMLClientSetupEvent event) {
-        MenuScreens.register(ModBlockEntities.GENERATING_BOX_MENU.get(), GeneratingBoxScreen::new);
         //EntityRenderers.register(ModEntities.OVERWORLD_SHULKER.get(), CustomShulkerRenderer::new);
         //EntityRenderers.register(ModEntities.SKY_SHULKER.get(), CustomShulkerRenderer::new);
         //EntityRenderers.register(ModEntities.NETHER_SHULKER.get(), CustomShulkerRenderer::new);
@@ -91,7 +88,7 @@ public class ClientEvents {
         BlockEntityRenderers.register(ModBlockEntities.SHULKER_PEDESTAL_BLOCK_ENTITY.get(), ShulkerPedestalRenderer::new);
 
         event.enqueueWork(()->{
-            SkullBlockRenderer.SKIN_BY_TYPE.put(SkullTypes.SHULKER,new ResourceLocation("textures/entity/shulker/shulker.png"));
+            SkullBlockRenderer.SKIN_BY_TYPE.put(SkullTypes.SHULKER,ResourceLocation.withDefaultNamespace("textures/entity/shulker/shulker.png"));
         });
 
     }
@@ -102,8 +99,8 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
-    public static void registerOverlay(RegisterGuiOverlaysEvent event){
-        event.registerAbove(VanillaGuiOverlay.HOTBAR.id(),"aura",AuraOverlay.HUD_AURA);
+    public static void registerOverlay(RegisterGuiLayersEvent event){
+        event.registerAbove(VanillaGuiLayers.HOTBAR,ResourceLocation.fromNamespaceAndPath(MODID,"aura"),AuraOverlay.HUD_AURA);
     }
 
 
@@ -113,7 +110,7 @@ public class ClientEvents {
         PartDefinition partDef = meshDefinition.getRoot();
         partDef.addOrReplaceChild("head", CubeListBuilder.create().texOffs(0, 52).addBox(-3.0F, -6.0F, -3.0F, 6.0F, 6.0F, 6.0F), PartPose.ZERO);
 
-        Supplier<LayerDefinition> shulkerHead = Lazy.of(()->LayerDefinition.create(meshDefinition, 64, 64));
+        Supplier<LayerDefinition> shulkerHead = (()->LayerDefinition.create(meshDefinition, 64, 64));
 
         event.registerLayerDefinition(shulkerLayer, shulkerHead);
     }

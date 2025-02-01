@@ -12,10 +12,10 @@ public class RecipesGenerator {
         ShulkersManager.TYPES.forEach(r->{
             if (r.item().startsWith("#")) {
                 generatingBoxWithTag(r.id().getPath().toLowerCase(),r.item().substring(1),r.type().getPath());
-                if (!r.id().getPath().equals("dye"))shulkerWithTag(r.id().getPath().toLowerCase(),r.item().substring(1),r.type().getPath());
+                shulkerWithTag(r.id().getPath().toLowerCase(),r.item().substring(1),r.type().getPath());
             } else{
                 generatingBox(r.id().getPath().toLowerCase(),r.type().getPath());
-                if (!r.id().getPath().equals("dye"))shulker(r.id().getPath().toLowerCase(),r.item(),r.type().getPath());
+                shulker(r.id().getPath().toLowerCase(),r.item(),r.type().getPath());
             }
         });
     }
@@ -26,42 +26,42 @@ public class RecipesGenerator {
         try {
             FileWriter writer = new FileWriter(new File(PathConstant.RECIPES_PATH.toFile(), name+"_shulker.json"));
             writer.write("{\n" +
-                    "  \"type\": \"forge:conditional\",\n" +
-                    "  \"recipes\": [\n" +
+                    "  \"neoforge:conditions\": [\n" +
                     "    {\n" +
-                    "      \"conditions\": [\n" +
-                    "        {\n" +
-                    "          \"type\": \"forge:not\",\n" +
-                    "          \"value\": {\n" +
-                    "            \"type\": \"forge:tag_empty\",\n" +
-                    "            \"tag\": \""+tag+"\"\n" +
-                    "          }\n" +
-                    "        }\n" +
-                    "      ],\n" +
-                    "      \"recipe\": {\n" +
-                    "        \"type\": \"resourcefulshulkers:shulker_item_infusion\",\n" +
-                    "        \"baseEntity\": \"resourcefulshulkers:"+type+"_shulkers\",\n" +
-                    "        \"resultEntity\": \"resourcefulshulkers:"+name+"_shulker\",\n" +
-                    "        \"pedestalsIngredients\": [\n" +
-                    "          {\n" +
-                    "            \"item\": \"resourcefulshulkers:"+type+"_essence\"\n" +
-                    "          },{\n" +
-                    "            \"item\": \"resourcefulshulkers:"+type+"_essence\"\n" +
-                    "          },{\n" +
-                    "            \"item\": \"resourcefulshulkers:"+type+"_essence\"\n" +
-                    "          },{\n" +
-                    "            \"item\": \"resourcefulshulkers:"+type+"_essence\"\n" +
-                    "          },{\n" +
-                    "            \"tag\": \""+tag+"\"\n" +
-                    "          },{\n" +
-                    "            \"tag\": \""+tag+"\"\n" +
-                    "          },{\n" +
-                    "            \"tag\": \""+tag+"\"\n" +
-                    "          },{\n" +
-                    "            \"tag\": \""+tag+"\"\n" +
-                    "          }\n" +
-                    "        ]\n" +
+                    "      \"type\": \"neoforge:not\",\n" +
+                    "      \"value\": {\n" +
+                    "        \"type\": \"neoforge:tag_empty\",\n" +
+                    "        \"tag\": \""+tag+"\"\n" +
                     "      }\n" +
+                    "    }\n" +
+                    "  ],\n" +
+                    "  \"type\": \"resourcefulshulkers:shulker_item_infusion\",\n" +
+                    "  \"baseEntity\": \"resourcefulshulkers:"+type+"_shulkers\",\n" +
+                    "  \"resultEntity\": \"resourcefulshulkers:"+name+"_shulker\",\n" +
+                    "  \"pedestalsIngredients\": [\n" +
+                    "    {\n" +
+                    "      \"item\": \"resourcefulshulkers:"+type+"_essence\"\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"item\": \"resourcefulshulkers:"+type+"_essence\"\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"item\": \"resourcefulshulkers:"+type+"_essence\"\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"item\": \"resourcefulshulkers:"+type+"_essence\"\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"tag\": \""+tag+"\"\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"tag\": \""+tag+"\"\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"tag\": \""+tag+"\"\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"tag\": \""+tag+"\"\n" +
                     "    }\n" +
                     "  ]\n" +
                     "}");
@@ -108,48 +108,48 @@ public class RecipesGenerator {
         try {
             FileWriter writer = new FileWriter(new File(PathConstant.RECIPES_PATH.toFile(), name+"_generating_box.json"));
             writer.write("{\n" +
-                    "  \"type\": \"forge:conditional\",\n" +
-                    "  \"recipes\": [\n" +
+                    "  \"neoforge:conditions\": [\n" +
                     "    {\n" +
-                    "      \"conditions\": [\n" +
-                    "        {\n" +
-                    "          \"type\": \"forge:not\",\n" +
-                    "          \"value\": {\n" +
-                    "            \"type\": \"forge:tag_empty\",\n" +
-                    "            \"tag\": \""+tag+"\"\n" +
-                    "          }\n" +
-                    "        }\n" +
-                    "      ],\n" +
-                    "      \"recipe\": {\n" +
-                    "        \"type\": \"resourcefulshulkers:shulker_item_infusion\",\n" +
-                    "        \"baseEntity\": \"resourcefulshulkers:"+name+"_shulker\",\n" +
-                    "        \"resultEntity\": \"minecraft:item\",\n" +
-                    "        \"resultNbt\": {\n" +
-                    "          \"Item\": {\n" +
-                    "            \"id\": \"resourcefulshulkers:"+name+"_generating_box\",\n" +
-                    "            \"Count\": 1\n" +
-                    "          }\n" +
-                    "        },\n" +
-                    "        \"pedestalsIngredients\": [\n" +
-                    "          {\n" +
-                    "            \"item\": \"resourcefulshulkers:"+name+"_shell\"\n" +
-                    "          },{\n" +
-                    "            \"item\": \"resourcefulshulkers:"+name+"_shell\"\n" +
-                    "          },{\n" +
-                    "            \"item\": \"resourcefulshulkers:"+type+"_essence\"\n" +
-                    "          },{\n" +
-                    "            \"item\": \"resourcefulshulkers:"+type+"_essence\"\n" +
-                    "          },{\n" +
-                    "            \"item\": \"minecraft:chest\"\n" +
-                    "          },{\n" +
-                    "            \"item\": \"minecraft:chest\"\n" +
-                    "          },{\n" +
-                    "            \"item\": \"minecraft:chest\"\n" +
-                    "          },{\n" +
-                    "            \"item\": \"minecraft:chest\"\n" +
-                    "          }\n" +
-                    "        ]\n" +
+                    "      \"type\": \"neoforge:not\",\n" +
+                    "      \"value\": {\n" +
+                    "        \"type\": \"neoforge:tag_empty\",\n" +
+                    "        \"tag\": \""+tag+"\"\n" +
                     "      }\n" +
+                    "    }\n" +
+                    "  ],\n" +
+                    "  \"type\": \"resourcefulshulkers:shulker_item_infusion\",\n" +
+                    "  \"baseEntity\": \"resourcefulshulkers:"+name+"_shulker\",\n" +
+                    "  \"resultEntity\": \"minecraft:item\",\n" +
+                    "  \"resultNbt\": {\n" +
+                    "    \"Item\": {\n" +
+                    "      \"id\": \"resourcefulshulkers:"+name+"_generating_box\",\n" +
+                    "      \"count\": 1\n" +
+                    "    }\n" +
+                    "  },\n" +
+                    "  \"pedestalsIngredients\": [\n" +
+                    "    {\n" +
+                    "      \"item\": \"resourcefulshulkers:"+name+"_shell\"\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"item\": \"resourcefulshulkers:"+name+"_shell\"\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"item\": \"resourcefulshulkers:"+type+"_essence\"\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"item\": \"resourcefulshulkers:"+type+"_essence\"\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"item\": \"minecraft:chest\"\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"item\": \"minecraft:chest\"\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"item\": \"minecraft:chest\"\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"item\": \"minecraft:chest\"\n" +
                     "    }\n" +
                     "  ]\n" +
                     "}");
@@ -169,7 +169,7 @@ public class RecipesGenerator {
                     "  \"resultNbt\": {\n" +
                     "    \"Item\": {\n" +
                     "      \"id\": \"resourcefulshulkers:"+name+"_generating_box\",\n" +
-                    "      \"Count\": 1\n" +
+                    "      \"count\": 1\n" +
                     "    }\n" +
                     "  },\n" +
                     "  \"pedestalsIngredients\": [\n" +

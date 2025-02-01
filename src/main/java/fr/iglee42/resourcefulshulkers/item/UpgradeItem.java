@@ -25,8 +25,9 @@ public class UpgradeItem extends Item {
         return upgrade;
     }
 
+
     @Override
-    public void appendHoverText(ItemStack p_41421_, @Nullable Level p_41422_, List<Component> tooltips, TooltipFlag p_41424_) {
+    public void appendHoverText(ItemStack p_41421_, @Nullable TooltipContext p_41422_, List<Component> tooltips, TooltipFlag p_41424_) {
         if (Screen.hasShiftDown())tooltips.add(upgrade.getDescription());
         else tooltips.add(Component.translatable("tooltip.resourcefulshulkers.press_shift"));
         super.appendHoverText(p_41421_, p_41422_, tooltips, p_41424_);

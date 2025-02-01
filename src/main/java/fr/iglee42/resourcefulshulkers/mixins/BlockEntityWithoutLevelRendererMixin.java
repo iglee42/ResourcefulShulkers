@@ -25,9 +25,9 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(BlockEntityWithoutLevelRenderer.class)
 public class BlockEntityWithoutLevelRendererMixin {
 
-    @Shadow @Final private BlockEntityRenderDispatcher blockEntityRenderDispatcher;
+    @Shadow(remap = false) @Final private BlockEntityRenderDispatcher blockEntityRenderDispatcher;
 
-    @Inject(method = "renderByItem", at = @At(value = "INVOKE",target = "Lnet/minecraft/world/item/BlockItem;getBlock()Lnet/minecraft/world/level/block/Block;",shift = At.Shift.AFTER,ordinal = 0),locals = LocalCapture.CAPTURE_FAILHARD)
+    @Inject(method = "renderByItem", at = @At(value = "INVOKE",target = "Lnet/minecraft/world/item/BlockItem;getBlock()Lnet/minecraft/world/level/block/Block;",shift = At.Shift.AFTER,ordinal = 0),locals = LocalCapture.CAPTURE_FAILHARD,remap = false)
     private void inject(ItemStack p_108830_, ItemDisplayContext p_270899_, PoseStack p_108832_, MultiBufferSource p_108833_, int p_108834_, int p_108835_, CallbackInfo ci, Item item) {
         Block block = ((BlockItem)item).getBlock();
         if (block instanceof GeneratingBoxBlock gb){

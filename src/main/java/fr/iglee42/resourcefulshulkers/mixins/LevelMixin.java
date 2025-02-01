@@ -7,7 +7,7 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,7 +18,7 @@ import static net.minecraft.core.Direction.UP;
 @Mixin(Level.class)
 public class LevelMixin {
 
-    @Inject(method = "loadedAndEntityCanStandOnFace",at = @At("HEAD"), cancellable = true)
+    @Inject(method = "loadedAndEntityCanStandOnFace",at = @At("HEAD"), cancellable = true,remap = false)
     private void loadedAndEntityCanStandOnFace(BlockPos pos, Entity entity, Direction direction, CallbackInfoReturnable<Boolean> cir){
         Object obj = this;
         ChunkAccess chunkaccess = ((Level)obj).getChunk(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()), ChunkStatus.FULL, false);

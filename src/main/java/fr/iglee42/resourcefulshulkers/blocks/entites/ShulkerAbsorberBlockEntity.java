@@ -8,6 +8,7 @@ import fr.iglee42.resourcefulshulkers.init.ModItems;
 import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
 import fr.iglee42.resourcefulshulkers.utils.CommonUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -42,18 +43,18 @@ public class ShulkerAbsorberBlockEntity extends SecondBlockEntity {
         super(ModBlockEntities.SHULKER_ABSORBER_BLOCK_ENTITY.get(),pos,state);
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, ShulkerAbsorberBlockEntity be){
-        SecondBlockEntity.tick(level,pos,state,be);
-        ModsUtils.debugSign(level,pos,be.progress+"");
+    public void tick(Level level, BlockPos pos, BlockState state){
+        SecondBlockEntity.tick(level,pos,state,this);
+        ModsUtils.debugSign(level,pos,progress+"");
         if (level.isClientSide) return;
         Vec3 posi = Vec3.atCenterOf(pos.above());
-        if (be.enable) {
+        if (enable) {
             spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SHULKER_SHELL)), (ServerLevel) level, posi.add(0.5, 0, 0), posi.add(1.5, -1, 0), 0);
             spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SHULKER_SHELL)), (ServerLevel) level, posi.add(-0.5, 0, 0), posi.add(-1.5, -1, 0), 0);
             spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SHULKER_SHELL)), (ServerLevel) level, posi.add(0, 0, 0.5), posi.add(0, -1, 1.5), 0);
             spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SHULKER_SHELL)), (ServerLevel) level, posi.add(0, 0, -0.5), posi.add(0, -1, -1.5), 0);
 
-            if (be.progress > 2) {
+            if (progress > 2) {
                 spawnParticle(ParticleTypes.END_ROD, (ServerLevel) level, posi.add(0.7, 2, 0), posi.add(0, 320 - posi.y, 0), 32);
                 spawnParticle(ParticleTypes.END_ROD, (ServerLevel) level, posi.add(-0.7, 2, 0), posi.add(0, 320 - posi.y, 0), 32);
                 spawnParticle(ParticleTypes.END_ROD, (ServerLevel) level, posi.add(0, 2, 0.7), posi.add(0, 320 - posi.y, 0), 32);
@@ -87,7 +88,7 @@ public class ShulkerAbsorberBlockEntity extends SecondBlockEntity {
     }
 
     public Entity getCurrentTarget(){
-        return CommonUtils.getEntityOnBlock(level,getBlockPos());
+        return CommonUtils.getEntityOnBlock((ServerLevel) level,getBlockPos());
     }
 
     public int getProgress() {
@@ -99,21 +100,21 @@ public class ShulkerAbsorberBlockEntity extends SecondBlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag,provider);
         tag.putBoolean("enable", enable);
         tag.putInt("progress",progress);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag,provider);
         enable = tag.getBoolean("enable");
         progress = tag.getInt("progress");
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("enable", enable);
         tag.putInt("progress",progress);

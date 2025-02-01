@@ -63,7 +63,7 @@ public class ResourceShulker extends CustomShulker{
     @Override
     public void readAdditionalSaveData(CompoundTag p_33432_) {
         super.readAdditionalSaveData(p_33432_);
-        if (p_33432_.contains("Target")) target = NbtUtils.readBlockPos(p_33432_.getCompound("Target"));
+        if (p_33432_.contains("Target")) target = NbtUtils.readBlockPos(p_33432_,"Target").get();
 
     }
 

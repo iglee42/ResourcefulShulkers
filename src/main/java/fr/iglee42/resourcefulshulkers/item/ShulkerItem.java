@@ -6,6 +6,7 @@ import fr.iglee42.resourcefulshulkers.utils.TypesManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
@@ -15,8 +16,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -35,7 +34,7 @@ public class ShulkerItem extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
-        Mob shulker = shulkerType != null ? (Mob)shulkerType.create(context.getLevel()) : (Mob)ForgeRegistries.ENTITY_TYPES.getValue(ForgeRegistries.ITEMS.getKey(this)).create(context.getLevel());
+        Mob shulker = shulkerType != null ? (Mob)shulkerType.create(context.getLevel()) : (Mob) BuiltInRegistries.ENTITY_TYPE.get(BuiltInRegistries.ITEM.getKey(this)).create(context.getLevel());
         shulker.getEntityData().set(CustomShulker.DATA_ATTACH_FACE_ID,context.getClickedFace().getOpposite());
         shulker.setPos(pos.getX(),pos.getY(),pos.getZ());
         if (context.getLevel().getBlockState(context.getClickedPos()).is(ModBlocks.SHULKER_INFUSER.get()) && context.getClickedFace() == UP) shulker.setNoAi(true);
@@ -50,7 +49,7 @@ public class ShulkerItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack p_41421_, @Nullable Level p_41422_, List<Component> tooltips, TooltipFlag p_41424_) {
+    public void appendHoverText(ItemStack p_41421_, @Nullable TooltipContext p_41422_, List<Component> tooltips, TooltipFlag p_41424_) {
         if (type != null){
             tooltips.add(Component.translatable("tooltip.resourcefulshulkers.type", TypesManager.getTierDisplayName(type)).withStyle(ChatFormatting.GRAY));
         }

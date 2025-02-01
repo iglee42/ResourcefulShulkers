@@ -4,6 +4,7 @@ import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -41,7 +42,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
@@ -50,8 +52,8 @@ import java.util.UUID;
 
 
 public abstract class CustomShulker extends AbstractGolem implements Enemy {
-   private static final UUID COVERED_ARMOR_MODIFIER_UUID = UUID.fromString("7E0292F2-9434-48D5-A29F-9583AF7DF27F");
-   private static final AttributeModifier COVERED_ARMOR_MODIFIER = new AttributeModifier(COVERED_ARMOR_MODIFIER_UUID, "Covered armor bonus", 20.0D, AttributeModifier.Operation.ADDITION);
+   private static final ResourceLocation COVERED_ARMOR_MODIFIER_ID = ResourceLocation.withDefaultNamespace("covered");
+   private static final AttributeModifier COVERED_ARMOR_MODIFIER = new AttributeModifier(COVERED_ARMOR_MODIFIER_ID, (double)20.0F, AttributeModifier.Operation.ADD_VALUE);
    public static final EntityDataAccessor<Direction> DATA_ATTACH_FACE_ID = SynchedEntityData.defineId(CustomShulker.class, EntityDataSerializers.DIRECTION);
 
    protected static final EntityDataAccessor<Byte> DATA_PEEK_ID = SynchedEntityData.defineId(CustomShulker.class, EntityDataSerializers.BYTE);
@@ -108,11 +110,11 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
       return this.isClosed() ? SoundEvents.SHULKER_HURT_CLOSED : SoundEvents.SHULKER_HURT;
    }
 
-   protected void defineSynchedData() {
-      super.defineSynchedData();
-      this.entityData.define(DATA_ATTACH_FACE_ID, Direction.DOWN);
-      this.entityData.define(DATA_PEEK_ID, (byte)0);
-      this.entityData.define(DATA_COLOR_ID, (byte)16);
+   protected void defineSynchedData(SynchedEntityData.Builder builder) {
+      super.defineSynchedData(builder);
+      builder.define(DATA_ATTACH_FACE_ID, Direction.DOWN);
+      builder.define(DATA_PEEK_ID, (byte)0);
+      builder.define(DATA_COLOR_ID, (byte)16);
    }
 
    public static AttributeSupplier.Builder createAttributes() {
@@ -226,10 +228,7 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
       return (new AABB(BlockPos.ZERO)).expandTowards((double)p_149794_.getStepX() * d0, (double)p_149794_.getStepY() * d0, (double)p_149794_.getStepZ() * d0).contract((double)(-p_149794_.getStepX()) * (1.0D + d1), (double)(-p_149794_.getStepY()) * (1.0D + d1), (double)(-p_149794_.getStepZ()) * (1.0D + d1));
    }
 
-   public double getMyRidingOffset() {
-      EntityType<?> entitytype = this.getVehicle().getType();
-      return entitytype != EntityType.BOAT && entitytype != EntityType.MINECART ? super.getMyRidingOffset() : 0.1875D - this.getVehicle().getPassengersRidingOffset();
-   }
+
 
    public boolean startRiding(Entity p_149773_, boolean p_149774_) {
       if (this.level().isClientSide()) {
@@ -252,11 +251,11 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
    }
 
    @Nullable
-   public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_149780_, DifficultyInstance p_149781_, MobSpawnType p_149782_, @Nullable SpawnGroupData p_149783_, @Nullable CompoundTag p_149784_) {
+   public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_149780_, DifficultyInstance p_149781_, MobSpawnType p_149782_, @Nullable SpawnGroupData p_149783_) {
       this.setYRot(0.0F);
       this.yHeadRot = this.getYRot();
       this.setOldPosAndRot();
-      return super.finalizeSpawn(p_149780_, p_149781_, p_149782_, p_149783_, p_149784_);
+      return super.finalizeSpawn(p_149780_, p_149781_, p_149782_, p_149783_);
    }
 
    public void move(MoverType p_33424_, Vec3 p_33425_) {
@@ -344,7 +343,7 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
             if (blockpos1.getY() > this.level().getMinBuildHeight() && this.level().isEmptyBlock(blockpos1) && this.level().getWorldBorder().isWithinBounds(blockpos1) && this.level().noCollision(this, (new AABB(blockpos1)).deflate(1.0E-6D))) {
                Direction direction = this.findAttachableSurface(blockpos1);
                if (direction != null) {
-                  net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(this, blockpos1.getX(), blockpos1.getY(), blockpos1.getZ());
+                  EntityTeleportEvent.EnderEntity event = EventHooks.onEnderTeleport(this, blockpos1.getX(), blockpos1.getY(), blockpos1.getZ());
                   if (event.isCanceled()) direction = null;
                   blockpos1 = new BlockPos((int) event.getTargetX(), (int) event.getTargetY(), (int) event.getTargetZ());
                }
@@ -395,7 +394,7 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
    @Override
    protected InteractionResult mobInteract(Player player, InteractionHand p_21473_) {
       if (player.isCrouching()){
-         player.addItem(new ItemStack(ForgeRegistries.ITEMS.getValue(ForgeRegistries.ENTITY_TYPES.getKey(this.getType()))));
+         player.addItem(new ItemStack(BuiltInRegistries.ITEM.get(BuiltInRegistries.ENTITY_TYPE.getKey(this.getType()))));
          this.remove(RemovalReason.KILLED);
          return InteractionResult.SUCCESS;
       }
@@ -405,7 +404,7 @@ public abstract class CustomShulker extends AbstractGolem implements Enemy {
    @org.jetbrains.annotations.Nullable
    @Override
    public ItemStack getPickResult() {
-      return new ItemStack(ForgeRegistries.ITEMS.getValue(ForgeRegistries.ENTITY_TYPES.getKey(this.getType())));
+      return new ItemStack(BuiltInRegistries.ITEM.get(BuiltInRegistries.ENTITY_TYPE.getKey(this.getType())));
    }
 
 

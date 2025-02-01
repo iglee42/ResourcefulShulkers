@@ -13,12 +13,12 @@ import java.util.function.Consumer;
 
 @Mixin(Sheets.class)
 public class SheetsMixin {
-    @Inject(at = @At("HEAD"), method = "getAllMaterials")
+   /* @Inject(at = @At("HEAD"), method = "getAllMaterials")
     private static void getAllMaterials(Consumer<Material> consumer, CallbackInfo info) {
         consumer.accept(Materials.OVERWORLD_SHULKER_TEXTURE);
         consumer.accept(Materials.SKY_SHULKER_TEXTURE);
         consumer.accept(Materials.NETHER_SHULKER_TEXTURE);
         ShulkersManager.TYPES.forEach(r->consumer.accept(r.getMaterial()));
         ShulkersManager.TYPES.forEach(r->consumer.accept(r.getBoxMaterial()));
-    }
+    }*/
 }

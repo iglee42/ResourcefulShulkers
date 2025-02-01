@@ -11,8 +11,8 @@ import fr.iglee42.resourcefulshulkers.init.ModEntities;
 import fr.iglee42.resourcefulshulkers.init.ModItems;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 
@@ -29,11 +29,11 @@ public class TypesManager {
 
 
     public static List<Type> TYPES = new ArrayList<>();
-    public static Map<ResourceLocation, RegistryObject<EntityType<TypeShulker>>> ENTITY_TYPES = new HashMap<>();
+    public static Map<ResourceLocation, DeferredHolder<EntityType<?>,EntityType<TypeShulker>>> ENTITY_TYPES = new HashMap<>();
 
 
     public static void init() {
-        Arrays.stream(Base.values()).forEach(b -> TYPES.add(new Type(new ResourceLocation(MODID,b.name().toLowerCase()),b.displayName,b.haveEntity)));
+        Arrays.stream(Base.values()).forEach(b -> TYPES.add(new Type(ResourceLocation.fromNamespaceAndPath(MODID,b.name().toLowerCase()),b.displayName,b.haveEntity)));
         File dir = FMLPaths.CONFIGDIR.get().resolve(MODID + "/types/").toFile();
         dir.mkdirs();
         if (dir.isDirectory()) {
@@ -50,7 +50,7 @@ public class TypesManager {
                     if (json.get("id").getAsString().isEmpty()) throw new NullPointerException("The id can't be empty ! (" + file.getName() + ")");
                     //if (json.get("displayName").getAsString().isEmpty())
                     //    throw new NullPointerException("The display name can't be empty ! (" + file.getName() + ")");
-                    //TYPES.put(new ResourceLocation(MODID, json.get("id").getAsString()), json.get("displayName").getAsString());
+                    //TYPES.put(ResourceLocation.fromNamespaceAndPath(MODID, json.get("id").getAsString()), json.get("displayName").getAsString());
                     TYPES.add(JsonHelper.createRecordFromJson(Type.class,json));
                     reader.close();
                 } catch (Exception e) {
@@ -61,7 +61,7 @@ public class TypesManager {
             }
         }
         TYPES.forEach(t->{
-           if (!t.id().equals(new ResourceLocation(MODID,"elemental"))) ModItems.createEssence(t.id());
+           if (!t.id().equals(ResourceLocation.fromNamespaceAndPath(MODID,"elemental"))) ModItems.createEssence(t.id());
            if (t.shouldCreateEntity())ENTITY_TYPES.put(t.id(), ModEntities.createTypeShulker(t.id()));
            //BULLET_TYPES.put(t.id(), ModEntities.createBullet(t.id()));
         } );

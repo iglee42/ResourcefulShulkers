@@ -24,7 +24,7 @@ public class BoxOutputRecipeCategory implements IRecipeCategory<IJeiInputOutputR
     public static final RecipeType<IJeiInputOutputRecipe> RECIPE_TYPE = RecipeType.create(ResourcefulShulkers.MODID, "box_output",
             InputOutputRecipe.class);
 
-    public final static ResourceLocation ARROW = new ResourceLocation(ResourcefulShulkers.MODID, "textures/gui/arrow.png");
+    public final static ResourceLocation ARROW = ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID, "textures/gui/arrow.png");
 
     private final IDrawable background;
     private final IDrawable icon;

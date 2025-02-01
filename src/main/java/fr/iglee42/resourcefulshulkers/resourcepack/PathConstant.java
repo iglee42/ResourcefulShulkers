@@ -2,7 +2,7 @@ package fr.iglee42.resourcefulshulkers.resourcepack;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.fml.loading.FMLPaths;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -34,10 +34,10 @@ public class PathConstant {
     public static Path MC_ITEM_TAGS_PATH;
     public static Path MC_MINEABLE_TAGS_PATH;
 
-    public static Path FORGE_DATA_PATH;
-    public static Path FORGE_TAGS_PATH;
-    public static Path FORGE_BLOCK_TAGS_PATH;
-    public static Path FORGE_ITEM_TAGS_PATH;
+    public static Path COMMON_DATA_PATH;
+    public static Path COMMON_TAGS_PATH;
+    public static Path COMMON_BLOCK_TAGS_PATH;
+    public static Path COMMON_ITEM_TAGS_PATH;
 
 
     public static void init() {
@@ -55,27 +55,27 @@ public class PathConstant {
         LANGS_PATH = ASSETS_PATH.resolve("lang");
         MODELS_PATH = ASSETS_PATH.resolve("models");
 
-        RECIPES_PATH = DATAS_PATH.resolve("recipes");
-        LOOT_TABLES_PATH = DATAS_PATH.resolve("loot_tables/blocks");
+        RECIPES_PATH = DATAS_PATH.resolve("recipe");
+        LOOT_TABLES_PATH = DATAS_PATH.resolve("loot_table/blocks");
         TAGS_PATH = DATAS_PATH.resolve("tags");
 
 
-        ITEMS_TAGS_PATH = TAGS_PATH.resolve("items");
-        ENTITY_TYPES_TAGS_PATH = TAGS_PATH.resolve("entity_types");
+        ITEMS_TAGS_PATH = TAGS_PATH.resolve("item");
+        ENTITY_TYPES_TAGS_PATH = TAGS_PATH.resolve("entity_type");
 
         ITEM_MODELS_PATH = MODELS_PATH.resolve("item");
         BLOCK_MODELS_PATH = MODELS_PATH.resolve("block");
 
         MC_DATA_PATH = ROOT_PATH.resolve("data/minecraft");
         MC_TAGS_PATH = MC_DATA_PATH.resolve("tags");
-        MC_BLOCK_TAGS_PATH = MC_TAGS_PATH.resolve("blocks");
-        MC_ITEM_TAGS_PATH = MC_TAGS_PATH.resolve("items");
+        MC_BLOCK_TAGS_PATH = MC_TAGS_PATH.resolve("block");
+        MC_ITEM_TAGS_PATH = MC_TAGS_PATH.resolve("item");
         MC_MINEABLE_TAGS_PATH = MC_BLOCK_TAGS_PATH.resolve("mineable");
 
-        FORGE_DATA_PATH = ROOT_PATH.resolve("data/forge");
-        FORGE_TAGS_PATH = FORGE_DATA_PATH.resolve("tags");
-        FORGE_BLOCK_TAGS_PATH = FORGE_TAGS_PATH.resolve("blocks");
-        FORGE_ITEM_TAGS_PATH = FORGE_TAGS_PATH.resolve("items");
+        COMMON_DATA_PATH = ROOT_PATH.resolve("data/c");
+        COMMON_TAGS_PATH = COMMON_DATA_PATH.resolve("tags");
+        COMMON_BLOCK_TAGS_PATH = COMMON_TAGS_PATH.resolve("block");
+        COMMON_ITEM_TAGS_PATH = COMMON_TAGS_PATH.resolve("item");
 
         BLOCK_STATES_PATH.toFile().mkdirs();
         LANGS_PATH.toFile().mkdirs();
@@ -93,9 +93,9 @@ public class PathConstant {
         MC_ITEM_TAGS_PATH.toFile().mkdirs();
         MC_MINEABLE_TAGS_PATH.toFile().mkdirs();
 
-        FORGE_TAGS_PATH.toFile().mkdirs();
-        FORGE_BLOCK_TAGS_PATH.toFile().mkdirs();
-        FORGE_ITEM_TAGS_PATH.toFile().mkdirs();
+        COMMON_TAGS_PATH.toFile().mkdirs();
+        COMMON_BLOCK_TAGS_PATH.toFile().mkdirs();
+        COMMON_ITEM_TAGS_PATH.toFile().mkdirs();
 
 
 

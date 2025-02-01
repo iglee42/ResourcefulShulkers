@@ -9,12 +9,12 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -23,12 +23,13 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.event.EventHooks;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -51,6 +52,11 @@ public class CustomShulkerBullet extends Projectile {
         super(p_37319_, p_37320_);
         this.typeId = typeId;
         this.noPhysics = true;
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+
     }
 
     public CustomShulkerBullet(Level p_37330_, LivingEntity p_37331_, BlockPos target, Direction.Axis p_37333_, ResourceLocation typeId) {
@@ -103,6 +109,7 @@ public class CustomShulkerBullet extends Projectile {
         p_37357_.putDouble("TZD", this.targetDeltaZ);
     }
 
+
     protected void readAdditionalSaveData(CompoundTag p_37353_) {
         super.readAdditionalSaveData(p_37353_);
         this.flightSteps = p_37353_.getInt("Steps");
@@ -114,7 +121,7 @@ public class CustomShulkerBullet extends Projectile {
         }
 
         if (p_37353_.contains("Target")) {
-            this.target = NbtUtils.readBlockPos(p_37353_.getCompound("Target"));
+            this.target = NbtUtils.readBlockPos(p_37353_,"Target").get();
         }
 
     }
@@ -229,7 +236,7 @@ public class CustomShulkerBullet extends Projectile {
             }
 
             HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
-            if (hitresult.getType() != HitResult.Type.MISS && !ForgeEventFactory.onProjectileImpact(this, hitresult)) {
+            if (hitresult.getType() != HitResult.Type.MISS && !EventHooks.onProjectileImpact(this, hitresult)) {
                 this.onHit(hitresult);
             }
         }
@@ -285,9 +292,15 @@ public class CustomShulkerBullet extends Projectile {
         Entity entity = p_37345_.getEntity();
         Entity entity1 = this.getOwner();
         LivingEntity livingentity = entity1 instanceof LivingEntity ? (LivingEntity)entity1 : null;
-        boolean flag = entity.hurt(level().damageSources().mobProjectile(this, livingentity), 4.0F);
+        DamageSource damagesource = this.damageSources().mobProjectile(this, livingentity);
+
+        boolean flag = entity.hurt(damagesource, 4.0F);
+
         if (flag) {
-            this.doEnchantDamageEffects(livingentity, entity);
+            if (level() instanceof ServerLevel) {
+                ServerLevel serverlevel = (ServerLevel)level();
+                EnchantmentHelper.doPostAttackEffects(serverlevel, entity, damagesource);
+            }
             if (entity instanceof LivingEntity) {
                 ((LivingEntity)entity).addEffect(new MobEffectInstance(MobEffects.LEVITATION, 200), (Entity) MoreObjects.firstNonNull(entity1, this));
             }

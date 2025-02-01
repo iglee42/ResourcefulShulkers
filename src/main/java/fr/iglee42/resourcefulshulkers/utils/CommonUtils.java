@@ -1,6 +1,7 @@
 package fr.iglee42.resourcefulshulkers.utils;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 public class CommonUtils {
 
-    public static Entity getEntityOnBlock(Level level, BlockPos pos){
+    public static Entity getEntityOnBlock(ServerLevel level, BlockPos pos){
         List<Entity> entities = new ArrayList<>();
 
         for (Entity entity : level.getEntities().getAll()) {

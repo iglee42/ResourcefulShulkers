@@ -6,6 +6,7 @@ import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
 import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
 import fr.iglee42.resourcefulshulkers.utils.CommonUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -39,13 +40,10 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
     }
 
 
-    public static void tick(Level lvl, BlockPos pos, BlockState state, ShulkerInfuserBlockEntity entity) {
-        SecondBlockEntity.tick(lvl,pos,state,entity);
-        if (!lvl.isClientSide)entity.tickEntity(lvl,pos,state);
-    }
 
-    private void tickEntity(Level level, BlockPos pos, BlockState state) {
-
+    public void tickEntity(Level level, BlockPos pos, BlockState state) {
+        SecondBlockEntity.tick(level,pos,state,this);
+        if (level.isClientSide) return;
         if (progress == 15*20 || recipe == null || !hasEnoughAura() || !recipe.canContinue(level,pos,state,progress,this) || getCurrentTarget() == null){
             enabled = false;
             progress = 0;
@@ -98,7 +96,7 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
     }
 
     public Entity getCurrentTarget(){
-        return CommonUtils.getEntityOnBlock(level,getBlockPos());
+        return CommonUtils.getEntityOnBlock((ServerLevel) level,getBlockPos());
     }
 
     //START
@@ -117,15 +115,15 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
 
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         tag.putInt("progress",progress);
         tag.putBoolean("enabled",enabled);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag,provider);
         progress = tag.getInt("progress");
         enabled = tag.getBoolean("enabled");
     }

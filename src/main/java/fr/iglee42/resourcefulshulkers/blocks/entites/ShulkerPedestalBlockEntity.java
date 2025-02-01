@@ -1,10 +1,9 @@
 package fr.iglee42.resourcefulshulkers.blocks.entites;
 
 import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
-import fr.iglee42.resourcefulshulkers.network.ModMessages;
-import fr.iglee42.resourcefulshulkers.network.packets.ItemStackSyncS2CPacket;
+import fr.iglee42.resourcefulshulkers.network.data.ItemStackSyncPayload;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -15,12 +14,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class ShulkerPedestalBlockEntity extends BlockEntity {
 
@@ -28,7 +23,7 @@ public class ShulkerPedestalBlockEntity extends BlockEntity {
         @Override
         protected void onContentsChanged(int slot) {
             if(!level.isClientSide()) {
-                ModMessages.sendToClients(new ItemStackSyncS2CPacket(getStackInSlot(slot),slot, worldPosition));
+                PacketDistributor.sendToAllPlayers(new ItemStackSyncPayload(worldPosition,slot,getStackInSlot(slot)));
             }
         }
 
@@ -37,43 +32,25 @@ public class ShulkerPedestalBlockEntity extends BlockEntity {
             return 1;
         }
     };
-    private LazyOptional<ItemStackHandler> optionalInventory = LazyOptional.empty();
 
 
     public ShulkerPedestalBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SHULKER_PEDESTAL_BLOCK_ENTITY.get(), pos,state);
     }
 
-    @NotNull
+
+
+
     @Override
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        return cap == ForgeCapabilities.ITEM_HANDLER ? optionalInventory.cast() : super.getCapability(cap, side);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag,provider);
+        tag.put("inventory",inventory.serializeNBT(provider));
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        optionalInventory.invalidate();
-    }
-
-    @Override
-    public void onLoad() {
-        super.onLoad();
-        optionalInventory = LazyOptional.of(()->inventory);
-    }
-
-
-
-    @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put("inventory",inventory.serializeNBT());
-    }
-
-    @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        inventory.deserializeNBT(tag.getCompound("inventory"));
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag,provider);
+        inventory.deserializeNBT(provider,tag.getCompound("inventory"));
     }
 
     public ItemStack getStack() {
@@ -86,9 +63,9 @@ public class ShulkerPedestalBlockEntity extends BlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
-        tag.put("inventory",inventory.serializeNBT());
+        tag.put("inventory",inventory.serializeNBT(provider));
         return tag;
     }
 
