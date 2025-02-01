@@ -27,7 +27,7 @@ public class GeneratingBoxScreen extends AbstractContainerScreen<GeneratingBoxMe
     @Override
     protected void init() {
         super.init();
-        addRenderableWidget(new ChooseItemWidget(getGuiLeft()+imageWidth - 25,getGuiTop()+ 35,20,Component.empty(),menu.getTile()));
+        if (menu.getTile().getResourceGenerated().getItems().size() > 1)addRenderableWidget(new ChooseItemWidget(getGuiLeft()+imageWidth - 25,getGuiTop()+ 35,20,Component.empty(),menu.getTile()));
     }
 
     @Override
