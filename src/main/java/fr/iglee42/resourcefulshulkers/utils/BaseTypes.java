@@ -2,7 +2,6 @@ package fr.iglee42.resourcefulshulkers.utils;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import fr.iglee42.resourcefulshulkers.init.ModItems;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
@@ -43,7 +42,7 @@ public enum BaseTypes {
     STONE(Items.STONE, DyeColor.LIGHT_GRAY,"7F7F7F","overworld"),
     TIN("#c:ingots/tin", DyeColor.LIGHT_BLUE,"476F81","overworld"),
     URANIUM("#c:ingots/uranium", DyeColor.LIME,"9FC3A1","overworld"),
-    WOOD(Items.OAK_LOG, DyeColor.BROWN,"745A36","overworld"),
+    WOOD("#minecraft:logs", DyeColor.BROWN,"745A36","overworld"),
     ZINC("#c:ingots/zinc", DyeColor.LIGHT_GRAY,"AAB59D","overworld"),
 
     ENDERMAN(Items.ENDER_PEARL,DyeColor.BLACK, "161616","end"),

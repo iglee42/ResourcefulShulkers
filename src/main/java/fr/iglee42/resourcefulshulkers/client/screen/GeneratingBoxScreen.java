@@ -79,4 +79,10 @@ public class GeneratingBoxScreen extends AbstractContainerScreen<GeneratingBoxMe
     public boolean isPauseScreen() {
         return false;
     }
+
+    @Override
+    public void mouseMoved(double mouseX, double mouseY) {
+        children().stream().filter(widget -> widget instanceof ChooseItemWidget).forEach(widget -> ((ChooseItemWidget) widget).mouseMoved(mouseX, mouseY));
+        super.mouseMoved(mouseX, mouseY);
+    }
 }

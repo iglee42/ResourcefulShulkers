@@ -221,9 +221,11 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
 
     private boolean isInventoryFull(){
         for (int i = 1; i < 10; i++){
+            if (!inventory.getStackInSlot(i).isEmpty() &&!inventory.getStackInSlot(i).getItem().equals(getResourceGenerated().getItems().get(generatedIndex)))
+                continue;
             int maxSlotStackSize = inventory.getStackInSlot(i).getMaxStackSize();
             if (inventory.getStackInSlot(i).getCount() < maxSlotStackSize) return false;
-        }
+        } 
         return true;
     }
 
