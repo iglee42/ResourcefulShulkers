@@ -183,28 +183,16 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     public int calculateAddedDurability(){
         if ( getResourceGenerated() == null || getResourceGenerated().getItems().get(generatedIndex) == Items.AIR) return SHELL_DURABILITY_ADDED;
         int slotWithUpgrade = Upgrade.getFirstInventoryIndexWithUpgrade(upgrades,Upgrade.SHELL);
-        if ( slotWithUpgrade == -1 )return SHELL_DURABILITY_ADDED;
-        return (int) (SHELL_DURABILITY_ADDED * switch (upgrades.getStackInSlot(slotWithUpgrade).getCount()){
-            case 1 -> 1.5;
-            case 2 -> 2;
-            case 3 -> 2.5;
-            case 4 -> 3;
-            default -> 1;
-        });
+        if ( slotWithUpgrade == -1 )return ResourcefulShulkersConfig.BASE_SHELL.get();
+        return (int) (ResourcefulShulkersConfig.BASE_SHELL.get() * ( 1 + upgrades.getStackInSlot(slotWithUpgrade).getCount() * ResourcefulShulkersConfig.SHELL_UPGRADE_MODIFIER.get()));
     }
 
     private void addItems() {
         ShulkerType res = ShulkerType.getById(id);
         if (res != null) {
             int slotWithQuantity = Upgrade.getFirstInventoryIndexWithUpgrade(upgrades,Upgrade.QUANTITY);
-            int count = 1;
-            if (slotWithQuantity != -1) count = switch (upgrades.getStackInSlot(slotWithQuantity).getCount()){
-                case 1 -> 2;
-                case 2 -> 4;
-                case 3 -> 6;
-                case 4 -> 8;
-                default -> 1;
-            };
+            int count = ResourcefulShulkersConfig.BASE_GENERATION.get();
+            if (slotWithQuantity != -1) count = ResourcefulShulkersConfig.BASE_GENERATION.get() + ((upgrades.getStackInSlot(slotWithQuantity).getCount()) * ResourcefulShulkersConfig.QUANTITY_UPGRADE_MODIFIER.get());
             ItemStack stack = new ItemStack(res.getItems().get(generatedIndex),count);
             int slot = getFirstSlotNotFull(stack.getItem());
             if (slot == -1) return;

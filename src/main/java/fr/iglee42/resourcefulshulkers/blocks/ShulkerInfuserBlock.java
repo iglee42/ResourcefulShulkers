@@ -1,6 +1,7 @@
 package fr.iglee42.resourcefulshulkers.blocks;
 
 import fr.iglee42.igleelib.api.utils.ModsUtils;
+import fr.iglee42.resourcefulshulkers.ResourcefulShulkersConfig;
 import fr.iglee42.resourcefulshulkers.blocks.entites.ShulkerInfuserBlockEntity;
 import fr.iglee42.resourcefulshulkers.blocks.entites.ShulkerPedestalBlockEntity;
 import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
@@ -189,7 +190,7 @@ public class ShulkerInfuserBlock extends Block implements EntityBlock {
         if (Screen.hasShiftDown()){
             tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_infuser"));
             tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_infuser1"));
-            tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_infuser2"));
+            tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_infuser2",Component.literal(ResourcefulShulkersConfig.NO_AI_AURA.get().toString()).withStyle(ChatFormatting.LIGHT_PURPLE)));
         }
         else tooltips.add(Component.translatable("tooltip.resourcefulshulkers.press_shift"));
         super.appendHoverText(p_49816_, p_49817_, tooltips, p_49819_);

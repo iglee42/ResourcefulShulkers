@@ -1,5 +1,6 @@
 package fr.iglee42.resourcefulshulkers.blocks;
 
+import fr.iglee42.resourcefulshulkers.ResourcefulShulkersConfig;
 import fr.iglee42.resourcefulshulkers.blocks.entites.ShulkerAbsorberBlockEntity;
 import fr.iglee42.resourcefulshulkers.blocks.entites.ShulkerInfuserBlockEntity;
 import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
@@ -77,7 +78,7 @@ public class ShulkerAbsorberBlock extends Block implements EntityBlock {
         tooltips.add(Component.literal("Warning: Don't put too many in a chunk, it can produce lags !").withStyle(ChatFormatting.YELLOW));
         if (Screen.hasShiftDown()) {
             tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_absorber"));
-            tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_absorber1"));
+            tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_absorber1", Component.literal(ResourcefulShulkersConfig.ABSORBER_AURA.get().toString()).withStyle(ChatFormatting.LIGHT_PURPLE)));
         }
         else tooltips.add(Component.translatable("tooltip.resourcefulshulkers.press_shift"));
         super.appendHoverText(p_49816_, p_49817_, tooltips, p_49819_);

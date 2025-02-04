@@ -2,6 +2,7 @@ package fr.iglee42.resourcefulshulkers.blocks.entites;
 
 import fr.iglee42.igleelib.api.blockentities.SecondBlockEntity;
 import fr.iglee42.igleelib.api.utils.ITickableRecipe;
+import fr.iglee42.resourcefulshulkers.ResourcefulShulkersConfig;
 import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
 import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
 import fr.iglee42.resourcefulshulkers.utils.CommonUtils;
@@ -67,7 +68,7 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
             if (enabled){
                     if (hasEnoughAura()) {
                         recipe.second(level,pos,state,progress,this);
-                        ShulkerAuraManager.get(level).extractAura(pos,100);
+                        ShulkerAuraManager.get(level).extractAura(pos,ResourcefulShulkersConfig.NO_AI_AURA.get());
                     }
             }
 
@@ -108,7 +109,7 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
 
     public boolean hasEnoughAura() {
         if (level.isClientSide) return false;
-        return ShulkerAuraManager.get(level).getAura(getBlockPos()) >= 100;
+        return ShulkerAuraManager.get(level).getAura(getBlockPos()) >= ResourcefulShulkersConfig.NO_AI_AURA.get();
     }
 
 

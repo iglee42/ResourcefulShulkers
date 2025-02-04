@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Pair;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
+import fr.iglee42.resourcefulshulkers.ResourcefulShulkersConfig;
 import fr.iglee42.resourcefulshulkers.resourcepack.generation.*;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
@@ -51,7 +52,7 @@ public class InMemoryPack implements PackResources {
             LangsGenerator.generate();
             TagsGenerator.generate();
             LootTablesGenerator.generate();
-            RecipesGenerator.generate();
+            if (ResourcefulShulkersConfig.GENERATE_RECIPES.get())RecipesGenerator.generate();
 
             hasGenerated = true;
         }

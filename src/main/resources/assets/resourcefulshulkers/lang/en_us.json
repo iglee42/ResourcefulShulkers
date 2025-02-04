@@ -43,7 +43,7 @@
   "tooltip.resourcefulshulkers.purpur_target2": "Can be \u00a7dtargeted \u00a75by only \u00a7done shulker \u00a75at the same time",
   "tooltip.resourcefulshulkers.shulker_infuser": "\u00a7dRight Click \u00a75to start \u00a7dthe craft",
   "tooltip.resourcefulshulkers.shulker_infuser1": "\u00a7dSneak \u00a75+ \u00a7dRight Click \u00a75to show \u00a7dpedestals positions",
-  "tooltip.resourcefulshulkers.shulker_infuser2": "\u00a75Infuser \u00a7dconsumes 100 aura \u00a75every second to \u00a7dkeep \u00a75entity on it without AI",
+  "tooltip.resourcefulshulkers.shulker_infuser2": "\u00a75Infuser \u00a7dconsumes %s \u00a7daura \u00a75every second to \u00a7dkeep \u00a75entity on it without AI",
   "tooltip.resourcefulshulkers.shulker_absorber": "\u00a7dPlace \u00a75a \u00a7dshulker \u00a75on it to \u00a7dstart absorbing \u00a75it",
-  "tooltip.resourcefulshulkers.shulker_absorber1": "\u00a7dOne shulker \u00a75generates \u00a7d4096 aura"
+  "tooltip.resourcefulshulkers.shulker_absorber1": "\u00a7dOne shulker \u00a75generates %s \u00a7daura"
 }
