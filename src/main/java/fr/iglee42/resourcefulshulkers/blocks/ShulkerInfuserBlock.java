@@ -1,6 +1,7 @@
 package fr.iglee42.resourcefulshulkers.blocks;
 
 import fr.iglee42.igleelib.api.utils.ModsUtils;
+import fr.iglee42.igleelib.common.network.data.CreateGhostBlockPayload;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkersConfig;
 import fr.iglee42.resourcefulshulkers.blocks.entites.ShulkerInfuserBlockEntity;
 import fr.iglee42.resourcefulshulkers.blocks.entites.ShulkerPedestalBlockEntity;
@@ -43,6 +44,7 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -109,8 +111,10 @@ public class ShulkerInfuserBlock extends Block implements EntityBlock {
         if (player.getMainHandItem().is(Items.AIR)) {
             if (player.isCrouching()){
                 for (int[] pedestalPos : ShulkerItemInfusionRecipe.PEDESTAL_POSITION) {
-                    if (level.getBlockState(new BlockPos(pos.getX() + pedestalPos[0],pos.getY() + pedestalPos[1], pos.getZ() + pedestalPos[2])).isAir())
-                        ModsUtils.placeGhostBlock((ServerLevel) level,new BlockPos(pos.getX() + pedestalPos[0],pos.getY() + pedestalPos[1], pos.getZ() + pedestalPos[2]),ModBlocks.SHULKER_PEDESTAL.get().defaultBlockState(),10*20);
+                    PacketDistributor.sendToAllPlayers(new CreateGhostBlockPayload(new BlockPos(pos.getX() + pedestalPos[0],pos.getY() + pedestalPos[1], pos.getZ() + pedestalPos[2]),ModBlocks.SHULKER_PEDESTAL.get().defaultBlockState(),200));
+                    //if (level.getBlockState(new BlockPos(pos.getX() + pedestalPos[0],pos.getY() + pedestalPos[1], pos.getZ() + pedestalPos[2])).isAir())
+
+                        //ModsUtils.placeGhostBlock((ServerLevel) level,new BlockPos(pos.getX() + pedestalPos[0],pos.getY() + pedestalPos[1], pos.getZ() + pedestalPos[2]),ModBlocks.SHULKER_PEDESTAL.get().defaultBlockState(),10*20);
                 }
                 return InteractionResult.SUCCESS;
             }
