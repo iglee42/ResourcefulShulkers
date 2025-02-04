@@ -14,7 +14,7 @@ public class RecipesGenerator {
                 generatingBoxWithTag(r.id().getPath().toLowerCase(),r.item().substring(1),r.type().getPath());
                 shulkerWithTag(r.id().getPath().toLowerCase(),r.item().substring(1),r.type().getPath());
             } else{
-                generatingBox(r.id().getPath().toLowerCase(),r.type().getPath());
+                generatingBox(r.id().getPath().toLowerCase(),r.type().getPath(),r.item());
                 shulker(r.id().getPath().toLowerCase(),r.item(),r.type().getPath());
             }
         });
@@ -140,10 +140,10 @@ public class RecipesGenerator {
                     "      \"item\": \"resourcefulshulkers:"+type+"_essence\"\n" +
                     "    },\n" +
                     "    {\n" +
-                    "      \"item\": \"minecraft:chest\"\n" +
+                    "      \"tag\": \""+tag+"\"\n" +
                     "    },\n" +
                     "    {\n" +
-                    "      \"item\": \"minecraft:chest\"\n" +
+                    "      \"tag\": \""+tag+"\"\n" +
                     "    },\n" +
                     "    {\n" +
                     "      \"item\": \"minecraft:chest\"\n" +
@@ -159,7 +159,7 @@ public class RecipesGenerator {
         }
     }
 
-    private static void generatingBox(String name,String type){
+    private static void generatingBox(String name,String type,String item){
         try {
             FileWriter writer = new FileWriter(new File(PathConstant.RECIPES_PATH.toFile(), name+"_generating_box.json"));
             writer.write("{\n" +
@@ -182,9 +182,9 @@ public class RecipesGenerator {
                     "    },{\n" +
                     "      \"item\": \"resourcefulshulkers:"+type+"_essence\"\n" +
                     "    },{\n" +
-                    "      \"item\": \"minecraft:chest\"\n" +
+                    "      \"item\": \""+item+"\"\n" +
                     "    },{\n" +
-                    "      \"item\": \"minecraft:chest\"\n" +
+                    "      \"item\": \""+item+"\"\n" +
                     "    },{\n" +
                     "      \"item\": \"minecraft:chest\"\n" +
                     "    },{\n" +
