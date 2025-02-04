@@ -30,17 +30,9 @@ public class LootTablesGenerator {
                     "          \"type\": \"minecraft:item\",\n" +
                     "          \"functions\": [\n" +
                     "            {\n" +
-                    "              \"function\": \"minecraft:copy_name\",\n" +
-                    "              \"source\": \"block_entity\"\n" +
-                    "            },\n" +
-                    "            {\n" +
-                    "              \"function\": \"minecraft:copy_nbt\",\n" +
-                    "              \"ops\": [\n" +
-                    "                {\n" +
-                    "                  \"op\": \"replace\",\n" +
-                    "                  \"source\": \"remainingDurability\",\n" +
-                    "                  \"target\": \"aura\"\n" +
-                    "                }\n" +
+                    "              \"function\": \"minecraft:copy_components\",\n" +
+                    "              \"include\": [\n" +
+                    "                \"resourcefulshulkers:durability\"\n"+
                     "              ],\n" +
                     "              \"source\": \"block_entity\"\n" +
                     "            }\n" +

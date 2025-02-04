@@ -5,6 +5,7 @@ import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkersConfig;
 import fr.iglee42.resourcefulshulkers.blocks.GeneratingBoxBlock;
 import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
+import fr.iglee42.resourcefulshulkers.init.ModComponents;
 import fr.iglee42.resourcefulshulkers.init.ModItems;
 import fr.iglee42.resourcefulshulkers.item.UpgradeItem;
 import fr.iglee42.resourcefulshulkers.menu.GeneratingBoxMenu;
@@ -16,6 +17,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -407,6 +409,20 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
         BlockEntity blockentity = p_56258_.getBlockEntity(p_56259_);
         return blockentity instanceof GeneratingBoxBlockEntity ? Shapes.create(((GeneratingBoxBlockEntity)blockentity).getBoundingBox(p_56257_)) : Shapes.block();
     }
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder builder) {
+        super.collectImplicitComponents(builder);
+        builder.set(ModComponents.DURABILITY,remainingDurability);
+    }
+
+    @Override
+    protected void applyImplicitComponents(DataComponentInput input) {
+        super.applyImplicitComponents(input);
+        this.remainingDurability = input.get(ModComponents.DURABILITY);
+
+    }
+
 
     public int getGeneratingTick() {
         return generatingTick;
