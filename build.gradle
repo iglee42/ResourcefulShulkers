@@ -126,7 +126,8 @@ dependencies {
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
-    implementation "fr.iglee42:IgleeLib:${minecraft_version}-${lib_version}"
+    //implementation "fr.iglee42:IgleeLib:${minecraft_version}-${lib_version}"
+    implementation files("libs/igleelib-${minecraft_version}-${lib_version}.jar")
 
     implementation "curse.maven:time-in-a-bottle-universal-895919:6055930"
 
