@@ -72,6 +72,7 @@ public class ChooseItemWidget extends AbstractWidget {
             int x = (getX() + 24);
             int y = (getY() + 1);
             int maxCols = (int) Math.ceil(page.size() / 4);
+            if (maxCols == 0) maxCols = 1;
             int maxRows = 4;
 
             if (page.size() == 16) {
