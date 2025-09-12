@@ -10,14 +10,16 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 
+import java.util.Arrays;
 import java.util.List;
 
 import static net.minecraft.client.renderer.Sheets.SHULKER_SHEET;
 
-public record ShulkerType(ResourceLocation id, @DefaultParameter(stringValue = "minecraft:stone") String item, @DefaultParameter(stringValue = "black") String color, String shellItemColor, @DefaultParameter(stringValue = "minecraft:entity/shulker/shulker") String texture, @DefaultParameter(stringValue = "minecraft:entity/shulker/shulker") String boxTexture,ResourceLocation type) {
+public record ShulkerType(ResourceLocation id, Ingredient item, @DefaultParameter(stringValue = "black") String color, String shellItemColor, @DefaultParameter(stringValue = "minecraft:entity/shulker/shulker") String texture, @DefaultParameter(stringValue = "minecraft:entity/shulker/shulker") String boxTexture, ResourceLocation type) {
 
     public static ShulkerType getById(ResourceLocation id){
         return ShulkersManager.TYPES.stream().filter(r->r.id.equals(id)).findFirst().orElse(null);
@@ -38,13 +40,7 @@ public record ShulkerType(ResourceLocation id, @DefaultParameter(stringValue = "
     }
 
     public List<Item> getItems(){
-        if (item.startsWith("#")){
-            TagKey<Item> tagKey = TagKey.create(BuiltInRegistries.ITEM.key(),ResourceLocation.parse(item.substring(1)));
-            HolderSet.Named<Item> tag = BuiltInRegistries.ITEM.getOrCreateTag(tagKey);
-            return tag.stream().count() == 0 ? List.of(Items.AIR) : tag.stream().map(Holder::value).toList();
-        } else {
-            return List.of(BuiltInRegistries.ITEM.get(ResourceLocation.parse(item)));
-        }
+        return Arrays.stream(item.getItems()).map(ItemStack::getItem).toList();
     }
 
     public ResourceLocation getTexture(){

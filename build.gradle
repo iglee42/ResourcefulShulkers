@@ -95,6 +95,10 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
 
+    flatDir {
+        dir 'libs'
+    }
+
 
     maven {
         // location of the maven that hosts JEI files since January 2023
@@ -109,7 +113,7 @@ repositories {
 
     maven {
         name "igleeRepoReleases"
-        url "https://iglee.fr:8081/releases"
+        url "https://maven.iglee.fr/releases"
     }
     maven {
         url "https://cursemaven.com"
@@ -126,10 +130,10 @@ dependencies {
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
-    //implementation "fr.iglee42:IgleeLib:${minecraft_version}-${lib_version}"
-    implementation files("libs/igleelib-${minecraft_version}-${lib_version}.jar")
+    implementation "fr.iglee42:IgleeLib:${minecraft_version}-${lib_version}"
+    //implementation files("libs/igleelib-${minecraft_version}-${lib_version}.jar")
 
-    implementation "curse.maven:time-in-a-bottle-universal-895919:6055930"
+    compileOnly files('libs/tiab-neoforge-6.5.0.jar')
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }

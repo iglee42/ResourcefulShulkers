@@ -1,6 +1,8 @@
 package fr.iglee42.resourcefulshulkers;
 
 import com.google.common.collect.ImmutableSet;
+import com.mojang.serialization.JsonOps;
+import fr.iglee42.igleelib.IgleeLibrary;
 import fr.iglee42.resourcefulshulkers.init.*;
 import fr.iglee42.resourcefulshulkers.recipes.ModRecipes;
 import fr.iglee42.resourcefulshulkers.resourcepack.PackType;
@@ -10,8 +12,14 @@ import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
 import fr.iglee42.resourcefulshulkers.utils.TypesManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.api.distmarker.Dist;
@@ -61,6 +69,18 @@ public class ResourcefulShulkers {
             }
         } catch (Exception ignored) {
         }
+
+        IgleeLibrary.addClassParser(Ingredient.class,je-> {
+            if (je.isJsonPrimitive() && je.getAsJsonPrimitive().isString()){
+                String item = je.getAsString();
+                if (item.startsWith("#")){
+                    TagKey<Item> key = TagKey.create(Registries.ITEM,ResourceLocation.parse(item.substring(1)));
+                    return Ingredient.of(key);
+                } else
+                    return Ingredient.of(BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(je.getAsString())));
+            }
+            return Ingredient.CODEC_NONEMPTY.parse(JsonOps.INSTANCE,je).getOrThrow();
+        });
     }
     private void commonSetup(final FMLCommonSetupEvent event) {
         //Code from Tinker's Construct
