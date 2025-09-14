@@ -43,6 +43,17 @@ public class ResourcefulShulkers {
 
 
     public ResourcefulShulkers(IEventBus bus, ModContainer container) {
+        IgleeLibrary.addClassParser(Ingredient.class,je-> {
+            if (je.isJsonPrimitive() && je.getAsJsonPrimitive().isString()){
+                String item = je.getAsString();
+                if (item.startsWith("#")){
+                    TagKey<Item> key = TagKey.create(Registries.ITEM,ResourceLocation.parse(item.substring(1)));
+                    return Ingredient.of(key);
+                } else
+                    return Ingredient.of(BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(je.getAsString())));
+            }
+            return Ingredient.CODEC_NONEMPTY.parse(JsonOps.INSTANCE,je).getOrThrow();
+        });
         TypesManager.init();
         ShulkersManager.init();
 
@@ -62,6 +73,7 @@ public class ResourcefulShulkers {
         bus.addListener(ModCreativeTabs::addCreative);
 
         container.registerConfig(ModConfig.Type.COMMON,ResourcefulShulkersConfig.SPEC,"resourcefulshulkers/common.toml");
+        container.registerConfig(ModConfig.Type.CLIENT,ResourcefulShulkersConfig.Client.SPEC,"resourcefulshulkers/common.toml");
 
         try {
             if (FMLEnvironment.dist == Dist.CLIENT) {
@@ -69,18 +81,6 @@ public class ResourcefulShulkers {
             }
         } catch (Exception ignored) {
         }
-
-        IgleeLibrary.addClassParser(Ingredient.class,je-> {
-            if (je.isJsonPrimitive() && je.getAsJsonPrimitive().isString()){
-                String item = je.getAsString();
-                if (item.startsWith("#")){
-                    TagKey<Item> key = TagKey.create(Registries.ITEM,ResourceLocation.parse(item.substring(1)));
-                    return Ingredient.of(key);
-                } else
-                    return Ingredient.of(BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(je.getAsString())));
-            }
-            return Ingredient.CODEC_NONEMPTY.parse(JsonOps.INSTANCE,je).getOrThrow();
-        });
     }
     private void commonSetup(final FMLCommonSetupEvent event) {
         //Code from Tinker's Construct

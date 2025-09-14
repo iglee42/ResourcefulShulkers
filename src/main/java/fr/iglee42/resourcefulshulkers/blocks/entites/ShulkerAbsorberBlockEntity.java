@@ -3,10 +3,13 @@ package fr.iglee42.resourcefulshulkers.blocks.entites;
 import fr.iglee42.igleelib.api.blockentities.SecondBlockEntity;
 import fr.iglee42.igleelib.api.utils.ModsUtils;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkersConfig;
+import fr.iglee42.resourcefulshulkers.entity.ResourceShulker;
 import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
 import fr.iglee42.resourcefulshulkers.init.ModItems;
 import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
 import fr.iglee42.resourcefulshulkers.utils.CommonUtils;
+import fr.iglee42.resourcefulshulkers.utils.ShulkerType;
+import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -49,16 +52,23 @@ public class ShulkerAbsorberBlockEntity extends SecondBlockEntity {
         if (level.isClientSide) return;
         Vec3 posi = Vec3.atCenterOf(pos.above());
         if (enable) {
-            spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SHULKER_SHELL)), (ServerLevel) level, posi.add(0.5, 0, 0), posi.add(1.5, -1, 0), 0);
-            spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SHULKER_SHELL)), (ServerLevel) level, posi.add(-0.5, 0, 0), posi.add(-1.5, -1, 0), 0);
-            spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SHULKER_SHELL)), (ServerLevel) level, posi.add(0, 0, 0.5), posi.add(0, -1, 1.5), 0);
-            spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SHULKER_SHELL)), (ServerLevel) level, posi.add(0, 0, -0.5), posi.add(0, -1, -1.5), 0);
+            if (getCurrentTarget().getType().equals(EntityType.SHULKER)) {
+                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SHULKER_SHELL)), (ServerLevel) level, posi.add(0.5, 0, 0), posi.add(1.5, -1, 0), 0);
+                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SHULKER_SHELL)), (ServerLevel) level, posi.add(-0.5, 0, 0), posi.add(-1.5, -1, 0), 0);
+                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SHULKER_SHELL)), (ServerLevel) level, posi.add(0, 0, 0.5), posi.add(0, -1, 1.5), 0);
+                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SHULKER_SHELL)), (ServerLevel) level, posi.add(0, 0, -0.5), posi.add(0, -1, -1.5), 0);
 
-            if (progress > 2) {
-                spawnParticle(ParticleTypes.END_ROD, (ServerLevel) level, posi.add(0.7, 2, 0), posi.add(0, 320 - posi.y, 0), 32);
-                spawnParticle(ParticleTypes.END_ROD, (ServerLevel) level, posi.add(-0.7, 2, 0), posi.add(0, 320 - posi.y, 0), 32);
-                spawnParticle(ParticleTypes.END_ROD, (ServerLevel) level, posi.add(0, 2, 0.7), posi.add(0, 320 - posi.y, 0), 32);
-                spawnParticle(ParticleTypes.END_ROD, (ServerLevel) level, posi.add(0, 2, -0.7), posi.add(0, 320 - posi.y, 0), 32);
+                if (progress > 2) {
+                    spawnParticle(ParticleTypes.END_ROD, (ServerLevel) level, posi.add(0.7, 2, 0), posi.add(0, 320 - posi.y, 0), 32);
+                    spawnParticle(ParticleTypes.END_ROD, (ServerLevel) level, posi.add(-0.7, 2, 0), posi.add(0, 320 - posi.y, 0), 32);
+                    spawnParticle(ParticleTypes.END_ROD, (ServerLevel) level, posi.add(0, 2, 0.7), posi.add(0, 320 - posi.y, 0), 32);
+                    spawnParticle(ParticleTypes.END_ROD, (ServerLevel) level, posi.add(0, 2, -0.7), posi.add(0, 320 - posi.y, 0), 32);
+                }
+            } else if (getCurrentTarget() instanceof ResourceShulker s) {
+                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ModItems.getShellById(s.getTypeId()))), (ServerLevel) level, posi.add(0.5, 0, 0), posi.add(1.5, -1, 0), 0);
+                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ModItems.getShellById(s.getTypeId()))), (ServerLevel) level, posi.add(-0.5, 0, 0), posi.add(-1.5, -1, 0), 0);
+                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ModItems.getShellById(s.getTypeId()))), (ServerLevel) level, posi.add(0, 0, 0.5), posi.add(0, -1, 1.5), 0);
+                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ModItems.getShellById(s.getTypeId()))), (ServerLevel) level, posi.add(0, 0, -0.5), posi.add(0, -1, -1.5), 0);
             }
         }
     }
@@ -80,6 +90,18 @@ public class ShulkerAbsorberBlockEntity extends SecondBlockEntity {
                 enable = false;
             }
 
+        } else if (getCurrentTarget() != null && getCurrentTarget() instanceof ResourceShulker s){
+            enable = true;
+            progress++;
+            s.setNoAi(true);
+            level.sendBlockUpdated(blockPos,blockState,blockState,Block.UPDATE_CLIENTS);
+            if (progress == MAX_PROGRESS){
+                getCurrentTarget().remove(Entity.RemovalReason.KILLED);
+                Block.popResource(level,blockPos.above(),new ItemStack(ModItems.SHULKER_HEAD.get()));
+                Block.popResource(level,blockPos.above(),new ItemStack(ModItems.getShellById(s.getTypeId()),2));
+                progress = 0;
+                enable = false;
+            }
         } else {
             enable = false;
             progress = 0;

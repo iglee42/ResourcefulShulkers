@@ -4,9 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
+import fr.iglee42.resourcefulshulkers.utils.ShulkerType;
 import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
 import fr.iglee42.resourcefulshulkers.resourcepack.PathConstant;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -33,12 +36,13 @@ public class RecipesGenerator {
                 ingredients.add(item.toJson());
             }
             for (int i = 0; i < 4; i++) {
-                ingredients.add("resourcefulshulkers:"+type+"_essence");
+                ingredients.add(Ingredient.of(ForgeRegistries.ITEMS.getValue(new ResourceLocation("resourcefulshulkers:"+type+"_essence"))).toJson());
             }
+            recipe.add("pedestalsIngredients",ingredients);
             writer.write(new Gson().toJson(recipe));
             writer.close();
         } catch (Exception exception){
-            ResourcefulShulkers.LOGGER.error("An error was detected when blockstates generating",exception);
+            ResourcefulShulkers.LOGGER.error("An error was detected when recipes generating",exception);
         }
     }
 
@@ -60,14 +64,15 @@ public class RecipesGenerator {
                 ingredients.add(item.toJson());
             }
             for (int i = 0; i < 2; i++) {
-                ingredients.add("resourcefulshulkers:"+name+"_shell");
+                ingredients.add(Ingredient.of(ForgeRegistries.ITEMS.getValue(new ResourceLocation("resourcefulshulkers:"+name+"_shell"))).toJson());
             }
             for (int i = 0; i < 2; i++) {
-                ingredients.add("resourcefulshulkers:"+type+"_essence");
+                ingredients.add(Ingredient.of(ForgeRegistries.ITEMS.getValue(new ResourceLocation("resourcefulshulkers:"+type+"_essence"))).toJson());
             }
             for (int i = 0; i < 2; i++) {
-                ingredients.add("minecraft:chest");
+                ingredients.add(Ingredient.of(ForgeRegistries.ITEMS.getValue(new ResourceLocation("minecraft:chest"))).toJson());
             }
+            recipe.add("pedestalsIngredients",ingredients);
             writer.write(new Gson().toJson(recipe));
             writer.close();
         } catch (Exception exception){

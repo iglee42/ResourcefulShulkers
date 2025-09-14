@@ -1,5 +1,6 @@
 package fr.iglee42.resourcefulshulkers.utils;
 
+import com.google.common.collect.Lists;
 import fr.iglee42.igleelib.api.utils.DefaultParameter;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
 import net.minecraft.client.resources.model.Material;
@@ -12,9 +13,12 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import static net.minecraft.client.renderer.Sheets.SHULKER_SHEET;
@@ -40,7 +44,7 @@ public record ShulkerType(ResourceLocation id, Ingredient item, @DefaultParamete
     }
 
     public List<Item> getItems(){
-        return Arrays.stream(item.getItems()).map(ItemStack::getItem).toList();
+        return Arrays.stream(item.getItems()).map(ItemStack::getItem).sorted(Comparator.comparingInt(BuiltInRegistries.ITEM::getId)).toList();
     }
 
     public ResourceLocation getTexture(){
@@ -49,6 +53,22 @@ public record ShulkerType(ResourceLocation id, Ingredient item, @DefaultParamete
 
     public ResourceLocation getBoxTexture(){
         return boxTexture != null ? ResourceLocation.parse(boxTexture) : ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID,"entity/boxes/"+id.getPath().toLowerCase()+".png");
+    }
+
+    public boolean hasItem(){
+        return Arrays.stream(item.values).anyMatch(v->{
+            if (v instanceof Ingredient.TagValue tv){
+                List<ItemStack> list = Lists.newArrayList();
+                Iterator var2 = BuiltInRegistries.ITEM.getTagOrEmpty(tv.tag()).iterator();
+
+                while(var2.hasNext()) {
+                    Holder<Item> holder = (Holder)var2.next();
+                    list.add(new ItemStack(holder));
+                }
+                return !list.isEmpty();
+            }
+            return v.getItems().stream().anyMatch(it->!it.isEmpty());
+        });
     }
 
 }

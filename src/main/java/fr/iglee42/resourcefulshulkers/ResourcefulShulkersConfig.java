@@ -31,4 +31,22 @@ public class ResourcefulShulkersConfig {
         BUILDER.pop();
         SPEC = BUILDER.build();
     }
+
+    public static class Client {
+        public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+        public static final ForgeConfigSpec SPEC;
+
+        public static final ForgeConfigSpec.ConfigValue<Integer> AURA_BAR_X;
+        public static final ForgeConfigSpec.ConfigValue<Integer> AURA_BAR_Y;
+
+        static {
+            BUILDER.push("ResourcefulShulker Client Config");
+
+            AURA_BAR_X = BUILDER.comment(" The x position of the aura bar, it is based on the right of the screen , so it's screenWidth - auraBarX").defineInRange("aura_bar_x", 24,0,Integer.MAX_VALUE);
+            AURA_BAR_Y = BUILDER.comment(" The y position of the aura bar").defineInRange("aura_bar_y", 0,0,Integer.MAX_VALUE);
+
+            BUILDER.pop();
+            SPEC = BUILDER.build();
+        }
+    }
 }

@@ -13,7 +13,6 @@ import fr.iglee42.resourcefulshulkers.network.data.ItemStackSyncPayload;
 import fr.iglee42.resourcefulshulkers.utils.ShulkerType;
 import fr.iglee42.resourcefulshulkers.utils.TIABUtils;
 import fr.iglee42.resourcefulshulkers.utils.Upgrade;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -32,7 +31,6 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -60,8 +58,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuProvider {
 
@@ -71,7 +67,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     private ShulkerBoxBlockEntity.AnimationStatus animationStatus = ShulkerBoxBlockEntity.AnimationStatus.CLOSED;
     private float progress;
     private float progressOld;
-    private boolean isTimeinBottled;
+    private boolean isTimeInBottled;
     private int generatedIndex = 0;
 
     private ResourceLocation id;
@@ -90,8 +86,6 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
             }
         }
     };
-
-
     private ItemStackHandler upgrades = new ItemStackHandler(4){
         @NotNull
         @Override
@@ -115,7 +109,6 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     };
     private int remainingDurability;
     private int generatingTick;
-    private boolean explosing;
 
 
     public GeneratingBoxBlockEntity(BlockPos pos, BlockState state, ResourceLocation id) {
@@ -127,18 +120,19 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
         this(blockPos,blockState,ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID,"empty"));
     }
 
-    public void tick(Level level, BlockPos blockPos, BlockState blockState){
-        SecondBlockEntity.tick(level,blockPos,blockState,this);
-        updateAnimation(level,blockPos,blockState);
-        //ModsUtils.debugSign(level,blockPos,entity.generatingTick+"",entity.inventory.getStackInSlot(1).getCount() + "",entity.getRemainingDurability() + "/"+ MAX_DURABILITY);
-        if (!level.isClientSide && getResourceGenerated() != null && getResourceGenerated().getItems().get(generatedIndex) != Items.AIR) {
-            //ModMessages.sendToClients(new GeneratingTickSyncS2CPacket(entity.generatingTick, blockPos));
-            //ModMessages.sendToClients(new GeneratorDurabilitySyncS2CPacket(entity.remainingDurability, blockPos));
+    public static void tick(Level level, BlockPos blockPos, BlockState blockState,GeneratingBoxBlockEntity entity){
+        SecondBlockEntity.tick(level,blockPos,blockState,entity);
+        entity.updateAnimation(level,blockPos,blockState);
+        entity.tick(level,blockPos,blockState);
+    }
+
+    private void tick(Level level,BlockPos blockPos,BlockState blockState){
+        if (!level.isClientSide && getResourceGenerated() != null && getResourceGenerated().hasItem() && getResourceGenerated().getItems().get(generatedIndex) != Items.AIR) {
             level.sendBlockUpdated(blockPos,blockState,blockState, GeneratingBoxBlock.UPDATE_CLIENTS);
             if (ModList.get().isLoaded("tiab") && ResourcefulShulkersConfig.TIAB_PROTECTION.get()){
-                isTimeinBottled = TIABUtils.checkTIAB(level,blockPos);
+                isTimeInBottled = TIABUtils.checkTIAB(level,blockPos);
             }
-            if (isTimeinBottled) return;
+            if (isTimeInBottled) return;
             if (remainingDurability > 0 && !isInventoryFull()){
                 int slotWithSpeed = Upgrade.getFirstInventoryIndexWithUpgrade(upgrades,Upgrade.SPEED);
                 generatingTick += (1 + (slotWithSpeed == -1 ? 0 : upgrades.getStackInSlot(slotWithSpeed).getCount()));
@@ -147,30 +141,17 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
                 addItems();
                 generatingTick = 0;
                 int slotWithDurability = Upgrade.getFirstInventoryIndexWithUpgrade(upgrades,Upgrade.DURABILITY);
-                if (remainingDurability > 0 && new Random().nextInt(5) < (5 - (slotWithDurability == -1 ? 0 : upgrades.getStackInSlot(slotWithDurability).getCount()))){
+                if (remainingDurability > 0 &&
+                        new Random().nextInt(5) < (5 - (slotWithDurability == -1 ? 0 : upgrades.getStackInSlot(slotWithDurability).getCount()))){
                     remainingDurability--;
                 }
-            }
-            else if (generatingTick / 20 > 5 && !explosing){
-                AABB aabb = new AABB(Vec3.atLowerCornerOf(blockPos.offset(-2,-2,-2)),Vec3.atBottomCenterOf(blockPos.offset(2,2,2)));
-                level.getNearbyPlayers(TargetingConditions.forNonCombat(),null,aabb).forEach(p->p.displayClientMessage(Component.literal("You change manually the time of generating box so it will explode in 3 seconds!").withStyle(ChatFormatting.RED),false));
-                explosing = true;
-                Timer timer = new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        level.explode(null,blockPos.getX(),blockPos.getY(),blockPos.getZ(), 12,false, Level.ExplosionInteraction.BLOCK);
-                    }
-                },1);
-
             }
         }
     }
 
-
     @Override
     protected void second(Level level, BlockPos blockPos, BlockState blockState, SecondBlockEntity be) {
-        if (!level.isClientSide && getResourceGenerated() != null && getResourceGenerated().getItems().get(generatedIndex) != Items.AIR){
+        if (!level.isClientSide && getResourceGenerated() != null && getResourceGenerated().hasItem()){
             int addedDurability = calculateAddedDurability();
             if (remainingDurability <= (MAX_DURABILITY - addedDurability)){
                 if(!inventory.getStackInSlot(0).isEmpty()){
@@ -183,7 +164,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     }
 
     public int calculateAddedDurability(){
-        if ( getResourceGenerated() == null || getResourceGenerated().getItems().get(generatedIndex) == Items.AIR) return SHELL_DURABILITY_ADDED;
+        if ( getResourceGenerated() == null || !getResourceGenerated().hasItem()) return SHELL_DURABILITY_ADDED;
         int slotWithUpgrade = Upgrade.getFirstInventoryIndexWithUpgrade(upgrades,Upgrade.SHELL);
         if ( slotWithUpgrade == -1 )return ResourcefulShulkersConfig.BASE_SHELL.get();
         return (int) (ResourcefulShulkersConfig.BASE_SHELL.get() * ( 1 + upgrades.getStackInSlot(slotWithUpgrade).getCount() * ResourcefulShulkersConfig.SHELL_UPGRADE_MODIFIER.get()));
@@ -245,8 +226,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
         this.upgrades.deserializeNBT(provider,tag.getCompound("upgrades"));
         this.remainingDurability = tag.getInt("remainingDurability");
         this.generatingTick = tag.getInt("generatingTick");
-        this.explosing = tag.getBoolean("isExplosing");
-        this.isTimeinBottled = tag.getBoolean("isTimeinBottled");
+        this.isTimeInBottled = tag.getBoolean("isTimeInBottled");
         this.generatedIndex = tag.getInt("generatedIndex") >= getResourceGenerated().getItems().size() ? 0 : tag.getInt("generatedIndex");
     }
 
@@ -264,8 +244,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
         tag.put("upgrades", this.upgrades.serializeNBT(provider));
         tag.putInt("remainingDurability",this.remainingDurability);
         tag.putInt("generatingTick", this.generatingTick);
-        tag.putBoolean("isExplosing",this.explosing);
-        tag.putBoolean("isTimeinBottled",this.isTimeinBottled);
+        tag.putBoolean("isTimeInBottled",this.isTimeInBottled);
         tag.putInt("generatedIndex",this.generatedIndex);
     }
 
@@ -464,7 +443,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     }
 
     public boolean isTimeInABottled() {
-        return isTimeinBottled;
+        return isTimeInBottled;
     }
 
     public ItemStackHandler getUpgrades() {

@@ -1,6 +1,7 @@
 package fr.iglee42.resourcefulshulkers.aura;
 
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
+import fr.iglee42.resourcefulshulkers.ResourcefulShulkersConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.screens.Screen;
@@ -10,8 +11,8 @@ public class AuraOverlay {
 
     public static final LayeredDraw.Layer HUD_AURA = (gui, tracker) -> {
         String toDisplay = String.valueOf(ClientAuraData.getChunkMana());
-        int x = gui.guiWidth() - 24;
-        int y = 0;
+        int x = gui.guiWidth() - ResourcefulShulkersConfig.Client.AURA_BAR_X.get();
+        int y = ResourcefulShulkersConfig.Client.AURA_BAR_Y.get();
         if (x >= 0 && y >= 0 && ClientAuraData.getChunkMana() > 0) {
             gui.blit( ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID, "textures/gui/aura_bar.png"),x, y, 0, 0, 24, 84, 256, 256);
 

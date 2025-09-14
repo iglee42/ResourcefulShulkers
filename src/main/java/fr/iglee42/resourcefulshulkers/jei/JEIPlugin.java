@@ -74,13 +74,13 @@ public class JEIPlugin implements IModPlugin {
         if (registration.getJeiHelpers().getRecipeType(ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID, "box_output")).isPresent()){
             List<IJeiInputOutputRecipe> shulkersOutputRecipes = new ArrayList<>();
             ShulkersManager.TYPES.forEach(s->{
-                if (s.getItems().getFirst() != Items.AIR)shulkersOutputRecipes.add(new InputOutputRecipe(Ingredient.of(ModBlocks.getBoxById(s.id())),Ingredient.of(s.getItems().stream().map(ItemStack::new))));
+                if (s.hasItem())shulkersOutputRecipes.add(new InputOutputRecipe(Ingredient.of(ModBlocks.getBoxById(s.id())),s.item()));
             });
             registration.addRecipes(BoxOutputRecipeCategory.RECIPE_TYPE,shulkersOutputRecipes);
         }
         List<IJeiInputOutputRecipe> shellOutputRecipes = new ArrayList<>();
         ShulkersManager.TYPES.forEach(s->{
-            if (s.getItems().getFirst() != Items.AIR)shellOutputRecipes.add(new InputOutputRecipe(Ingredient.of(ModItems.getShulkerItemById(s.id())),Ingredient.of(ModItems.getShellById(s.id()))));
+            if (s.hasItem())shellOutputRecipes.add(new InputOutputRecipe(Ingredient.of(ModItems.getShulkerItemById(s.id())),Ingredient.of(ModItems.getShellById(s.id()))));
         });
         registration.addRecipes(ShellOutputRecipeCategory.RECIPE_TYPE,shellOutputRecipes);
 
