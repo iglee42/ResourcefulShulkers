@@ -109,7 +109,7 @@ public class GeneratingBoxBlock extends Block implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<T> type) {
-        return type.equals(ModBlockEntities.GENERATING_BOX_BLOCK_ENTITY.get()) ? ((level, blockPos, blockState, t) -> ((GeneratingBoxBlockEntity)t).tick(level,blockPos,blockState)) : null;
+        return type.equals(ModBlockEntities.GENERATING_BOX_BLOCK_ENTITY.get()) ? ((level, blockPos, blockState, t) -> GeneratingBoxBlockEntity.tick(level,blockPos,blockState, (GeneratingBoxBlockEntity) t)) : null;
     }
 
 

@@ -3,13 +3,14 @@ package fr.iglee42.resourcefulshulkers.resourcepack.generation;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
 import fr.iglee42.resourcefulshulkers.utils.ShulkerType;
 import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
 import fr.iglee42.resourcefulshulkers.resourcepack.PathConstant;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -33,10 +34,10 @@ public class RecipesGenerator {
             recipe.addProperty("resultEntity","resourcefulshulkers:"+name+"_shulker");
             JsonArray ingredients = new JsonArray();
             for (int i = 0; i < 4; i++) {
-                ingredients.add(item.toJson());
+                ingredients.add(Ingredient.CODEC_NONEMPTY.encodeStart(JsonOps.INSTANCE,item).getOrThrow());
             }
             for (int i = 0; i < 4; i++) {
-                ingredients.add(Ingredient.of(ForgeRegistries.ITEMS.getValue(new ResourceLocation("resourcefulshulkers:"+type+"_essence"))).toJson());
+                ingredients.add(Ingredient.CODEC_NONEMPTY.encodeStart(JsonOps.INSTANCE,Ingredient.of(BuiltInRegistries.ITEM.get(ResourceLocation.parse("resourcefulshulkers:"+type+"_essence")))).getOrThrow());
             }
             recipe.add("pedestalsIngredients",ingredients);
             writer.write(new Gson().toJson(recipe));
@@ -61,16 +62,16 @@ public class RecipesGenerator {
             recipe.add("resultNbt",nbts);
             JsonArray ingredients = new JsonArray();
             for (int i = 0; i < 2; i++) {
-                ingredients.add(item.toJson());
+                ingredients.add(Ingredient.CODEC_NONEMPTY.encodeStart(JsonOps.INSTANCE,item).getOrThrow());
             }
             for (int i = 0; i < 2; i++) {
-                ingredients.add(Ingredient.of(ForgeRegistries.ITEMS.getValue(new ResourceLocation("resourcefulshulkers:"+name+"_shell"))).toJson());
+                ingredients.add(Ingredient.CODEC_NONEMPTY.encodeStart(JsonOps.INSTANCE,Ingredient.of(BuiltInRegistries.ITEM.get(ResourceLocation.parse("resourcefulshulkers:"+name+"_shell")))).getOrThrow());
             }
             for (int i = 0; i < 2; i++) {
-                ingredients.add(Ingredient.of(ForgeRegistries.ITEMS.getValue(new ResourceLocation("resourcefulshulkers:"+type+"_essence"))).toJson());
+                ingredients.add(Ingredient.CODEC_NONEMPTY.encodeStart(JsonOps.INSTANCE,Ingredient.of(BuiltInRegistries.ITEM.get(ResourceLocation.parse("resourcefulshulkers:"+type+"_essence")))).getOrThrow());
             }
             for (int i = 0; i < 2; i++) {
-                ingredients.add(Ingredient.of(ForgeRegistries.ITEMS.getValue(new ResourceLocation("minecraft:chest"))).toJson());
+                ingredients.add(Ingredient.CODEC_NONEMPTY.encodeStart(JsonOps.INSTANCE,Ingredient.of(BuiltInRegistries.ITEM.get(ResourceLocation.parse("minecraft:chest")))).getOrThrow());
             }
             recipe.add("pedestalsIngredients",ingredients);
             writer.write(new Gson().toJson(recipe));

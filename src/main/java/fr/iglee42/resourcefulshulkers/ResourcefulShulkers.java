@@ -73,7 +73,7 @@ public class ResourcefulShulkers {
         bus.addListener(ModCreativeTabs::addCreative);
 
         container.registerConfig(ModConfig.Type.COMMON,ResourcefulShulkersConfig.SPEC,"resourcefulshulkers/common.toml");
-        container.registerConfig(ModConfig.Type.CLIENT,ResourcefulShulkersConfig.Client.SPEC,"resourcefulshulkers/common.toml");
+        container.registerConfig(ModConfig.Type.CLIENT,ResourcefulShulkersConfig.Client.SPEC,"resourcefulshulkers/client.toml");
 
         try {
             if (FMLEnvironment.dist == Dist.CLIENT) {
