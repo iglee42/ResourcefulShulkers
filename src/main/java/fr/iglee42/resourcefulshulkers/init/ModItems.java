@@ -1,5 +1,6 @@
 package fr.iglee42.resourcefulshulkers.init;
 
+import fr.iglee42.resourcefulshulkers.ResourcefulShulkersConfig;
 import fr.iglee42.resourcefulshulkers.entity.CustomShulker;
 import fr.iglee42.resourcefulshulkers.item.ShellItem;
 import fr.iglee42.resourcefulshulkers.item.ShulkerItem;
@@ -9,6 +10,7 @@ import fr.iglee42.resourcefulshulkers.utils.Upgrade;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -101,6 +103,13 @@ public class ModItems {
         @Override
         public void appendHoverText(ItemStack p_40572_, @Nullable TooltipContext p_40573_, List<Component> tooltips, TooltipFlag p_40575_) {
             tooltips.add(Component.literal("Try it on your head !").withStyle(ChatFormatting.LIGHT_PURPLE));
+            if (ResourcefulShulkersConfig.HEAD_TARGET_ESSENCE.get()) {
+                if (Screen.hasShiftDown()) {
+                    tooltips.add(Component.translatable("tooltip.resourcefulshulkers.place_on_target").withStyle(ChatFormatting.DARK_PURPLE));
+                } else {
+                    tooltips.add(Component.translatable("tooltip.resourcefulshulkers.press_shift").withStyle(ChatFormatting.DARK_PURPLE));
+                }
+            }
             super.appendHoverText(p_40572_, p_40573_, tooltips, p_40575_);
         }
     });

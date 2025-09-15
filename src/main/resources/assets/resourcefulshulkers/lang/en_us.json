@@ -45,5 +45,7 @@
   "tooltip.resourcefulshulkers.shulker_infuser1": "\u00a7dSneak \u00a75+ \u00a7dRight Click \u00a75to show \u00a7dpedestals positions",
   "tooltip.resourcefulshulkers.shulker_infuser2": "\u00a75Infuser \u00a7dconsumes %s \u00a7daura \u00a75every second to \u00a7dkeep \u00a75entity on it without AI",
   "tooltip.resourcefulshulkers.shulker_absorber": "\u00a7dPlace \u00a75a \u00a7dshulker \u00a75on it to \u00a7dstart absorbing \u00a75it",
-  "tooltip.resourcefulshulkers.shulker_absorber1": "\u00a7dOne shulker \u00a75generates %s \u00a7daura"
+  "tooltip.resourcefulshulkers.shulker_absorber1": "\u00a7dOne shulker \u00a75generates %s \u00a7daura",
+  "tooltip.resourcefulshulkers.shulker_absorber2": "\u00a75A \u00a7dResource Shulker \u00a75can be placed on it to \u00a7dgenerate 2 shells",
+  "tooltip.resourcefulshulkers.place_on_target": "\u00a75If placed on a \u00a7dpurpur target\u00a75, it drops \u00a7d2 base essences"
 }

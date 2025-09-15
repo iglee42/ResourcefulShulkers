@@ -15,6 +15,8 @@ public class ResourcefulShulkersConfig {
     public static final ModConfigSpec.ConfigValue<Integer> QUANTITY_UPGRADE_MODIFIER;
     public static final ModConfigSpec.ConfigValue<Integer> BASE_SHELL;
     public static final ModConfigSpec.ConfigValue<Double> SHELL_UPGRADE_MODIFIER;
+    public static final ModConfigSpec.ConfigValue<Boolean> HEAD_TARGET_ESSENCE;
+    public static final ModConfigSpec.ConfigValue<Boolean> ABSORBER_WORKS_AS_TARGET;
 
     static {
         BUILDER.push("ResourcefulShulker Config");
@@ -27,6 +29,8 @@ public class ResourcefulShulkersConfig {
         QUANTITY_UPGRADE_MODIFIER = BUILDER.comment(" The modifier for each quantity upgrade").defineInRange("quantity_upgrade_modifier", 2,0,Integer.MAX_VALUE);
         BASE_SHELL = BUILDER.comment(" The base amount of durability restored by a shulker shell. Amount is calculated with: base * (nb_upgrades * modifier)"," Warning: The shell is consumed only if the box is missing at least the amount of durability restored by the shell").defineInRange("base_shell_durability", 4,0,64);
         SHELL_UPGRADE_MODIFIER = BUILDER.comment(" The modifier for each shell upgrade").defineInRange("shell_upgrade_modifier", 0.5,0,Double.MAX_VALUE);
+        HEAD_TARGET_ESSENCE = BUILDER.comment(" Define if a shulker head is placed on a purpur target, it should be consumed to drop 2 base essences").define("head_target_essence", true);
+        ABSORBER_WORKS_AS_TARGET = BUILDER.comment(" Define if the absorber can be used to create shulker shells by placing resource shulkers on it").define("absorber_works_as_target", true);
 
         BUILDER.pop();
         SPEC = BUILDER.build();

@@ -1,10 +1,15 @@
 package fr.iglee42.resourcefulshulkers.blocks;
 
+import fr.iglee42.resourcefulshulkers.ResourcefulShulkersConfig;
 import fr.iglee42.resourcefulshulkers.entity.CustomShulkerBullet;
+import fr.iglee42.resourcefulshulkers.init.ModBlocks;
 import fr.iglee42.resourcefulshulkers.init.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +26,7 @@ import java.util.List;
 
 public class PurpurTargetBlock extends TargetBlock {
     public PurpurTargetBlock() {
-        super(Properties.of().strength(1.5F,6.0F).requiresCorrectToolForDrops());
+        super(Properties.of().randomTicks().strength(1.5F,6.0F).requiresCorrectToolForDrops());
     }
 
     @Override
@@ -34,7 +39,6 @@ public class PurpurTargetBlock extends TargetBlock {
 
     @Override
     public void appendHoverText(ItemStack p_49816_, Item.TooltipContext p_49817_, List<Component> tooltips, TooltipFlag p_49819_) {
-
         if (Screen.hasShiftDown()){
             tooltips.add(Component.translatable("tooltip.resourcefulshulkers.purpur_target").withStyle(ChatFormatting.DARK_PURPLE));
             tooltips.add(Component.translatable("tooltip.resourcefulshulkers.purpur_target1").withStyle(ChatFormatting.DARK_PURPLE));
@@ -43,6 +47,15 @@ public class PurpurTargetBlock extends TargetBlock {
             tooltips.add(Component.translatable("tooltip.resourcefulshulkers.press_shift").withStyle(ChatFormatting.DARK_PURPLE));
         }
         super.appendHoverText(p_49816_, p_49817_, tooltips, p_49819_);
+    }
 
+    @Override
+    public void randomTick(BlockState p_222954_, ServerLevel level, BlockPos pos, RandomSource p_222957_) {
+        if (ResourcefulShulkersConfig.HEAD_TARGET_ESSENCE.get()) {
+            if (level.getBlockState(pos.above()).is(ModBlocks.SHULKER_HEAD.get()) || level.getBlockState(pos.above()).is(ModBlocks.WALL_SHULKER_HEAD.get())) {
+                level.destroyBlock(pos.above(), false);
+                Block.popResource(level, pos.above(), new ItemStack(ModItems.BASE_ESSENCE.get(), 2));
+            }
+        }
     }
 }

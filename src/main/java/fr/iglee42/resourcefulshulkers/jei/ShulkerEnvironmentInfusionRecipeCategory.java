@@ -121,8 +121,7 @@ public class ShulkerEnvironmentInfusionRecipeCategory implements IRecipeCategory
         guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "" + ChatFormatting.UNDERLINE + "Allowed Biomes", 52, y + 10, 0,false);
         guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.GRAY + "(Hover)", 70, y + 20, 0,false);
         if (recipe.getMinY() > -64 || recipe.getMaxY() < 320) {
-            guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "Y : " + recipe.getMinY() + "   " + recipe.getMaxY(), 54, y - 50, 0,false);
-            guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "~", 91, y - 48, 0,false);
+            guiGraphics.drawString(Minecraft.getInstance().font,ChatFormatting.BLUE + "Y : " + recipe.getMinY() + " ~ " + recipe.getMaxY(), 54, y - 50, 0, false);
         } else {
             guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "Y : Any", 70, y - 50, 0,false);
         }
@@ -130,7 +129,7 @@ public class ShulkerEnvironmentInfusionRecipeCategory implements IRecipeCategory
         guiGraphics.drawString(Minecraft.getInstance().font, ChatFormatting.BLUE + "Aura : " + recipe.getAuraConsumed(), 88 -auraWidth/2, y - 39, 0,false);
 
     }
-    
+
 
     @Override
     public List<Component> getTooltipStrings(ShulkerRecipeEnvironment recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {

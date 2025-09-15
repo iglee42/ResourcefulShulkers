@@ -79,6 +79,7 @@ public class ShulkerAbsorberBlock extends Block implements EntityBlock {
         if (Screen.hasShiftDown()) {
             tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_absorber"));
             tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_absorber1", Component.literal(ResourcefulShulkersConfig.ABSORBER_AURA.get().toString()).withStyle(ChatFormatting.LIGHT_PURPLE)));
+            if (ResourcefulShulkersConfig.ABSORBER_WORKS_AS_TARGET.get()) tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_absorber2", Component.literal(ResourcefulShulkersConfig.ABSORBER_AURA.get().toString()).withStyle(ChatFormatting.LIGHT_PURPLE)));
         }
         else tooltips.add(Component.translatable("tooltip.resourcefulshulkers.press_shift"));
         super.appendHoverText(p_49816_, p_49817_, tooltips, p_49819_);

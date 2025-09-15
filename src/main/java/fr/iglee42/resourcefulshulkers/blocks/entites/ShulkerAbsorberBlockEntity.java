@@ -64,7 +64,7 @@ public class ShulkerAbsorberBlockEntity extends SecondBlockEntity {
                     spawnParticle(ParticleTypes.END_ROD, (ServerLevel) level, posi.add(0, 2, 0.7), posi.add(0, 320 - posi.y, 0), 32);
                     spawnParticle(ParticleTypes.END_ROD, (ServerLevel) level, posi.add(0, 2, -0.7), posi.add(0, 320 - posi.y, 0), 32);
                 }
-            } else if (getCurrentTarget() instanceof ResourceShulker s) {
+            } else if (getCurrentTarget() instanceof ResourceShulker s && ResourcefulShulkersConfig.ABSORBER_WORKS_AS_TARGET.get()) {
                 spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ModItems.getShellById(s.getTypeId()))), (ServerLevel) level, posi.add(0.5, 0, 0), posi.add(1.5, -1, 0), 0);
                 spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ModItems.getShellById(s.getTypeId()))), (ServerLevel) level, posi.add(-0.5, 0, 0), posi.add(-1.5, -1, 0), 0);
                 spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ModItems.getShellById(s.getTypeId()))), (ServerLevel) level, posi.add(0, 0, 0.5), posi.add(0, -1, 1.5), 0);
@@ -90,7 +90,7 @@ public class ShulkerAbsorberBlockEntity extends SecondBlockEntity {
                 enable = false;
             }
 
-        } else if (getCurrentTarget() != null && getCurrentTarget() instanceof ResourceShulker s){
+        } else if (getCurrentTarget() != null && getCurrentTarget() instanceof ResourceShulker s && ResourcefulShulkersConfig.ABSORBER_WORKS_AS_TARGET.get()){
             enable = true;
             progress++;
             s.setNoAi(true);
