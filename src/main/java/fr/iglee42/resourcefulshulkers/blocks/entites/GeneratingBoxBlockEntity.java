@@ -131,6 +131,8 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
             level.sendBlockUpdated(blockPos,blockState,blockState, GeneratingBoxBlock.UPDATE_CLIENTS);
             if (ModList.get().isLoaded("tiab") && ResourcefulShulkersConfig.TIAB_PROTECTION.get()){
                 isTimeInBottled = TIABUtils.checkTIAB(level,blockPos);
+            } else {
+                isTimeInBottled = false;
             }
             if (isTimeInBottled) return;
             if (remainingDurability > 0 && !isInventoryFull()){
