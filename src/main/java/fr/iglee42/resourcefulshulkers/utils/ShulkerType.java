@@ -56,7 +56,7 @@ public record ShulkerType(ResourceLocation id, Ingredient item, @DefaultParamete
     }
 
     public boolean hasItem(){
-        return Arrays.stream(item.values).anyMatch(v->{
+        return Arrays.stream(item.getValues()).anyMatch(v->{
             if (v instanceof Ingredient.TagValue tv){
                 List<ItemStack> list = Lists.newArrayList();
                 Iterator var2 = BuiltInRegistries.ITEM.getTagOrEmpty(tv.tag()).iterator();

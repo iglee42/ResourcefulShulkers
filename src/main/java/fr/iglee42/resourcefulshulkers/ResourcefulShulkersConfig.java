@@ -33,11 +33,11 @@ public class ResourcefulShulkersConfig {
     }
 
     public static class Client {
-        public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-        public static final ForgeConfigSpec SPEC;
+        public static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+        public static final ModConfigSpec SPEC;
 
-        public static final ForgeConfigSpec.ConfigValue<Integer> AURA_BAR_X;
-        public static final ForgeConfigSpec.ConfigValue<Integer> AURA_BAR_Y;
+        public static final ModConfigSpec.ConfigValue<Integer> AURA_BAR_X;
+        public static final ModConfigSpec.ConfigValue<Integer> AURA_BAR_Y;
 
         static {
             BUILDER.push("ResourcefulShulker Client Config");
