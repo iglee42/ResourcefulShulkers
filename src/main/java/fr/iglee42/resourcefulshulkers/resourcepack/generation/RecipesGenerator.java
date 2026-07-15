@@ -18,8 +18,8 @@ import java.io.FileWriter;
 public class RecipesGenerator {
     public static void generate() {
         ShulkersManager.TYPES.forEach(r->{
-            generatingBox(r.id().getPath().toLowerCase(),r.type().getPath(),r.item());
-            shulker(r.id().getPath().toLowerCase(),r.item(),r.type().getPath());
+            generatingBox(r.id().getPath().toLowerCase(),r.type().getPath(),r.item().getIngredient());
+            shulker(r.id().getPath().toLowerCase(),r.item().getIngredient(),r.type().getPath());
         });
     }
 

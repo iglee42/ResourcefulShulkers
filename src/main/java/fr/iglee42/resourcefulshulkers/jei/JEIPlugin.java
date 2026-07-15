@@ -70,11 +70,11 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipes(ShulkerItemInfusionRecipeCategory.RECIPE_TYPE,
                 new ArrayList<>(rm.getAllRecipesFor(ShulkerItemInfusionRecipe.Type.INSTANCE).stream().map(RecipeHolder::value).toList()));
         registration.getIngredientManager().removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK, Arrays.asList(new ItemStack(ModItems.SHULKER_KILLER.get())));
-        ShulkersManager.TYPES.stream().filter(t->t.getItems() == Items.AIR).forEach(t-> registration.getIngredientManager().removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK,Arrays.asList(new ItemStack(ModItems.getShellById(t.id())), new ItemStack(ModBlocks.getBoxById(t.id())), new ItemStack(ModItems.getShulkerItemById(t.id())))));
+        //ShulkersManager.TYPES.stream().filter(t->t.getItems() == Items.AIR).forEach(t-> registration.getIngredientManager().removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK,Arrays.asList(new ItemStack(ModItems.getShellById(t.id())), new ItemStack(ModBlocks.getBoxById(t.id())), new ItemStack(ModItems.getShulkerItemById(t.id())))));
         if (registration.getJeiHelpers().getRecipeType(ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID, "box_output")).isPresent()){
             List<IJeiInputOutputRecipe> shulkersOutputRecipes = new ArrayList<>();
             ShulkersManager.TYPES.forEach(s->{
-                if (s.hasItem())shulkersOutputRecipes.add(new InputOutputRecipe(Ingredient.of(ModBlocks.getBoxById(s.id())),s.item()));
+                if (s.hasItem())shulkersOutputRecipes.add(new InputOutputRecipe(Ingredient.of(ModBlocks.getBoxById(s.id())),s.item().getIngredient()));
             });
             registration.addRecipes(BoxOutputRecipeCategory.RECIPE_TYPE,shulkersOutputRecipes);
         }

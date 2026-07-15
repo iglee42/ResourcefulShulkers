@@ -1,6 +1,7 @@
 package fr.iglee42.resourcefulshulkers;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.JsonParseException;
 import com.mojang.serialization.JsonOps;
 import fr.iglee42.igleelib.IgleeLibrary;
 import fr.iglee42.resourcefulshulkers.init.*;
@@ -8,6 +9,7 @@ import fr.iglee42.resourcefulshulkers.recipes.ModRecipes;
 import fr.iglee42.resourcefulshulkers.resourcepack.PackType;
 import fr.iglee42.resourcefulshulkers.resourcepack.PathConstant;
 import fr.iglee42.resourcefulshulkers.resourcepack.RSPackFinder;
+import fr.iglee42.resourcefulshulkers.utils.LazyIngredient;
 import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
 import fr.iglee42.resourcefulshulkers.utils.TypesManager;
 import net.minecraft.ChatFormatting;
@@ -43,16 +45,16 @@ public class ResourcefulShulkers {
 
 
     public ResourcefulShulkers(IEventBus bus, ModContainer container) {
-        IgleeLibrary.addClassParser(Ingredient.class,je-> {
+        IgleeLibrary.addClassParser(LazyIngredient.class, je-> {
             if (je.isJsonPrimitive() && je.getAsJsonPrimitive().isString()){
                 String item = je.getAsString();
                 if (item.startsWith("#")){
-                    TagKey<Item> key = TagKey.create(Registries.ITEM,ResourceLocation.parse(item.substring(1)));
-                    return Ingredient.of(key);
-                } else
-                    return Ingredient.of(BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(je.getAsString())));
+                    return LazyIngredient.tag(item.substring(1));
+                } else {
+                    return LazyIngredient.item(item);
+                }
             }
-            return Ingredient.CODEC_NONEMPTY.parse(JsonOps.INSTANCE,je).getOrThrow();
+            return LazyIngredient.EMPTY;
         });
         TypesManager.init();
         ShulkersManager.init();

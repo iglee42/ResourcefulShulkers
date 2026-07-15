@@ -23,7 +23,7 @@ import java.util.List;
 
 import static net.minecraft.client.renderer.Sheets.SHULKER_SHEET;
 
-public record ShulkerType(ResourceLocation id, Ingredient item, @DefaultParameter(stringValue = "black") String color, String shellItemColor, @DefaultParameter(stringValue = "minecraft:entity/shulker/shulker") String texture, @DefaultParameter(stringValue = "minecraft:entity/shulker/shulker") String boxTexture, ResourceLocation type) {
+public record ShulkerType(ResourceLocation id, LazyIngredient item, @DefaultParameter(stringValue = "black") String color, String shellItemColor, @DefaultParameter(stringValue = "minecraft:entity/shulker/shulker") String texture, @DefaultParameter(stringValue = "minecraft:entity/shulker/shulker") String boxTexture, ResourceLocation type) {
 
     public static ShulkerType getById(ResourceLocation id){
         return ShulkersManager.TYPES.stream().filter(r->r.id.equals(id)).findFirst().orElse(null);
@@ -44,7 +44,7 @@ public record ShulkerType(ResourceLocation id, Ingredient item, @DefaultParamete
     }
 
     public List<Item> getItems(){
-        return Arrays.stream(item.getItems()).map(ItemStack::getItem).sorted(Comparator.comparingInt(BuiltInRegistries.ITEM::getId)).toList();
+        return Arrays.stream(item.getIngredient().getItems()).map(ItemStack::getItem).sorted(Comparator.comparingInt(BuiltInRegistries.ITEM::getId)).toList();
     }
 
     public ResourceLocation getTexture(){
@@ -56,19 +56,7 @@ public record ShulkerType(ResourceLocation id, Ingredient item, @DefaultParamete
     }
 
     public boolean hasItem(){
-        return Arrays.stream(item.getValues()).anyMatch(v->{
-            if (v instanceof Ingredient.TagValue tv){
-                List<ItemStack> list = Lists.newArrayList();
-                Iterator var2 = BuiltInRegistries.ITEM.getTagOrEmpty(tv.tag()).iterator();
-
-                while(var2.hasNext()) {
-                    Holder<Item> holder = (Holder)var2.next();
-                    list.add(new ItemStack(holder));
-                }
-                return !list.isEmpty();
-            }
-            return v.getItems().stream().anyMatch(it->!it.isEmpty());
-        });
+        return !item.getIngredient().isEmpty();
     }
 
 }
