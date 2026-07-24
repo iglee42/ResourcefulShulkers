@@ -74,8 +74,8 @@ public enum BaseTypes {
         obj.addProperty("item",item);
         obj.addProperty("color",color);
         obj.addProperty("shellItemColor",shellColor);
-        obj.addProperty("texture",MODID + ":entity/mod_base/"+name().toLowerCase()+".png");
-        obj.addProperty("boxTexture",MODID + ":entity/boxes/"+name().toLowerCase()+".png");
+        obj.addProperty("texture",MODID + ":entity/shulker/"+type+"/"+name().toLowerCase()+".png");
+        obj.addProperty("boxTexture",MODID + ":entity/shulker/"+type+"/"+name().toLowerCase()+".png");
         obj.addProperty("type",MODID + ":"+ type);
         return new GsonBuilder().setPrettyPrinting().create().toJson(obj);
     }

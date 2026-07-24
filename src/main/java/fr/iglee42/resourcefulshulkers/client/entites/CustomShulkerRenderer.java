@@ -63,11 +63,11 @@ public class CustomShulkerRenderer extends MobRenderer<CustomShulker, CustomShul
    }
 
    private static ResourceLocation getTypeShulkerTexture(String essence){
-      return ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID,"textures/entity/types/"+essence+".png");
+      return ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID,"textures/entity/shulker/types/"+essence+".png");
    }
 
    public static ResourceLocation getResourceTextureLocation(ShulkerType r) {
-      return ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID,"textures/"+r.getTexture().getPath());
+      return ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID,"textures/entity/"+r.getTexture().getPath());
    }
    public static ResourceLocation getTextureLocation(@Nullable DyeColor p_174376_) {
       return p_174376_ == null ? DEFAULT_TEXTURE_LOCATION : TEXTURE_LOCATION[p_174376_.getId()];
