@@ -3,7 +3,7 @@ package fr.iglee42.resourcefulshulkers.blocks;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkersConfig;
 import fr.iglee42.resourcefulshulkers.entity.CustomShulkerBullet;
 import fr.iglee42.resourcefulshulkers.init.ModBlocks;
-import fr.iglee42.resourcefulshulkers.init.ModItems;
+import fr.iglee42.resourcefulshulkers.registries.RSItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -14,10 +14,8 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.TargetBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -33,7 +31,7 @@ public class PurpurTargetBlock extends TargetBlock {
     public void onProjectileHit(Level p_57381_, BlockState p_57382_, BlockHitResult p_57383_, Projectile projectile) {
         super.onProjectileHit(p_57381_, p_57382_, p_57383_, projectile);
         if (projectile instanceof CustomShulkerBullet bullet){
-            Block.popResource(p_57381_,p_57383_.getBlockPos().offset(0,1,0), new ItemStack(ModItems.getShellById(bullet.getTypeId())));
+            //Block.popResource(p_57381_,p_57383_.getBlockPos().offset(0,1,0), new ItemStack(RSItems.getShellById(bullet.getTypeId())));
         }
     }
 
@@ -54,7 +52,7 @@ public class PurpurTargetBlock extends TargetBlock {
         if (ResourcefulShulkersConfig.HEAD_TARGET_ESSENCE.get()) {
             if (level.getBlockState(pos.above()).is(ModBlocks.SHULKER_HEAD.get()) || level.getBlockState(pos.above()).is(ModBlocks.WALL_SHULKER_HEAD.get())) {
                 level.destroyBlock(pos.above(), false);
-                Block.popResource(level, pos.above(), new ItemStack(ModItems.BASE_ESSENCE.get(), 2));
+                Block.popResource(level, pos.above(), new ItemStack(RSItems.BASE_ESSENCE.get(), 2));
             }
         }
     }

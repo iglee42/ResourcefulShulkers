@@ -84,6 +84,11 @@ public class ShulkerInfuserBlock extends Block implements EntityBlock {
     }
 
     @Override
+    protected VoxelShape getCollisionShape(BlockState p_60572_, BlockGetter p_60573_, BlockPos p_60574_, CollisionContext p_60575_) {
+        return Shapes.join(getShape(p_60572_, p_60573_, p_60574_, p_60575_), Shapes.box(0, 15/16f, 0, 1, 1, 1), BooleanOp.OR);
+    }
+
+    @Override
     public VoxelShape getShape(BlockState p_60555_, BlockGetter p_60556_, BlockPos p_60557_, CollisionContext p_60558_) {
         VoxelShape shape = Shapes.empty();
 
@@ -93,10 +98,10 @@ public class ShulkerInfuserBlock extends Block implements EntityBlock {
         shape = Shapes.join(shape, Shapes.box(0.3125, 0.875, 0.3125, 0.6875, 0.9375, 0.6875), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.3125, 0.625, 0.5625, 0.4375, 0.875, 0.6875), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.3125, 0.625, 0.3125, 0.4375, 0.875, 0.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.0625, 0.9375, 0.25, 0, 1.125, 0.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1, 0.9375, 0.25, 1.0625, 1.125, 0.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.9375, -0.0625, 0.75, 1.125, 0), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.9375, 1, 0.75, 1.125, 1.0625), BooleanOp.OR);
+        //shape = Shapes.join(shape, Shapes.box(-0.0625, 0.9375, 0.25, 0, 1.125, 0.75), BooleanOp.OR);
+        //shape = Shapes.join(shape, Shapes.box(1, 0.9375, 0.25, 1.0625, 1.125, 0.75), BooleanOp.OR);
+        //shape = Shapes.join(shape, Shapes.box(0.25, 0.9375, -0.0625, 0.75, 1.125, 0), BooleanOp.OR);
+        //shape = Shapes.join(shape, Shapes.box(0.25, 0.9375, 1, 0.75, 1.125, 1.0625), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.3125, 0.5625, 0.3125, 0.6875, 0.625, 0.6875), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.1875, 0, 0.1875, 0.8125, 0.5625, 0.8125), BooleanOp.OR);
 

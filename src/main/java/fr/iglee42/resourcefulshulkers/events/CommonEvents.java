@@ -1,9 +1,7 @@
 package fr.iglee42.resourcefulshulkers.events;
 
-import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
-import fr.iglee42.resourcefulshulkers.command.RSCommand;
 import fr.iglee42.resourcefulshulkers.entity.CustomShulker;
-import fr.iglee42.resourcefulshulkers.init.ModItems;
+import fr.iglee42.resourcefulshulkers.registries.RSItems;
 import fr.iglee42.resourcefulshulkers.resourcepack.RSPackFinder;
 import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
 import fr.iglee42.resourcefulshulkers.utils.Type;
@@ -15,10 +13,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
 
@@ -56,22 +52,11 @@ public class CommonEvents {
         @SubscribeEvent
         public static void entityInteract(PlayerInteractEvent.EntityInteract event) {
             if (event.getTarget().getType() == EntityType.SHULKER && event.getEntity().isCrouching()){
-                event.getEntity().addItem(new ItemStack(ModItems.SHULKER_ITEM.get()));
+                event.getEntity().addItem(new ItemStack(RSItems.SHULKER.get()));
                 event.getTarget().remove(Entity.RemovalReason.KILLED);
             }
         }
 
-        @SubscribeEvent
-        public static void onWorldTick(LevelTickEvent.Post event) {
-            if (event.getLevel().isClientSide)
-                return;
-            ShulkerAuraManager manager = ShulkerAuraManager.get(event.getLevel());
-            manager.tick(event.getLevel());
-        }
-        @SubscribeEvent
-        public static void commandRegister(RegisterCommandsEvent event){
-            new RSCommand(event.getDispatcher());
-        }
 
     }
 

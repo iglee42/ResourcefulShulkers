@@ -2,7 +2,7 @@ package fr.iglee42.resourcefulshulkers.menu.slot;
 
 import com.mojang.datafixers.util.Pair;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
-import fr.iglee42.resourcefulshulkers.init.ModItems;
+import fr.iglee42.resourcefulshulkers.registries.RSItems;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
@@ -28,6 +28,6 @@ public class BoxShellSlot extends SlotItemHandler {
 
     @Override
     public boolean mayPlace(@NotNull ItemStack stack) {
-        return stack.is(ModItems.getShellById(resourceId));
+        return /*stack.is(RSItems.getShellById(resourceId))*/true;
     }
 }

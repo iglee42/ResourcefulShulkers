@@ -1,5 +1,7 @@
 package fr.iglee42.resourcefulshulkers.aura;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
 import fr.iglee42.resourcefulshulkers.network.data.AuraSyncPayload;
 import net.minecraft.advancements.AdvancementHolder;
@@ -7,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -15,6 +18,9 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,20 +29,47 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class ShulkerAuraManager extends SavedData {
+import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
 
-    private final Map<ChunkPos, ShulkerAura> manaMap = new HashMap<>();
+@EventBusSubscriber(modid = MODID)
+public final class ShulkerAuraManager extends SavedData {
+
+    private final Map<ChunkPos, ShulkerAura> auraByChunk = new HashMap<>();
 
     private int counter = 0;
 
-    public ShulkerAuraManager() {
+    private ShulkerAuraManager() {}
+
+    public ShulkerAuraManager(CompoundTag tag, HolderLookup.Provider provider) {
+        ListTag list = tag.getList("entries", Tag.TAG_COMPOUND);
+        for (Tag t : list) {
+            Entry.CODEC.parse(NbtOps.INSTANCE, t).resultOrPartial(ResourcefulShulkers.LOGGER::error).ifPresent(entry -> auraByChunk.put(entry.pos(), entry.aura()));
+        }
     }
 
+    @Override
+    public @NotNull CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
+        ListTag list = new ListTag();
+        auraByChunk.forEach((chunkPos, aura) -> {
+            Entry entry = new Entry(chunkPos, aura);
+            Entry.CODEC.encodeStart(NbtOps.INSTANCE, entry).resultOrPartial(ResourcefulShulkers.LOGGER::error).ifPresent(list::add);
+        });
+        tag.put("entries", list);
+        return tag;
+    }
+
+    @SubscribeEvent
+    public static void onWorldTick(LevelTickEvent.Post event) {
+        if (event.getLevel().isClientSide)
+            return;
+        ShulkerAuraManager manager = ShulkerAuraManager.get(event.getLevel());
+        manager.tick(event.getLevel());
+    }
 
     @Nonnull
     public static ShulkerAuraManager get(Level level) {
         if (level.isClientSide) {
-            throw new RuntimeException("You can't access to client side!");
+            throw new RuntimeException("Shulker Aura can't be accessed on Client Side");
         }
         DimensionDataStorage storage = ((ServerLevel)level).getDataStorage();
         return storage.computeIfAbsent(new Factory<>(ShulkerAuraManager::new,ShulkerAuraManager::new), "auramanager");
@@ -45,7 +78,7 @@ public class ShulkerAuraManager extends SavedData {
     @NotNull
     private ShulkerAura getAuraInternal(BlockPos pos) {
         ChunkPos chunkPos = new ChunkPos(pos);
-        return manaMap.computeIfAbsent(chunkPos, cp -> new ShulkerAura());
+        return auraByChunk.computeIfAbsent(chunkPos, cp -> new ShulkerAura());
     }
 
     public int getAura(BlockPos pos) {
@@ -53,40 +86,26 @@ public class ShulkerAuraManager extends SavedData {
         return aura.getAura();
     }
 
-    public int extractAura(BlockPos pos, int extract) {
+    public int extractAura(BlockPos pos, int amount, boolean simulate) {
         ShulkerAura aura = getAuraInternal(pos);
-        int present = aura.getAura();
-        if (present > 0) {
-            if (present >= extract) {
-                aura.setAura(present - extract);
-                setDirty();
-                return extract;
-            } else {
-                aura.setAura(0);
-                setDirty();
-                return present;
-            }
-        } else {
-            return 0;
-        }
-    }
-    public int insertAura(BlockPos pos, int insert) {
-        ShulkerAura aura = getAuraInternal(pos);
-        int present = aura.getAura();
-        if (present < ShulkerAura.MAX_AURA) {
-            if (present <= ShulkerAura.MAX_AURA - insert) {
-                aura.setAura(present + insert);
-                setDirty();
-                return insert;
-            } else {
-                aura.setAura(ShulkerAura.MAX_AURA);
-                setDirty();
 
-                return ShulkerAura.MAX_AURA - present;
-            }
-        } else {
-            return 0;
-        }
+        int extracted = aura.extractAura(amount, simulate);
+
+        if (!simulate && extracted > 0)
+            setDirty();
+
+        return extracted;
+    }
+
+    public int insertAura(BlockPos pos, int insert, boolean simulate) {
+        ShulkerAura aura = getAuraInternal(pos);
+
+        int added = aura.insertAura(insert, simulate);
+
+        if (added > 0 && !simulate)
+            setDirty();
+
+        return added;
     }
 
 
@@ -117,28 +136,22 @@ public class ShulkerAuraManager extends SavedData {
     }
 
 
-    public ShulkerAuraManager(CompoundTag tag, HolderLookup.Provider provider) {
-        ListTag list = tag.getList("aura", Tag.TAG_COMPOUND);
-        for (Tag t : list) {
-            CompoundTag manaTag = (CompoundTag) t;
-            ShulkerAura aura = new ShulkerAura(manaTag.getInt("aura"));
-            ChunkPos pos = new ChunkPos(manaTag.getInt("x"), manaTag.getInt("z"));
-            manaMap.put(pos, aura);
-        }
-    }
+    private record Entry(ChunkPos pos, ShulkerAura aura){
 
-    @Override
-    public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
-        ListTag list = new ListTag();
-        manaMap.forEach((chunkPos, aura) -> {
-            CompoundTag manaTag = new CompoundTag();
-            manaTag.putInt("x", chunkPos.x);
-            manaTag.putInt("z", chunkPos.z);
-            manaTag.putInt("aura", aura.getAura());
-            list.add(manaTag);
-        });
-        tag.put("aura", list);
-        return tag;
+
+        private static final Codec<ChunkPos> CHUNK_POS_CODEC = RecordCodecBuilder.create(instance->
+                instance.group(
+                        Codec.INT.fieldOf("x").forGetter(pos->pos.x),
+                        Codec.INT.fieldOf("z").forGetter(pos->pos.z)
+                ).apply(instance,ChunkPos::new)
+        );
+
+        private static final Codec<Entry> CODEC = RecordCodecBuilder.create(instance->
+                instance.group(
+                        CHUNK_POS_CODEC.fieldOf("pos").forGetter(Entry::pos),
+                        ShulkerAura.CODEC.fieldOf("aura").forGetter(Entry::aura)
+                ).apply(instance,Entry::new)
+        );
     }
 
 }

@@ -18,7 +18,7 @@ public class ModMessages {
         registrar.playToClient(GeneratorTickSyncPayload.TYPE, GeneratorTickSyncPayload.STREAM_CODEC, GeneratorTickSyncPacketHandler.instance()::handle);
         registrar.playToClient(GeneratorDurabilitySyncPayload.TYPE, GeneratorDurabilitySyncPayload.STREAM_CODEC, GeneratorDurabilitySyncPacketHandler.instance()::handle);
         registrar.playToClient(ItemStackSyncPayload.TYPE, ItemStackSyncPayload.STREAM_CODEC, ItemStackSyncPacketHandler.instance()::handle);
-        registrar.playToClient(AuraSyncPayload.TYPE, AuraSyncPayload.STREAM_CODEC, AuraSyncPacketHandler.instance()::handle);
+        registrar.playToClient(AuraSyncPayload.TYPE, AuraSyncPayload.STREAM_CODEC, AuraSyncPacketHandler::handle);
 
 
         registrar.playToServer(GeneratorIndexChangePayload.TYPE, GeneratorIndexChangePayload.STREAM_CODEC, GeneratorIndexChangePacketHandler.instance()::handle);

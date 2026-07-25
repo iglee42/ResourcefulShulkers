@@ -13,6 +13,7 @@ import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
+import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.repository.KnownPack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
@@ -129,20 +130,9 @@ public class InMemoryPack implements PackResources {
     @Nullable
     @Override
     public <T> T getMetadataSection(MetadataSectionSerializer<T> deserializer) throws IOException {
-        JsonObject jsonobject = new JsonObject();
-        JsonObject packObject = new JsonObject();
-        packObject.addProperty("pack_format", 16);
-        packObject.addProperty("description", "RS Pack");
-        jsonobject.add("pack", packObject);
-        if (!jsonobject.has(deserializer.getMetadataSectionName())) {
-            return null;
-        } else {
-            try {
-                return deserializer.fromJson(jsonobject.get(deserializer.getMetadataSectionName()).getAsJsonObject());
-            } catch (JsonParseException jsonparseexception) {
-                return null;
-            }
-        }
+        if (deserializer.getMetadataSectionName().equals(PackMetadataSection.TYPE.getMetadataSectionName()))
+            return (T) new PackMetadataSection(Component.literal("Resourceful Shulkers generated resources"), type == PackType.SERVER_DATA ? 48 : 34);
+        return null;
     }
 
     @Override

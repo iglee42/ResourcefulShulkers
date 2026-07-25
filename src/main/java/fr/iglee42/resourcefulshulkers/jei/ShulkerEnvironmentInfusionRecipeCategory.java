@@ -6,7 +6,7 @@ import com.mojang.math.Axis;
 import fr.iglee42.igleelib.api.utils.MouseUtil;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
 import fr.iglee42.resourcefulshulkers.init.ModBlocks;
-import fr.iglee42.resourcefulshulkers.init.ModItems;
+import fr.iglee42.resourcefulshulkers.registries.RSItems;
 import fr.iglee42.resourcefulshulkers.recipes.ShulkerRecipeEnvironment;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -155,7 +155,7 @@ public class ShulkerEnvironmentInfusionRecipeCategory implements IRecipeCategory
     public void setRecipe(@Nonnull IRecipeLayoutBuilder builder, @Nonnull ShulkerRecipeEnvironment recipe, @Nonnull IFocusGroup focusGroup) {
         builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT).addIngredients(Ingredient.of(BuiltInRegistries.ITEM.get(recipe.getResultEntity())));
         if (!recipe.getBaseEntity().equals(ResourceLocation.withDefaultNamespace("shulker")))builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addIngredients(Ingredient.of(BuiltInRegistries.ITEM.get(recipe.getBaseEntity())));
-        else builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addIngredients(Ingredient.of(ModItems.SHULKER_ITEM.get()));
+        else builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addIngredients(Ingredient.of(RSItems.SHULKER.get()));
     }
 
 

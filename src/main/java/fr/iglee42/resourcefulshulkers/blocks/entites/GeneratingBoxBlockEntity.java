@@ -6,7 +6,7 @@ import fr.iglee42.resourcefulshulkers.ResourcefulShulkersConfig;
 import fr.iglee42.resourcefulshulkers.blocks.GeneratingBoxBlock;
 import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
 import fr.iglee42.resourcefulshulkers.init.ModComponents;
-import fr.iglee42.resourcefulshulkers.init.ModItems;
+import fr.iglee42.resourcefulshulkers.registries.RSItems;
 import fr.iglee42.resourcefulshulkers.item.UpgradeItem;
 import fr.iglee42.resourcefulshulkers.menu.GeneratingBoxMenu;
 import fr.iglee42.resourcefulshulkers.network.data.ItemStackSyncPayload;
@@ -76,7 +76,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
         @NotNull
         @Override
         public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            return slot > 0 && slot < 10 ? stack : (slot==0 && stack.is(ModItems.getShellById(id)) ?super.insertItem(slot,stack,simulate) : stack);
+            return slot > 0 && slot < 10 ? stack : ((slot==0 /*&& stack.is(RSItems.getShellById(id)*/) ?super.insertItem(slot,stack,simulate) : stack);
         }
 
         @Override

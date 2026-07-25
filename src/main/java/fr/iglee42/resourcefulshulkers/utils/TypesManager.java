@@ -4,11 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import fr.iglee42.igleelib.api.utils.JsonHelper;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
-import fr.iglee42.resourcefulshulkers.entity.ResourceShulker;
 import fr.iglee42.resourcefulshulkers.entity.TypeShulker;
-import fr.iglee42.resourcefulshulkers.init.ModBlocks;
-import fr.iglee42.resourcefulshulkers.init.ModEntities;
-import fr.iglee42.resourcefulshulkers.init.ModItems;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.fml.loading.FMLPaths;
@@ -60,11 +56,11 @@ public class TypesManager {
                 }
             }
         }
-        TYPES.forEach(t->{
-           if (!t.id().equals(ResourceLocation.fromNamespaceAndPath(MODID,"elemental"))) ModItems.createEssence(t.id());
+        /*TYPES.forEach(t->{
+           if (!t.id().equals(ResourceLocation.fromNamespaceAndPath(MODID,"elemental"))) RSItems.createEssence(t.id());
            if (t.shouldCreateEntity())ENTITY_TYPES.put(t.id(), ModEntities.createTypeShulker(t.id()));
            //BULLET_TYPES.put(t.id(), ModEntities.createBullet(t.id()));
-        } );
+        } );*/
     }
 
 

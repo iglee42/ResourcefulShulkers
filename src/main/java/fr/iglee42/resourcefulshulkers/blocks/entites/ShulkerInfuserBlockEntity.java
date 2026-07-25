@@ -68,7 +68,7 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
             if (enabled){
                     if (hasEnoughAura()) {
                         recipe.second(level,pos,state,progress,this);
-                        ShulkerAuraManager.get(level).extractAura(pos,ResourcefulShulkersConfig.NO_AI_AURA.get());
+                        ShulkerAuraManager.get(level).extractAura(pos,ResourcefulShulkersConfig.NO_AI_AURA.get(), false);
                     }
             }
 
@@ -87,7 +87,7 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
 
                 if (target instanceof Mob m) {
                     m.setNoAi(true);
-                    ShulkerAuraManager.get(level).extractAura(pos,100);
+                    ShulkerAuraManager.get(level).extractAura(pos,100, false);
                 }
             } else {
                 if (target instanceof Mob m && m.isNoAi())m.setNoAi(false);

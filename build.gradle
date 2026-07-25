@@ -76,7 +76,7 @@ neoForge {
             // Recommended logging level for the console
             // You can set various levels here.
             // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
-            logLevel = org.slf4j.event.Level.DEBUG
+            logLevel = org.slf4j.event.Level.INFO
         }
     }
     mods {
@@ -131,11 +131,11 @@ dependencies {
     runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
     implementation "fr.iglee42:IgleeLib:${minecraft_version}-${lib_version}"
+
+    runtimeOnly "curse.maven:atlasviewer-633577:6088094"
     //implementation files("libs/igleelib-${minecraft_version}-${lib_version}.jar")
 
     compileOnly files('libs/tiab-neoforge-6.5.0.jar')
-
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

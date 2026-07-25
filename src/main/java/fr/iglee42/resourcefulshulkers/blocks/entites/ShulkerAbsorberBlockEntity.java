@@ -5,11 +5,9 @@ import fr.iglee42.igleelib.api.utils.ModsUtils;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkersConfig;
 import fr.iglee42.resourcefulshulkers.entity.ResourceShulker;
 import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
-import fr.iglee42.resourcefulshulkers.init.ModItems;
+import fr.iglee42.resourcefulshulkers.registries.RSItems;
 import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
 import fr.iglee42.resourcefulshulkers.utils.CommonUtils;
-import fr.iglee42.resourcefulshulkers.utils.ShulkerType;
-import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -21,8 +19,6 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -30,8 +26,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
 
 import static fr.iglee42.igleelib.api.utils.ModsUtils.spawnParticle;
 
@@ -52,7 +46,7 @@ public class ShulkerAbsorberBlockEntity extends SecondBlockEntity {
         if (level.isClientSide) return;
         Vec3 posi = Vec3.atCenterOf(pos.above());
         if (enable) {
-            if (getCurrentTarget().getType().equals(EntityType.SHULKER)) {
+            /*if (getCurrentTarget().getType().equals(EntityType.SHULKER)) {
                 spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SHULKER_SHELL)), (ServerLevel) level, posi.add(0.5, 0, 0), posi.add(1.5, -1, 0), 0);
                 spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SHULKER_SHELL)), (ServerLevel) level, posi.add(-0.5, 0, 0), posi.add(-1.5, -1, 0), 0);
                 spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SHULKER_SHELL)), (ServerLevel) level, posi.add(0, 0, 0.5), posi.add(0, -1, 1.5), 0);
@@ -65,11 +59,11 @@ public class ShulkerAbsorberBlockEntity extends SecondBlockEntity {
                     spawnParticle(ParticleTypes.END_ROD, (ServerLevel) level, posi.add(0, 2, -0.7), posi.add(0, 320 - posi.y, 0), 32);
                 }
             } else if (getCurrentTarget() instanceof ResourceShulker s && ResourcefulShulkersConfig.ABSORBER_WORKS_AS_TARGET.get()) {
-                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ModItems.getShellById(s.getTypeId()))), (ServerLevel) level, posi.add(0.5, 0, 0), posi.add(1.5, -1, 0), 0);
-                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ModItems.getShellById(s.getTypeId()))), (ServerLevel) level, posi.add(-0.5, 0, 0), posi.add(-1.5, -1, 0), 0);
-                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ModItems.getShellById(s.getTypeId()))), (ServerLevel) level, posi.add(0, 0, 0.5), posi.add(0, -1, 1.5), 0);
-                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ModItems.getShellById(s.getTypeId()))), (ServerLevel) level, posi.add(0, 0, -0.5), posi.add(0, -1, -1.5), 0);
-            }
+                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(RSItems.getShellById(s.getTypeId()))), (ServerLevel) level, posi.add(0.5, 0, 0), posi.add(1.5, -1, 0), 0);
+                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(RSItems.getShellById(s.getTypeId()))), (ServerLevel) level, posi.add(-0.5, 0, 0), posi.add(-1.5, -1, 0), 0);
+                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(RSItems.getShellById(s.getTypeId()))), (ServerLevel) level, posi.add(0, 0, 0.5), posi.add(0, -1, 1.5), 0);
+                spawnParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(RSItems.getShellById(s.getTypeId()))), (ServerLevel) level, posi.add(0, 0, -0.5), posi.add(0, -1, -1.5), 0);
+            }*/
         }
     }
 
@@ -82,10 +76,10 @@ public class ShulkerAbsorberBlockEntity extends SecondBlockEntity {
             progress++;
             ((Shulker)getCurrentTarget()).setNoAi(true);
             level.sendBlockUpdated(blockPos,blockState,blockState,Block.UPDATE_CLIENTS);
-            ShulkerAuraManager.get(level).insertAura(blockPos, ResourcefulShulkersConfig.ABSORBER_AURA.get() / MAX_PROGRESS);
+            ShulkerAuraManager.get(level).insertAura(blockPos, ResourcefulShulkersConfig.ABSORBER_AURA.get() / MAX_PROGRESS, false);
             if (progress == MAX_PROGRESS){
                 getCurrentTarget().remove(Entity.RemovalReason.KILLED);
-                Block.popResource(level,blockPos.above(),new ItemStack(ModItems.SHULKER_HEAD.get()));
+                Block.popResource(level,blockPos.above(),new ItemStack(RSItems.SHULKER_HEAD.get()));
                 progress = 0;
                 enable = false;
             }
@@ -97,8 +91,8 @@ public class ShulkerAbsorberBlockEntity extends SecondBlockEntity {
             level.sendBlockUpdated(blockPos,blockState,blockState,Block.UPDATE_CLIENTS);
             if (progress == MAX_PROGRESS){
                 getCurrentTarget().remove(Entity.RemovalReason.KILLED);
-                Block.popResource(level,blockPos.above(),new ItemStack(ModItems.SHULKER_HEAD.get()));
-                Block.popResource(level,blockPos.above(),new ItemStack(ModItems.getShellById(s.getTypeId()),2));
+                Block.popResource(level,blockPos.above(),new ItemStack(RSItems.SHULKER_HEAD.get()));
+                //Block.popResource(level,blockPos.above(),new ItemStack(RSItems.getShellById(s.getTypeId()),2));
                 progress = 0;
                 enable = false;
             }

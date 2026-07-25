@@ -4,11 +4,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import fr.iglee42.igleelib.api.utils.JsonHelper;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
-import fr.iglee42.resourcefulshulkers.init.ModBlocks;
-import fr.iglee42.resourcefulshulkers.init.ModEntities;
 import fr.iglee42.resourcefulshulkers.entity.CustomShulkerBullet;
 import fr.iglee42.resourcefulshulkers.entity.ResourceShulker;
-import fr.iglee42.resourcefulshulkers.init.ModItems;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.fml.loading.FMLPaths;
@@ -61,24 +58,24 @@ public class ShulkersManager {
             }
         }
 
-        TYPES.forEach(t->{
+        /*TYPES.forEach(t->{
             ModBlocks.createBox(t.id());
-            ModItems.createShell(t.id());
+            RSItems.createShell(t.id());
             ENTITY_TYPES.put(t.id(), ModEntities.createShulker(t.id()));
             BULLET_TYPES.put(t.id(), ModEntities.createBullet(t.id()));
-        } );
+        } );*/
     }
 
     private static void createShulkerDir(File dir) {
         if (dir.mkdirs() && dir.isDirectory()){
-            for (BaseTypes t : BaseTypes.values()) {
+            /*for (DefaultShulkerType t : DefaultShulkerType.values()) {
                 try (FileWriter writer = new FileWriter(new File(dir,t.name().toLowerCase() + ".json"))) {
                     writer.write(t.toJson());
                 } catch (Exception e) {
                     ResourcefulShulkers.LOGGER.error("An error occurred while generating default shulkers", e);
                 }
 
-            }
+            }*/
         }
     }
 

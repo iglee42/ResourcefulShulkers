@@ -22,7 +22,7 @@ public class TagsGenerator {
     private static List<String> pickaxe = new ArrayList<>();
     public static void generate() {
 
-        ShulkersManager.TYPES.forEach(r->{
+       /* ShulkersManager.TYPES.forEach(r->{
             shulker.add(MODID+":"+r.id().getPath().toLowerCase()+"_shulker");
             shells.add(MODID + ":" + r.id().getPath().toLowerCase()+"_shell");
             pickaxe.add(MODID + ":" + r.id().getPath().toLowerCase()+"_generating_box");
@@ -36,7 +36,7 @@ public class TagsGenerator {
 
         } catch (Exception exception){
             ResourcefulShulkers.LOGGER.error("An error was detected when tags generating",exception);
-        }
+        }*/
     }
 
     private static void writeTag(List<String> objects, File file) throws IOException {

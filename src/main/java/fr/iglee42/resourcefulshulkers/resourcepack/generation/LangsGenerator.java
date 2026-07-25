@@ -19,11 +19,11 @@ public class LangsGenerator {
     private static Map<String,String> langs = new HashMap<>();
     public static void generate() {
 
-        ShulkersManager.TYPES.forEach(r->{
+        /*ShulkersManager.TYPES.forEach(r->{
             langs.put("entity."+MODID+"."+r.id().getPath().toLowerCase()+"_shulker", ModsUtils.getUpperName(r.id().getPath().toLowerCase()+"_shulker","_"));
             langs.put("item."+MODID+"."+r.id().getPath().toLowerCase()+"_shell",ModsUtils.getUpperName(r.id().getPath().toLowerCase()+"_shulker_shell","_"));
             langs.put("block."+MODID+"."+r.id().getPath().toLowerCase()+"_generating_box",ModsUtils.getUpperName(r.id().getPath().toLowerCase()+"_generating_box","_"));
-        });
+        });*/
 
         try {
             FileWriter writer = new FileWriter(new File(PathConstant.LANGS_PATH.toFile(), "en_us.json"));

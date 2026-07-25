@@ -11,9 +11,9 @@ import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
 
 public class BlockStatesGenerator {
     public static void generate() {
-        ShulkersManager.TYPES.forEach(r->{
+        /*ShulkersManager.TYPES.forEach(r->{
             generatingBox(r.id().getPath().toLowerCase());
-        });
+        });*/
     }
 
     private static void generatingBox(String name){

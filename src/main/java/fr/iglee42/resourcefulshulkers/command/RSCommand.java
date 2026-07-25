@@ -16,58 +16,66 @@ import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
-public class RSCommand {
+import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
+
+@EventBusSubscriber(modid = MODID)
+public final class RSCommand {
 
     private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(Component.literal("Aura can't be modified !"));
 
-    public RSCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
+    @SubscribeEvent
+    public static void register(RegisterCommandsEvent event) {
+        CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
         LiteralCommandNode<CommandSourceStack> command = dispatcher.register(Commands.literal("resourcefulshulkers")
                 .then(Commands.literal("aura").requires(c->c.hasPermission(4))
-                        .then(Commands.literal("add").then(Commands.argument("amount", IntegerArgumentType.integer(1, ShulkerAura.MAX_AURA)).executes(this::addAura).then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(this::addAuraWithPos))))
-                        .then(Commands.literal("remove").then(Commands.argument("amount", IntegerArgumentType.integer(1, ShulkerAura.MAX_AURA)).executes(this::removeAura).then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(this::removeAuraWithPos))))
-                        .then(Commands.literal("get").executes(this::getAura).then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(this::getAuraWithPos)))));
+                        .then(Commands.literal("add").then(Commands.argument("amount", IntegerArgumentType.integer(1, ShulkerAura.MAX_AURA)).executes(RSCommand::addAura).then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(RSCommand::addAuraWithPos))))
+                        .then(Commands.literal("remove").then(Commands.argument("amount", IntegerArgumentType.integer(1, ShulkerAura.MAX_AURA)).executes(RSCommand::removeAura).then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(RSCommand::removeAuraWithPos))))
+                        .then(Commands.literal("get").executes(RSCommand::getAura).then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(RSCommand::getAuraWithPos)))));
         dispatcher.register(Commands.literal("rs").requires(c->c.hasPermission(4)).redirect(command));
     }
 
-    private int getAuraWithPos(CommandContext<CommandSourceStack> source) {
+    private static int getAuraWithPos(CommandContext<CommandSourceStack> source) {
         ServerLevel level = source.getSource().getLevel();
         source.getSource().sendSuccess(()->ResourcefulShulkers.PREFIX.copy().append(Component.literal("Current chunk aura : ").withStyle(ChatFormatting.LIGHT_PURPLE).append(Component.literal(""+ShulkerAuraManager.get(level).getAura(source.getArgument("pos",BlockPos.class))).withStyle(ChatFormatting.DARK_PURPLE)).append(Component.literal(" !").withStyle(ChatFormatting.LIGHT_PURPLE))), true);
         return 1;
     }
-    private int getAura(CommandContext<CommandSourceStack> source) {
+    private static int getAura(CommandContext<CommandSourceStack> source) {
         ServerLevel level = source.getSource().getLevel();
         source.getSource().sendSuccess(()->ResourcefulShulkers.PREFIX.copy().append(Component.literal("Current chunk aura : ").withStyle(ChatFormatting.LIGHT_PURPLE).append(Component.literal(""+ShulkerAuraManager.get(level).getAura(new BlockPos((int) source.getSource().getPosition().x,(int)source.getSource().getPosition().y,(int)source.getSource().getPosition().z))).withStyle(ChatFormatting.DARK_PURPLE)).append(Component.literal(" !").withStyle(ChatFormatting.LIGHT_PURPLE))), true);
         return 1;
     }
 
-    private int addAuraWithPos(CommandContext<CommandSourceStack> source) throws CommandSyntaxException {
+    private static int addAuraWithPos(CommandContext<CommandSourceStack> source) throws CommandSyntaxException {
         ServerLevel level = source.getSource().getLevel();
-        if (ShulkerAuraManager.get(level).insertAura(source.getArgument("pos",BlockPos.class),source.getArgument("amount",Integer.class)) == 0)
+        if (ShulkerAuraManager.get(level).insertAura(source.getArgument("pos",BlockPos.class),source.getArgument("amount",Integer.class), false) == 0)
             throw ERROR_FAILED.create();
         source.getSource().sendSuccess(()->ResourcefulShulkers.PREFIX.copy().append(Component.literal("Aura successfully added !").withStyle(ChatFormatting.GREEN)), true);
         return 1;
     }
 
-    private int addAura(CommandContext<CommandSourceStack> source) throws CommandSyntaxException {
+    private static int addAura(CommandContext<CommandSourceStack> source) throws CommandSyntaxException {
         ServerLevel level = source.getSource().getLevel();
-        if (ShulkerAuraManager.get(level).insertAura(new BlockPos((int) source.getSource().getPosition().x,(int)source.getSource().getPosition().y,(int)source.getSource().getPosition().z),source.getArgument("amount",Integer.class)) == 0)
+        if (ShulkerAuraManager.get(level).insertAura(new BlockPos((int) source.getSource().getPosition().x,(int)source.getSource().getPosition().y,(int)source.getSource().getPosition().z),source.getArgument("amount",Integer.class), false) == 0)
             throw ERROR_FAILED.create();
         source.getSource().sendSuccess(()->ResourcefulShulkers.PREFIX.copy().append(Component.literal("Aura successfully added !").withStyle(ChatFormatting.GREEN)), true);
         return 1;
     }
 
-    private int removeAuraWithPos(CommandContext<CommandSourceStack> source) throws CommandSyntaxException {
+    private static int removeAuraWithPos(CommandContext<CommandSourceStack> source) throws CommandSyntaxException {
         ServerLevel level = source.getSource().getLevel();
-        if (ShulkerAuraManager.get(level).extractAura(source.getArgument("pos",BlockPos.class),source.getArgument("amount",Integer.class)) == 0)
+        if (ShulkerAuraManager.get(level).extractAura(source.getArgument("pos",BlockPos.class),source.getArgument("amount",Integer.class), false) == 0)
             throw ERROR_FAILED.create();
         source.getSource().sendSuccess(()->ResourcefulShulkers.PREFIX.copy().append(Component.literal("Aura successfully removed !").withStyle(ChatFormatting.GREEN)), true);
         return 1;
     }
 
-    private int removeAura(CommandContext<CommandSourceStack> source) throws CommandSyntaxException {
+    private static int removeAura(CommandContext<CommandSourceStack> source) throws CommandSyntaxException {
         ServerLevel level = source.getSource().getLevel();
-        if (ShulkerAuraManager.get(level).extractAura(new BlockPos((int) source.getSource().getPosition().x,(int)source.getSource().getPosition().y,(int)source.getSource().getPosition().z),source.getArgument("amount",Integer.class)) == 0)
+        if (ShulkerAuraManager.get(level).extractAura(new BlockPos((int) source.getSource().getPosition().x,(int)source.getSource().getPosition().y,(int)source.getSource().getPosition().z),source.getArgument("amount",Integer.class), false) == 0)
             throw ERROR_FAILED.create();
         source.getSource().sendSuccess(()->ResourcefulShulkers.PREFIX.copy().append(Component.literal("Aura successfully removed !").withStyle(ChatFormatting.GREEN)), true);
         return 1;

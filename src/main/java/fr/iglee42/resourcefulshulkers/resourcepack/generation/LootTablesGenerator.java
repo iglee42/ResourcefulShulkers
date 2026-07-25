@@ -9,7 +9,7 @@ import java.io.FileWriter;
 
 public class LootTablesGenerator {
     public static void generate() {
-        ShulkersManager.TYPES.forEach(r-> generatingBox(r.id().getPath().toLowerCase()));
+        //ShulkersManager.TYPES.forEach(r-> generatingBox(r.id().getPath().toLowerCase()));
     }
 
     private static void generatingBox(String name){
