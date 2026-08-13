@@ -90,7 +90,7 @@ public interface IShulkerDefinition {
      * @return {@code true} if {@link #item()} resolves to a non-empty ingredient
      */
     default boolean hasItem(){
-        return !item().getIngredient().isEmpty();
+        return !item().getIngredient().hasNoItems();
     }
 
 }

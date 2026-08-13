@@ -11,7 +11,7 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
+import static fr.iglee42.resourcefulshulkers.RSIds.MODID;
 
 public class RSCreativeTabs {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB,MODID);
@@ -30,8 +30,10 @@ public class RSCreativeTabs {
     public static void addCreative(BuildCreativeModeTabContentsEvent event){
         if (event.getTabKey().equals(SHULKERS.getKey())) {
             ShulkersManager.forEachShulker(shulker -> {
+                if (!shulker.definition().hasItem()) return;
                 event.accept(shulker.shulkerItem().get());
                 event.accept(shulker.shell().get());
+                event.accept(shulker.generatingBox().get());
             });
         }
         if (event.getTabKey().equals(MAIN.getKey())){
@@ -43,6 +45,14 @@ public class RSCreativeTabs {
             event.accept(RSItems.DURABILITY_UPGRADE.get());
             event.accept(RSItems.QUANTITY_UPGRADE.get());
             event.accept(RSItems.SHELL_UPGRADE.get());
+
+            event.accept(RSBlocks.SHULKER_ABSORBER.get());
+            event.accept(RSBlocks.SHULKER_INFUSER.get());
+            event.accept(RSBlocks.SHULKER_PEDESTAL.get());
+            event.accept(RSBlocks.PURPUR_TARGET.get());
+            event.accept(RSBlocks.TRAINER.get());
+            event.accept(RSBlocks.END_CITY.get());
+            event.accept(RSBlocks.END_CITY_TIER_2.get());
 
             TypesManager.forEachType(type -> {
                 if (type.definition().equals(TypesManager.getElementalType())) return;

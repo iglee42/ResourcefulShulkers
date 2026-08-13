@@ -1,15 +1,15 @@
 package fr.iglee42.resourcefulshulkers.resourcepack.generation;
 
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
-import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
 import fr.iglee42.resourcefulshulkers.resourcepack.PathConstant;
+import fr.iglee42.resourcefulshulkers.shulkers.ShulkersManager;
 
 import java.io.File;
 import java.io.FileWriter;
 
 public class LootTablesGenerator {
     public static void generate() {
-        //ShulkersManager.TYPES.forEach(r-> generatingBox(r.id().getPath().toLowerCase()));
+        ShulkersManager.forEachShulker(r-> generatingBox(r.definition().id().getPath().toLowerCase()));
     }
 
     private static void generatingBox(String name){
@@ -32,7 +32,8 @@ public class LootTablesGenerator {
                     "            {\n" +
                     "              \"function\": \"minecraft:copy_components\",\n" +
                     "              \"include\": [\n" +
-                    "                \"resourcefulshulkers:durability\"\n"+
+                    "                \"resourcefulshulkers:durability\",\n"+
+                    "                \"resourcefulshulkers:item_index\"\n"+
                     "              ],\n" +
                     "              \"source\": \"block_entity\"\n" +
                     "            }\n" +

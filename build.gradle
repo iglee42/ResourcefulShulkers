@@ -48,7 +48,7 @@ neoForge {
 
         // This run config launches GameTestServer and runs all registered gametests, then exits.
         // By default, the server will crash when no gametests are provided.
-        // The gametest system is also enabled by default for other run configs under the /test command.
+        // The gametest system is also enabled by default for other run config under the /test command.
         gameTestServer {
             type = "gameTestServer"
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
@@ -133,9 +133,11 @@ dependencies {
     implementation "fr.iglee42:IgleeLib:${minecraft_version}-${lib_version}"
 
     runtimeOnly "curse.maven:atlasviewer-633577:6088094"
-    //implementation files("libs/igleelib-${minecraft_version}-${lib_version}.jar")
+    runtimeOnly "curse.maven:configured-457570:7276577"
 
-    compileOnly files('libs/tiab-neoforge-6.5.0.jar')
+    implementation "curse.maven:just-dire-things-1002348:7463040"
+    implementation "curse.maven:gag-694962:7261542"
+    implementation "curse.maven:time-in-a-bottle-895919:7555622"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

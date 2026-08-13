@@ -1,5 +1,7 @@
 package fr.iglee42.resourcefulshulkers.api.shulkers;
 
+import fr.iglee42.resourcefulshulkers.entity.shulkers.ResourceShulker;
+import fr.iglee42.resourcefulshulkers.entity.shulkers.ResourceShulkerBullet;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -39,14 +41,14 @@ public interface IRegisteredShulker {
      *
      * @return a supplier yielding the entity type, or {@code null} if none is bound
      */
-    @Nullable Supplier<EntityType<?>> entityType();
+    @Nullable Supplier<EntityType<? extends ResourceShulker>> entityType();
 
     /**
      * Returns a supplier for the generated Shulker bullet entity type.
      *
      * @return a supplier yielding the bullet entity type, or {@code null} if none is bound
      */
-    @Nullable Supplier<EntityType<?>> bulletType();
+    @Nullable Supplier<EntityType<? extends ResourceShulkerBullet>> bulletType();
 
     /**
      * Returns a supplier for the generated Shulker item.

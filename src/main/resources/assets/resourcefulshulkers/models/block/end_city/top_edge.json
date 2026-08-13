@@ -1,0 +1,43 @@
+{
+	"render_type": "translucent",
+	"texture_size": [48, 48],
+	"textures": {
+		"0": "resourcefulshulkers:block/end_city_side",
+		"1": "resourcefulshulkers:block/end_city_top",
+		"particle": "resourcefulshulkers:block/end_city_side"
+	},
+	"elements": [
+		{
+			"name": "frame",
+			"from": [0, 8, 0],
+			"to": [16, 16, 8],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 12, 4]},
+			"faces": {
+				"north": {"uv": [5.33333, 0, 10.66667, 2.66667], "texture": "#0"},
+				"south": {"uv": [5.33333, 0, 10.66667, 2.66667], "texture": "#0"},
+				"up": {"uv": [5.33333, 16, 10.66667, 13.33333], "texture": "#1"},
+				"down": {"uv": [5.33333, 0, 10.66667, 2.66667], "rotation": 180, "texture": "#1"}
+			}
+		},
+		{
+			"name": "glass",
+			"from": [0, 0, 2],
+			"to": [16, 8, 6],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-8, -24, 2]},
+			"faces": {
+				"north": {"uv": [5.33333, 2.66667, 10.66667, 5.33333], "texture": "#0"},
+				"south": {"uv": [5.33333, 2.66667, 10.66667, 5.33333], "texture": "#0"}
+			}
+		},
+		{
+			"name": "glass",
+			"from": [0, 10, 8],
+			"to": [16, 14, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 12, 12]},
+			"faces": {
+				"up": {"uv": [5.33333, 2.66667, 10.66667, 5.33333], "texture": "#1"},
+				"down": {"uv": [5.33333, 2.66667, 10.66667, 5.33333], "rotation": 180, "texture": "#1"}
+			}
+		}
+	]
+}

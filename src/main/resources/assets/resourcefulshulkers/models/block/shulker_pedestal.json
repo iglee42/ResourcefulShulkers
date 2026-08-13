@@ -1,6 +1,7 @@
 {
 	"format_version": "1.21.11",
 	"credit": "Made with Blockbench and by iglee42",
+	"render_type": "cutout",
 	"textures": {
 		"2": "block/purpur_block",
 		"3": "block/end_stone_bricks",

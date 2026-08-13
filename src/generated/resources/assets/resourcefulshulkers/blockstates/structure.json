@@ -1,0 +1,114 @@
+{
+  "variants": {
+    "facing=east,part=bottom_corner": {
+      "model": "resourcefulshulkers:block/end_city/bottom_corner",
+      "uvlock": true,
+      "y": 90
+    },
+    "facing=east,part=bottom_edge": {
+      "model": "resourcefulshulkers:block/end_city/bottom_edge",
+      "uvlock": true,
+      "y": 90
+    },
+    "facing=east,part=middle_edge": {
+      "model": "resourcefulshulkers:block/end_city/middle_edge",
+      "y": 90
+    },
+    "facing=east,part=middle_face": {
+      "model": "resourcefulshulkers:block/end_city/middle_face",
+      "y": 90
+    },
+    "facing=east,part=top_corner": {
+      "model": "resourcefulshulkers:block/end_city/top_corner_sw"
+    },
+    "facing=east,part=top_edge": {
+      "model": "resourcefulshulkers:block/end_city/top_edge_alt",
+      "y": 90
+    },
+    "facing=east,part=top_face": {
+      "model": "resourcefulshulkers:block/end_city/top_face",
+      "y": 90
+    },
+    "facing=north,part=bottom_corner": {
+      "model": "resourcefulshulkers:block/end_city/bottom_corner",
+      "uvlock": true
+    },
+    "facing=north,part=bottom_edge": {
+      "model": "resourcefulshulkers:block/end_city/bottom_edge",
+      "uvlock": true
+    },
+    "facing=north,part=middle_edge": {
+      "model": "resourcefulshulkers:block/end_city/middle_edge"
+    },
+    "facing=north,part=middle_face": {
+      "model": "resourcefulshulkers:block/end_city/middle_face"
+    },
+    "facing=north,part=top_corner": {
+      "model": "resourcefulshulkers:block/end_city/top_corner_se"
+    },
+    "facing=north,part=top_edge": {
+      "model": "resourcefulshulkers:block/end_city/top_edge"
+    },
+    "facing=north,part=top_face": {
+      "model": "resourcefulshulkers:block/end_city/top_face"
+    },
+    "facing=south,part=bottom_corner": {
+      "model": "resourcefulshulkers:block/end_city/bottom_corner",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=south,part=bottom_edge": {
+      "model": "resourcefulshulkers:block/end_city/bottom_edge",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=south,part=middle_edge": {
+      "model": "resourcefulshulkers:block/end_city/middle_edge",
+      "y": 180
+    },
+    "facing=south,part=middle_face": {
+      "model": "resourcefulshulkers:block/end_city/middle_face",
+      "y": 180
+    },
+    "facing=south,part=top_corner": {
+      "model": "resourcefulshulkers:block/end_city/top_corner_nw"
+    },
+    "facing=south,part=top_edge": {
+      "model": "resourcefulshulkers:block/end_city/top_edge_alt",
+      "y": 180
+    },
+    "facing=south,part=top_face": {
+      "model": "resourcefulshulkers:block/end_city/top_face",
+      "y": 180
+    },
+    "facing=west,part=bottom_corner": {
+      "model": "resourcefulshulkers:block/end_city/bottom_corner",
+      "uvlock": true,
+      "y": 270
+    },
+    "facing=west,part=bottom_edge": {
+      "model": "resourcefulshulkers:block/end_city/bottom_edge",
+      "uvlock": true,
+      "y": 270
+    },
+    "facing=west,part=middle_edge": {
+      "model": "resourcefulshulkers:block/end_city/middle_edge",
+      "y": 270
+    },
+    "facing=west,part=middle_face": {
+      "model": "resourcefulshulkers:block/end_city/middle_face",
+      "y": 270
+    },
+    "facing=west,part=top_corner": {
+      "model": "resourcefulshulkers:block/end_city/top_corner_ne"
+    },
+    "facing=west,part=top_edge": {
+      "model": "resourcefulshulkers:block/end_city/top_edge",
+      "y": 270
+    },
+    "facing=west,part=top_face": {
+      "model": "resourcefulshulkers:block/end_city/top_face",
+      "y": 270
+    }
+  }
+}

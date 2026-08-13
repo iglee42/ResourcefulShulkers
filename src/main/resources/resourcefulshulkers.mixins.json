@@ -5,7 +5,6 @@
   "refmap": "resourcefulshulkers.refmap.json",
   "mixins": [],
   "client": [
-    "BlockEntityWithoutLevelRendererMixin",
     "CustomHeadLayerMixin"
   ],
   "minVersion": "0.8",

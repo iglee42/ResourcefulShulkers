@@ -7,9 +7,11 @@ import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
+import fr.iglee42.resourcefulshulkers.RSIds;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
+import fr.iglee42.resourcefulshulkers.registries.RSBlocks;
+import fr.iglee42.resourcefulshulkers.registries.RSEntities;
 import fr.iglee42.resourcefulshulkers.registries.RSItems;
-import fr.iglee42.resourcefulshulkers.types.RegisteredType;
 import fr.iglee42.resourcefulshulkers.types.TypesManager;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.loading.FMLPaths;
@@ -17,15 +19,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Comparator;
+import java.util.TreeMap;
 import java.util.function.Consumer;
 
 public final class ShulkersManager {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    private static final Map<ResourceLocation, RegisteredShulker> SHULKERS = new HashMap<>();
+    private static final TreeMap<ResourceLocation, RegisteredShulker> SHULKERS = new TreeMap<>(Comparator.comparing(ResourceLocation::getPath).thenComparing(ResourceLocation::getNamespace));
 
     private static final Codec<ShulkerDefinition> VALIDATED_CODEC = ShulkerDefinition.CODEC.validate(
             def->{
@@ -40,7 +42,7 @@ public final class ShulkersManager {
 
     public static void load(){
         SHULKERS.clear();
-        File shulkersDirectory = FMLPaths.CONFIGDIR.get().resolve(ResourcefulShulkers.MODID + "/shulkers/").toFile();
+        File shulkersDirectory = FMLPaths.CONFIGDIR.get().resolve(RSIds.MODID + "/shulkers/").toFile();
         if (!shulkersDirectory.exists()) {
             createShulkerDirectory(shulkersDirectory);
         }
@@ -67,7 +69,9 @@ public final class ShulkersManager {
     private static void registerEntries(){
         SHULKERS.forEach((id,shulker)->{
             shulker.setShell(RSItems.createShell(shulker.definition()));
-            shulker.setShulkerItem(RSItems.createResourceShulker(shulker.definition()));
+            shulker.setupEntity(RSEntities.createResourceShulker(shulker.definition()),RSItems.createResourceShulker(shulker.definition()));
+            shulker.setBulletType(RSEntities.createResourceBullet(shulker.definition()));
+            shulker.setGeneratingBox(RSBlocks.createGeneratingBox(shulker.definition()));
         });
     }
 

@@ -1,0 +1,9 @@
+{
+  "values": [
+    "minecraft:shulker_shell",
+    {
+      "id": "#resourcefulshulkers:shulker_shells/resource",
+      "required": false
+    }
+  ]
+}

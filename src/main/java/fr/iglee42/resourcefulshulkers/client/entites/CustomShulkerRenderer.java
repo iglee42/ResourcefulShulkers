@@ -1,13 +1,11 @@
 package fr.iglee42.resourcefulshulkers.client.entites;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import javax.annotation.Nullable;
-
-import fr.iglee42.resourcefulshulkers.entity.TypeShulker;
-import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
-import fr.iglee42.resourcefulshulkers.entity.CustomShulker;
-import fr.iglee42.resourcefulshulkers.entity.ResourceShulker;
-import fr.iglee42.resourcefulshulkers.utils.ShulkerType;
+import fr.iglee42.resourcefulshulkers.client.entites.layers.CustomShulkerHeadLayer;
+import fr.iglee42.resourcefulshulkers.entity.shulkers.CustomShulker;
+import fr.iglee42.resourcefulshulkers.entity.shulkers.ResourceShulker;
+import fr.iglee42.resourcefulshulkers.entity.shulkers.TypeShulker;
+import net.minecraft.client.model.ShulkerModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -15,70 +13,52 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
-public class CustomShulkerRenderer extends MobRenderer<CustomShulker, CustomShulkerModel<CustomShulker>> {
-   private static final ResourceLocation DEFAULT_TEXTURE_LOCATION = ResourceLocation.withDefaultNamespace("textures/" + Sheets.DEFAULT_SHULKER_TEXTURE_LOCATION.texture().getPath() + ".png");
-   public static final ResourceLocation[] TEXTURE_LOCATION = Sheets.SHULKER_TEXTURE_LOCATION.stream().map((p_115919_) -> {
-      return ResourceLocation.withDefaultNamespace("textures/" + p_115919_.texture().getPath() + ".png");
-   }).toArray(ResourceLocation[]::new);
+public class CustomShulkerRenderer extends MobRenderer<CustomShulker, ShulkerModel<CustomShulker>> {
+    private static final ResourceLocation DEFAULT_TEXTURE_LOCATION = Sheets.DEFAULT_SHULKER_TEXTURE_LOCATION
+            .texture()
+            .withPath(texture -> "textures/" + texture + ".png");
 
-   public CustomShulkerRenderer(EntityRendererProvider.Context p_174370_) {
-      super(p_174370_, new CustomShulkerModel<>(p_174370_.bakeLayer(ModelLayers.SHULKER)), 0.0F);
-      this.addLayer(new CustomShulkerHeadLayer(this));
-   }
+    public CustomShulkerRenderer(EntityRendererProvider.Context ctx) {
+        super(ctx, new ShulkerModel<>(ctx.bakeLayer(ModelLayers.SHULKER)), 0.0F);
+        this.addLayer(new CustomShulkerHeadLayer(this));
+    }
 
-   public Vec3 getRenderOffset(CustomShulker p_115904_, float p_115905_) {
-      return p_115904_.getRenderPosition(p_115905_).orElse(super.getRenderOffset(p_115904_, p_115905_));
-   }
+    public Vec3 getRenderOffset(CustomShulker shulker, float partialTick) {
+        return shulker.getRenderPosition(partialTick).orElse(super.getRenderOffset(shulker, partialTick)).scale(shulker.getScale());
+    }
 
-   public boolean shouldRender(CustomShulker p_115913_, Frustum p_115914_, double p_115915_, double p_115916_, double p_115917_) {
-      return super.shouldRender(p_115913_, p_115914_, p_115915_, p_115916_, p_115917_) ? true : p_115913_.getRenderPosition(0.0F).filter((p_174374_) -> {
-         EntityType<?> entitytype = p_115913_.getType();
-         float f = entitytype.getHeight() / 2.0F;
-         float f1 = entitytype.getWidth() / 2.0F;
-         Vec3 vec3 = Vec3.atBottomCenterOf(p_115913_.blockPosition());
-         return p_115914_.isVisible((new AABB(p_174374_.x, p_174374_.y + (double)f, p_174374_.z, vec3.x, vec3.y + (double)f, vec3.z)).inflate((double)f1, (double)f, (double)f1));
-      }).isPresent();
-   }
+    public boolean shouldRender(CustomShulker shulker, Frustum camera, double camX, double camY, double camZ) {
+        return super.shouldRender(shulker, camera, camX, camY, camZ) || shulker.getRenderPosition(0.0F)
+                .filter(
+                        p_174374_ -> {
+                            EntityType<?> entitytype = shulker.getType();
+                            float f = entitytype.getHeight() / 2.0F;
+                            float f1 = entitytype.getWidth() / 2.0F;
+                            Vec3 vec3 = Vec3.atBottomCenterOf(shulker.blockPosition());
+                            return camera.isVisible(
+                                    new AABB(p_174374_.x, p_174374_.y + (double) f, p_174374_.z, vec3.x, vec3.y + (double) f, vec3.z)
+                                            .inflate((double) f1, (double) f, (double) f1)
+                            );
+                        }
+                )
+                .isPresent();
+    }
 
-   @Override
-   public ResourceLocation getTextureLocation(CustomShulker shulker) {
-      return getShulkerTexture(shulker);
-   }
+    public ResourceLocation getTextureLocation(CustomShulker shulker) {
+        return getShulkerTexture(shulker);
+    }
 
-   public static ResourceLocation getShulkerTexture(CustomShulker shulker) {
+    public static ResourceLocation getShulkerTexture(CustomShulker shulker) {
+        if (shulker instanceof ResourceShulker rs) return rs.definition().texture().withPath(path->"textures/"+path+".png");
+        if (shulker instanceof TypeShulker ts) return ts.definition().texture().withPath(path->"textures/"+path+".png");
+        return DEFAULT_TEXTURE_LOCATION;
+    }
 
-      if (shulker.hasCustomName() && shulker.getCustomName().getString().equalsIgnoreCase("MLDEG")) return getTypeShulkerTexture("mldeg");
-      if (shulker instanceof TypeShulker) return getTypeShulkerTexture(shulker.getTypeId().getPath());
-      //if (shulker.getType() == ModEntities.OVERWORLD_SHULKER.get()) return getBaseShulkerTexture("overworld");
-      //if (shulker.getType() == ModEntities.SKY_SHULKER.get()) return getBaseShulkerTexture("sky");
-      //if (shulker.getType() == ModEntities.NETHER_SHULKER.get()) return getBaseShulkerTexture("nether");
-      return shulker instanceof ResourceShulker ? getResourceTextureLocation(ShulkerType.getById(shulker.getTypeId())) : getTextureLocation(shulker.getColor());
-   }
-
-   private static ResourceLocation getTypeShulkerTexture(String essence){
-      return ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID,"textures/entity/shulker/types/"+essence+".png");
-   }
-
-   public static ResourceLocation getResourceTextureLocation(ShulkerType r) {
-      return ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID,"textures/entity/"+r.getTexture().getPath());
-   }
-   public static ResourceLocation getTextureLocation(@Nullable DyeColor p_174376_) {
-      return p_174376_ == null ? DEFAULT_TEXTURE_LOCATION : TEXTURE_LOCATION[p_174376_.getId()];
-   }
-
-   @Override
-   protected void setupRotations(CustomShulker p_115317_, PoseStack p_115318_, float p_115319_, float p_115320_, float p_115321_, float p_320045_) {
-      super.setupRotations(p_115317_, p_115318_, p_115319_, p_115320_, p_115321_, p_320045_);
-      p_115318_.translate(0.0D, 0.5D, 0.0D);
-      p_115318_.mulPose(p_115317_.getAttachFace().getOpposite().getRotation());
-      p_115318_.translate(0.0D, -0.5D, 0.0D);
-   }
-
+    protected void setupRotations(CustomShulker shulker, PoseStack poseStack, float bob, float yBodyRot, float partialTick, float scale) {
+        super.setupRotations(shulker, poseStack, bob, yBodyRot + 180.0F, partialTick, scale);
+        poseStack.rotateAround(shulker.getAttachFace().getOpposite().getRotation(), 0.0F, 0.5F, 0.0F);
+    }
 }

@@ -1,0 +1,33 @@
+{
+  "parent": "resourcefulshulkers:item_infusion",
+  "criteria": {
+    "craft_end_city": {
+      "conditions": {
+        "items": [
+          {
+            "items": "resourcefulshulkers:end_city"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.resourcefulshulkers.end_city.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "resourcefulshulkers:end_city"
+    },
+    "title": {
+      "translate": "advancements.resourcefulshulkers.end_city.title"
+    }
+  },
+  "requirements": [
+    [
+      "craft_end_city"
+    ]
+  ]
+}

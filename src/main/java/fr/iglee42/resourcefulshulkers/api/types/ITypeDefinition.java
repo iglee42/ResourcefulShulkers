@@ -34,6 +34,16 @@ public interface ITypeDefinition {
     boolean createShulker();
 
     /**
+     * Returns the texture used to render this Shulker.
+     * <p>
+     * Implementations may derive a default location from the {@link #id()} when no explicit texture is provided.
+     *
+     * @return the entity texture location, never {@code null}
+     */
+    @NotNull ResourceLocation texture();
+
+
+    /**
      * Returns the runtime registration bound to this definition.
      *
      * @return the matching registration, never {@code null}

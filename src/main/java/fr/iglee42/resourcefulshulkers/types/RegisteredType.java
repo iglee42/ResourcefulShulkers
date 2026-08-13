@@ -1,6 +1,7 @@
 package fr.iglee42.resourcefulshulkers.types;
 
 import fr.iglee42.resourcefulshulkers.api.types.IRegisteredType;
+import fr.iglee42.resourcefulshulkers.entity.shulkers.TypeShulker;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +12,7 @@ public class RegisteredType implements IRegisteredType {
 
     private final TypeDefinition definition;
 
-    private Supplier<EntityType<?>> entityType;
+    private Supplier<EntityType<? extends TypeShulker>> entityType;
     private Supplier<Item> shulkerItem;
     private Supplier<Item> essenceItem;
 
@@ -26,7 +27,7 @@ public class RegisteredType implements IRegisteredType {
 
 
     @Override
-    public @Nullable Supplier<EntityType<?>> entityType() {
+    public @Nullable Supplier<EntityType<? extends TypeShulker>> entityType() {
         return entityType;
     }
 
@@ -41,20 +42,12 @@ public class RegisteredType implements IRegisteredType {
     }
 
 
-    public void setupEntity(Supplier<EntityType<?>> entityType,Supplier<Item> shulkerItem) {
+    public void setupEntity(Supplier<EntityType<? extends TypeShulker>> entityType,Supplier<Item> shulkerItem) {
         if (this.entityType != null) {
             throw new IllegalStateException("Entity type supplier is already set for " + definition.id());
         }
         this.shulkerItem = shulkerItem;
         this.entityType = entityType;
-    }
-
-    // TODO Remove when fully implemented
-    public void setShulkerItem(Supplier<Item> shulkerItem) {
-        if (this.shulkerItem != null) {
-            throw new IllegalStateException("Shulker item supplier is already set for " + definition.id());
-        }
-        this.shulkerItem = shulkerItem;
     }
 
     public void setEssenceItem(Supplier<Item> essenceItem) {

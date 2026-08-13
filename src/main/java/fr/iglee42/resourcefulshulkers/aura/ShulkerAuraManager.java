@@ -3,15 +3,14 @@ package fr.iglee42.resourcefulshulkers.aura;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
+import fr.iglee42.resourcefulshulkers.advancements.RSAdvancements;
 import fr.iglee42.resourcefulshulkers.network.data.AuraSyncPayload;
-import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
@@ -26,10 +25,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
-import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
+import static fr.iglee42.resourcefulshulkers.RSIds.MODID;
 
 @EventBusSubscriber(modid = MODID)
 public final class ShulkerAuraManager extends SavedData {
@@ -121,12 +119,7 @@ public final class ShulkerAuraManager extends SavedData {
                                     //.orElse(-1);
                             int chunkAura = getAura(serverPlayer.blockPosition());
                             if (chunkAura > 0) {
-                                AdvancementHolder adv = serverPlayer.getServer().getAdvancements().get(ResourceLocation.fromNamespaceAndPath(ResourcefulShulkers.MODID,"aura"));
-                                Iterator<String> it = serverPlayer.getAdvancements().getOrStartProgress(adv).getRemainingCriteria().iterator();
-                                while (it.hasNext()){
-                                    String criteria = it.next();
-                                    serverPlayer.getAdvancements().award(adv,criteria);
-                                }
+                                RSAdvancements.AURA.awardTo(serverPlayer);
                             }
                     PacketDistributor.sendToPlayer(serverPlayer,new AuraSyncPayload(chunkAura));
                 }

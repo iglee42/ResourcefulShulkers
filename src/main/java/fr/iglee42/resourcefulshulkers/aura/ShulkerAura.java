@@ -2,15 +2,14 @@ package fr.iglee42.resourcefulshulkers.aura;
 
 import com.mojang.serialization.Codec;
 import fr.iglee42.resourcefulshulkers.api.aura.IShulkerAura;
+import fr.iglee42.resourcefulshulkers.config.RSServerConfig;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
 public class ShulkerAura implements IShulkerAura {
 
-    public static final int MAX_AURA = 262_144;
-
-    public static final Codec<ShulkerAura> CODEC = Codec.intRange(0, MAX_AURA)
+    public static final Codec<ShulkerAura> CODEC = Codec.intRange(0, RSServerConfig.getMaxAura())
             .xmap(ShulkerAura::new, ShulkerAura::getAura);
 
     public static final StreamCodec<FriendlyByteBuf, ShulkerAura> STREAM_CODEC = StreamCodec.composite(
@@ -49,9 +48,9 @@ public class ShulkerAura implements IShulkerAura {
 
     @Override
     public int insertAura(int amount, boolean simulate) {
-        if (aura >= MAX_AURA) return 0;
+        if (aura >= RSServerConfig.getMaxAura()) return 0;
         if (amount <= 0) return 0;
-        int added = Math.min(MAX_AURA - aura, amount);
+        int added = Math.min(RSServerConfig.getMaxAura() - aura, amount);
         if (!simulate) setAura(aura + added);
         return added;
     }

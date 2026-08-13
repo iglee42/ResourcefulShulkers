@@ -2,6 +2,7 @@ package fr.iglee42.resourcefulshulkers.shulkers;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import fr.iglee42.resourcefulshulkers.RSIds;
 import fr.iglee42.resourcefulshulkers.api.shulkers.IRegisteredShulker;
 import fr.iglee42.resourcefulshulkers.api.shulkers.IShulkerDefinition;
 import fr.iglee42.resourcefulshulkers.api.types.ITypeDefinition;
@@ -16,7 +17,14 @@ import java.util.Objects;
 import java.util.Optional;
 
 
-public final class ShulkerDefinition implements IShulkerDefinition {
+public class ShulkerDefinition implements IShulkerDefinition {
+
+    public static final ShulkerDefinition EMPTY = new ShulkerDefinition(RSIds.id("empty"), "Empty", LazyIngredient.EMPTY, null, null, 0xFFFFFF, RSIds.id("elemental")){
+        @Override
+        public @NotNull IRegisteredShulker registration() {
+            return new RegisteredShulker(this);
+        }
+    };
 
     public static final Codec<ShulkerDefinition> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
@@ -52,7 +60,7 @@ public final class ShulkerDefinition implements IShulkerDefinition {
 
     @Override
     public @NotNull ResourceLocation texture() {
-        return texture != null ? texture : ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "textures/entity/shulkers/" + type.getPath() + "/" + id.getPath());
+        return texture != null ? texture : ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "entity/shulker/" + type.getPath() + "/" + id.getPath());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package fr.iglee42.resourcefulshulkers.api.types;
 
 import fr.iglee42.resourcefulshulkers.api.shulkers.IShulkerDefinition;
+import fr.iglee42.resourcefulshulkers.entity.shulkers.TypeShulker;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -33,7 +34,7 @@ public interface IRegisteredType {
      *
      * @return a supplier yielding the entity type, or {@code null} if none is bound or if the type is not associated with an shulker entity
      */
-    @Nullable Supplier<EntityType<?>> entityType();
+    @Nullable Supplier<EntityType<? extends TypeShulker>> entityType();
 
     /**
      * Returns a supplier for the generated shulker item.

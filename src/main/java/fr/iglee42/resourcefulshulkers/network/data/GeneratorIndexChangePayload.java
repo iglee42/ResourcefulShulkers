@@ -1,24 +1,24 @@
 package fr.iglee42.resourcefulshulkers.network.data;
 
+import fr.iglee42.resourcefulshulkers.RSIds;
+import fr.iglee42.resourcefulshulkers.blocks.entites.GeneratingBoxBlockEntity;
+import fr.iglee42.resourcefulshulkers.blocks.entites.structure.endcity.EndCityBlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-
-import java.util.UUID;
-
-import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record GeneratorIndexChangePayload(
-        UUID player,
         BlockPos pos,
+        int slot,
         int index
 ) implements CustomPacketPayload {
 
-    public static final Type<GeneratorIndexChangePayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(MODID, "index_change"));
+    public static final Type<GeneratorIndexChangePayload> TYPE = new Type<>(RSIds.id("index_change"));
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
@@ -26,9 +26,25 @@ public record GeneratorIndexChangePayload(
 
 
     public static final StreamCodec<RegistryFriendlyByteBuf, GeneratorIndexChangePayload> STREAM_CODEC = StreamCodec.composite(
-            UUIDUtil.STREAM_CODEC, GeneratorIndexChangePayload::player,
             BlockPos.STREAM_CODEC, GeneratorIndexChangePayload::pos,
+            ByteBufCodecs.INT, GeneratorIndexChangePayload::slot,
             ByteBufCodecs.INT, GeneratorIndexChangePayload::index,
             GeneratorIndexChangePayload::new
     );
+
+    public static void handle(GeneratorIndexChangePayload payload, IPayloadContext ctx){
+        ctx.enqueueWork(()->{
+            if (!(ctx.player() instanceof ServerPlayer player)) return;
+            Level level = player.level();
+            BlockPos pos = payload.pos();
+
+            if (level.getBlockEntity(pos) instanceof GeneratingBoxBlockEntity be){
+                be.setItemIndex(payload.index());
+            }
+
+            if (level.getBlockEntity(pos) instanceof EndCityBlockEntity be){
+                be.setItemIndex(payload.slot(), payload.index());
+            }
+        });
+    }
 }

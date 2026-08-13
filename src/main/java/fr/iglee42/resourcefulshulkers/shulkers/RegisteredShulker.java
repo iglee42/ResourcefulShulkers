@@ -1,7 +1,8 @@
 package fr.iglee42.resourcefulshulkers.shulkers;
 
 import fr.iglee42.resourcefulshulkers.api.shulkers.IRegisteredShulker;
-import fr.iglee42.resourcefulshulkers.api.shulkers.IShulkerDefinition;
+import fr.iglee42.resourcefulshulkers.entity.shulkers.ResourceShulker;
+import fr.iglee42.resourcefulshulkers.entity.shulkers.ResourceShulkerBullet;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -14,8 +15,8 @@ public class RegisteredShulker implements IRegisteredShulker {
     private final ShulkerDefinition definition;
 
     private Supplier<Block> generatingBox;
-    private Supplier<EntityType<?>> entityType;
-    private Supplier<EntityType<?>> bulletType;
+    private Supplier<EntityType<? extends ResourceShulker>> entityType;
+    private Supplier<EntityType<? extends ResourceShulkerBullet>> bulletType;
     private Supplier<Item> shulkerItem;
     private Supplier<Item> shell;
 
@@ -34,12 +35,12 @@ public class RegisteredShulker implements IRegisteredShulker {
     }
 
     @Override
-    public @Nullable Supplier<EntityType<?>> entityType() {
+    public @Nullable Supplier<EntityType<? extends ResourceShulker>> entityType() {
         return entityType;
     }
 
     @Override
-    public @Nullable Supplier<EntityType<?>> bulletType() {
+    public @Nullable Supplier<EntityType<? extends ResourceShulkerBullet>> bulletType() {
         return bulletType;
     }
 
@@ -60,7 +61,7 @@ public class RegisteredShulker implements IRegisteredShulker {
         this.generatingBox = generatingBox;
     }
 
-    public void setupEntity(Supplier<EntityType<?>> entityType,Supplier<Item> shulkerItem) {
+    public void setupEntity(Supplier<EntityType<? extends ResourceShulker>> entityType,Supplier<Item> shulkerItem) {
         if (this.entityType != null) {
             throw new IllegalStateException("Entity type supplier is already set for " + definition.id());
         }
@@ -68,18 +69,11 @@ public class RegisteredShulker implements IRegisteredShulker {
         this.entityType = entityType;
     }
 
-    public void setBulletType(Supplier<EntityType<?>> bulletType) {
+    public void setBulletType(Supplier<EntityType<? extends ResourceShulkerBullet>> bulletType) {
         if (this.bulletType != null) {
             throw new IllegalStateException("Bullet type supplier is already set for " + definition.id());
         }
         this.bulletType = bulletType;
-    }
-
-    public void setShulkerItem(Supplier<Item> shulkerItem) {
-        if (this.shulkerItem != null) {
-            throw new IllegalStateException("Shulker item supplier is already set for " + definition.id());
-        }
-        this.shulkerItem = shulkerItem;
     }
 
     public void setShell(Supplier<Item> shell) {

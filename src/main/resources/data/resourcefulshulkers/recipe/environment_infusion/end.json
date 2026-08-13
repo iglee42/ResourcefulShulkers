@@ -1,0 +1,13 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "resourcefulshulkers:end_shulker"
+    }
+  ],
+  "type": "resourcefulshulkers:environment_infusion",
+  "base_entity": "minecraft:shulker",
+  "result_entity": "resourcefulshulkers:end_shulker",
+  "biomes": "#minecraft:is_end",
+  "particle": "minecraft:end_stone"
+}

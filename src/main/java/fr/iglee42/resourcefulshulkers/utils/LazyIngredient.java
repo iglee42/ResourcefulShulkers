@@ -107,6 +107,12 @@ public class LazyIngredient {
         return this.ingredient == null ? Ingredient.EMPTY : this.ingredient;
     }
 
+    public boolean isConsideredEmptyWithoutTags(){
+        if (this == EMPTY) return true;
+        if (isTag()) return false;
+        return !BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(id));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -7,11 +7,10 @@ import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
-import fr.iglee42.igleelib.api.utils.ModsUtils;
+import fr.iglee42.resourcefulshulkers.RSIds;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
+import fr.iglee42.resourcefulshulkers.registries.RSEntities;
 import fr.iglee42.resourcefulshulkers.registries.RSItems;
-import fr.iglee42.resourcefulshulkers.shulkers.RegisteredShulker;
-import fr.iglee42.resourcefulshulkers.shulkers.ShulkerDefinition;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.loading.FMLPaths;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
+import static fr.iglee42.resourcefulshulkers.RSIds.MODID;
 
 public final class TypesManager {
 
@@ -33,7 +32,7 @@ public final class TypesManager {
 
     private static final Codec<TypeDefinition> VALIDATED_CODEC = TypeDefinition.CODEC.validate(
             def->{
-                if (def.id().equals(ResourceLocation.fromNamespaceAndPath(MODID,"elemental"))) return DataResult.error(()->"Type cannot be elemental type !");
+                if (def.id().equals(RSIds.id("elemental"))) return DataResult.error(()->"Type cannot be elemental type !");
                 if (exists(def.id())) return DataResult.error(()->"Type already exists with id: " + def.id());
                 return DataResult.success(def);
             }
@@ -43,7 +42,7 @@ public final class TypesManager {
 
     public static void load(){
         TYPES.clear();
-        File typesDirectory = FMLPaths.CONFIGDIR.get().resolve(ResourcefulShulkers.MODID + "/types/").toFile();
+        File typesDirectory = FMLPaths.CONFIGDIR.get().resolve(RSIds.MODID + "/types/").toFile();
         if (!typesDirectory.exists()) {
             createTypeDirectory(typesDirectory);
         }
@@ -52,7 +51,7 @@ public final class TypesManager {
             ResourcefulShulkers.LOGGER.error("Failed to list files in types directory at: {}", typesDirectory.getAbsolutePath());
             return;
         }
-        TYPES.put(ResourceLocation.fromNamespaceAndPath(MODID,"elemental"), new RegisteredType(new TypeDefinition(ResourceLocation.fromNamespaceAndPath(MODID,"elemental"),"\u00a7dElemental", false)));
+        TYPES.put(RSIds.id("elemental"), new RegisteredType(new TypeDefinition(RSIds.id("elemental"),"\u00a7dElemental", false, null)));
         for (File file : files){
             try (FileInputStream inputStream = new FileInputStream(file); InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)){
                 JsonObject json = GSON.fromJson(reader, JsonObject.class);
@@ -74,7 +73,7 @@ public final class TypesManager {
 
             type.setEssenceItem(RSItems.createEssence(type.definition()));
             if (type.definition().createShulker())
-                type.setShulkerItem(RSItems.createTypeShulker(type.definition()));
+                type.setupEntity(RSEntities.createTypeShulker(type.definition()), RSItems.createTypeShulker(type.definition()));
         }
     }
 
@@ -101,7 +100,7 @@ public final class TypesManager {
     }
 
     public static @NotNull TypeDefinition getElementalType(){
-        TypeDefinition type = getDefinition(ResourceLocation.fromNamespaceAndPath(MODID,"elemental"));
+        TypeDefinition type = getDefinition(RSIds.id("elemental"));
         if (type == null) throw new IllegalStateException("Elemental type is missing!");
         return type;
     }
@@ -129,10 +128,10 @@ public final class TypesManager {
     }
 
     private enum Default {
-        OVERWORLD("\u00a72Overworld"),
-        SKY("\u00a7bSky"),
-        NETHER("\u00a74Nether"),
-        END("\u00a7eEnd");
+        OVERWORLD("§2Overworld"),
+        SKY("§bSky"),
+        NETHER("§4Nether"),
+        END("§eEnd");
         public final String displayName;
 
         Default(String displayName) {

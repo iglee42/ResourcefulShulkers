@@ -1,19 +1,19 @@
 package fr.iglee42.resourcefulshulkers.resourcepack.generation;
 
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
-import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
 import fr.iglee42.resourcefulshulkers.resourcepack.PathConstant;
+import fr.iglee42.resourcefulshulkers.shulkers.ShulkersManager;
 
 import java.io.File;
 import java.io.FileWriter;
 
-import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
+import static fr.iglee42.resourcefulshulkers.RSIds.MODID;
 
 public class BlockStatesGenerator {
     public static void generate() {
-        /*ShulkersManager.TYPES.forEach(r->{
-            generatingBox(r.id().getPath().toLowerCase());
-        });*/
+        ShulkersManager.forEachShulker(s->{
+            generatingBox(s.definition().id().getPath().toLowerCase());
+        });
     }
 
     private static void generatingBox(String name){

@@ -1,0 +1,25 @@
+{
+  "values": [
+    "minecraft:experience_bottle",
+    {
+      "id": "create:experience_nugget",
+      "required": false
+    },
+    {
+      "id": "ars_nouveau:experience_gem",
+      "required": false
+    },
+    {
+      "id": "mob_grinding_utils:solid_xp_baby",
+      "required": false
+    },
+    {
+      "id": "forbidden_arcanus:xpetrified_orb",
+      "required": false
+    },
+    {
+      "id": "actuallyadditions:solidified_experience",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "values": [
+    "resourcefulshulkers:shulker_item",
+    {
+      "id": "#resourcefulshulkers:shulkers/elemental",
+      "required": false
+    },
+    {
+      "id": "#resourcefulshulkers:shulkers/resource",
+      "required": false
+    }
+  ]
+}

@@ -10,16 +10,14 @@ import fr.iglee42.resourcefulshulkers.item.UpgradeItem;
 import fr.iglee42.resourcefulshulkers.item.shulker.TypeShulkerItem;
 import fr.iglee42.resourcefulshulkers.utils.Upgrade;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.item.*;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
-
-import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
+import static fr.iglee42.resourcefulshulkers.RSIds.MODID;
 
 public class RSItems {
 
@@ -27,7 +25,7 @@ public class RSItems {
 
     public static final DeferredHolder<Item,ShulkerItem> SHULKER = ITEMS.register("shulker_item", () -> new ShulkerItem(new Item.Properties()) {
         @Override
-        public @NotNull EntityType<?> entityType() {
+        public @NotNull EntityType<? extends Shulker> entityType() {
             return EntityType.SHULKER;
         }
     });

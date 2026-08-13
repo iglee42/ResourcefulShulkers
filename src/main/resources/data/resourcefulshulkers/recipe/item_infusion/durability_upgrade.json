@@ -1,0 +1,30 @@
+{
+  "type": "resourcefulshulkers:item_infusion",
+  "base_entity": "minecraft:shulker",
+  "result_entity": "minecraft:item",
+  "result_nbt": {
+    "Item": {
+      "id": "resourcefulshulkers:durability_upgrade",
+      "count": 1
+    }
+  },
+  "pedestal_ingredients": [
+    {
+      "item": "resourcefulshulkers:upgrade_base"
+    },{
+      "tag": "resourcefulshulkers:shulker_shells"
+    },{
+      "tag": "resourcefulshulkers:shulker_shells"
+    },{
+      "tag": "resourcefulshulkers:shulker_shells"
+    },{
+      "tag": "resourcefulshulkers:shulker_shells"
+    },{
+      "tag": "resourcefulshulkers:essences"
+    },{
+      "tag": "resourcefulshulkers:essences"
+    },{
+      "tag": "resourcefulshulkers:essences"
+    }
+  ]
+}

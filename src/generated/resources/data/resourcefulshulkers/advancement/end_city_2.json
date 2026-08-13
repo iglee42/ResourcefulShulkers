@@ -1,0 +1,34 @@
+{
+  "parent": "resourcefulshulkers:end_city",
+  "criteria": {
+    "craft_end_city": {
+      "conditions": {
+        "items": [
+          {
+            "items": "resourcefulshulkers:end_city_tier_2"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.resourcefulshulkers.end_city_2.description"
+    },
+    "frame": "challenge",
+    "hidden": true,
+    "icon": {
+      "count": 1,
+      "id": "resourcefulshulkers:end_city_tier_2"
+    },
+    "title": {
+      "translate": "advancements.resourcefulshulkers.end_city_2.title"
+    }
+  },
+  "requirements": [
+    [
+      "craft_end_city"
+    ]
+  ]
+}

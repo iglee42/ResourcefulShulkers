@@ -1,0 +1,33 @@
+{
+  "parent": "resourcefulshulkers:item_infusion",
+  "criteria": {
+    "craft_shulker_trainer": {
+      "conditions": {
+        "items": [
+          {
+            "items": "resourcefulshulkers:shulker_trainer"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.resourcefulshulkers.shulker_trainer.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "resourcefulshulkers:shulker_trainer"
+    },
+    "title": {
+      "translate": "advancements.resourcefulshulkers.shulker_trainer.title"
+    }
+  },
+  "requirements": [
+    [
+      "craft_shulker_trainer"
+    ]
+  ]
+}

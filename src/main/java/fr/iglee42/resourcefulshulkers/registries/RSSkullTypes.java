@@ -1,7 +1,6 @@
 package fr.iglee42.resourcefulshulkers.registries;
 
-import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
-import fr.iglee42.resourcefulshulkers.init.ModBlocks;
+import fr.iglee42.resourcefulshulkers.RSIds;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SkullBlock;
@@ -13,10 +12,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
-@EventBusSubscriber(modid = ResourcefulShulkers.MODID)
+@EventBusSubscriber(modid = RSIds.MODID)
 public enum RSSkullTypes implements SkullBlock.Type, StringRepresentable {
 
-    SHULKER("shulker", ()-> ModBlocks.SHULKER_HEAD.get(), ()-> ModBlocks.WALL_SHULKER_HEAD.get());
+    SHULKER("shulker", ()-> RSBlocks.SHULKER_HEAD.get(), ()-> RSBlocks.WALL_SHULKER_HEAD.get());
 
     private final String name;
     private final Supplier<Block> block;
