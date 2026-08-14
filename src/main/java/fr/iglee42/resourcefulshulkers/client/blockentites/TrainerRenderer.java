@@ -37,6 +37,7 @@ public class TrainerRenderer implements BlockEntityRenderer<TrainerBlockEntity> 
             Entity entity = item.entityType().create(be.getLevel());
             if (!(entity instanceof ResourceShulker shulker)) continue;
             shulker.setPeekAmountRaw(3);
+            shulker.setCustomName(be.getShulkers().getStackInSlot(slot).getHoverName());
             float[] pos = POSITIONS[slot];
             poseStack.pushPose();
             poseStack.translate(8/16F, 1.25F, 8/16F);

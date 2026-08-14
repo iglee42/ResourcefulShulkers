@@ -2,7 +2,9 @@ package fr.iglee42.resourcefulshulkers.client.blockentites;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import fr.iglee42.resourcefulshulkers.RSIds;
 import fr.iglee42.resourcefulshulkers.blocks.entites.GeneratingBoxBlockEntity;
+import fr.iglee42.resourcefulshulkers.utils.RSColors;
 import net.minecraft.client.model.ShulkerModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
@@ -26,6 +28,7 @@ public class GeneratingBoxRenderer implements BlockEntityRenderer<GeneratingBoxB
 
    public void render(GeneratingBoxBlockEntity entity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
       Material material = new Material(Sheets.SHULKER_SHEET, entity.definition().boxTexture());
+      boolean isDyeShulker = entity.definition().id().equals(RSIds.id("dye"));
       poseStack.pushPose();
       poseStack.translate(0.5F, 0.5F, 0.5F);
       float f = 0.9995F;
@@ -36,7 +39,7 @@ public class GeneratingBoxRenderer implements BlockEntityRenderer<GeneratingBoxB
       modelpart.setPos(0.0F, 24.0F - entity.getAnimationProgress(partialTick) * 0.5F * 16.0F, 0.0F);
       modelpart.yRot = 270.0F * entity.getAnimationProgress(partialTick) * ((float)Math.PI / 180F);
       VertexConsumer vertexconsumer = material.buffer(bufferSource, RenderType::entityCutoutNoCull);
-      this.model.renderToBuffer(poseStack, vertexconsumer, packedLight, packedOverlay);
+      this.model.renderToBuffer(poseStack, vertexconsumer, packedLight, packedOverlay, isDyeShulker ? RSColors.getRGBColor().toARGB() : -1);
       poseStack.popPose();
    }
 

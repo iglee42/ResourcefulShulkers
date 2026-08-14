@@ -1,12 +1,14 @@
 package fr.iglee42.resourcefulshulkers.client.entites;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import fr.iglee42.resourcefulshulkers.RSIds;
 import fr.iglee42.resourcefulshulkers.client.entites.layers.CustomShulkerHeadLayer;
 import fr.iglee42.resourcefulshulkers.entity.shulkers.CustomShulker;
 import fr.iglee42.resourcefulshulkers.entity.shulkers.ResourceShulker;
 import fr.iglee42.resourcefulshulkers.entity.shulkers.TypeShulker;
 import net.minecraft.client.model.ShulkerModel;
 import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -52,6 +54,7 @@ public class CustomShulkerRenderer extends MobRenderer<CustomShulker, ShulkerMod
     }
 
     public static ResourceLocation getShulkerTexture(CustomShulker shulker) {
+        if (shulker.getCustomName() != null && shulker.getCustomName().getString().equalsIgnoreCase("MLDEG")) return RSIds.id("textures/entity/shulker/types/mldeg.png");
         if (shulker instanceof ResourceShulker rs) return rs.definition().texture().withPath(path->"textures/"+path+".png");
         if (shulker instanceof TypeShulker ts) return ts.definition().texture().withPath(path->"textures/"+path+".png");
         return DEFAULT_TEXTURE_LOCATION;
