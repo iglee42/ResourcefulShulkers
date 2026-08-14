@@ -23,7 +23,7 @@ public class RSItems {
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, MODID);
 
-    public static final DeferredHolder<Item,ShulkerItem> SHULKER = ITEMS.register("shulker_item", () -> new ShulkerItem(new Item.Properties()) {
+    public static final DeferredHolder<Item,ShulkerItem> SHULKER = ITEMS.register("shulker", () -> new ShulkerItem(new Item.Properties()) {
         @Override
         public @NotNull EntityType<? extends Shulker> entityType() {
             return EntityType.SHULKER;

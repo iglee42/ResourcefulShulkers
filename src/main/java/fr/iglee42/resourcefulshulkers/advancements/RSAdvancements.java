@@ -27,7 +27,7 @@ public final class RSAdvancements {
             .background(BACKGROUND)
             .toast(false)
             .announce(false)
-            .criterion("shulker", PlayerTrigger.TriggerInstance.tick()));
+            .criterion("shulker", InventoryChangeTrigger.TriggerInstance.hasItems(RSItems.SHULKER.get())));
 
     public static final RSAdvancement AURA = register(RSAdvancement.builder("aura")
             .parent(ROOT)
@@ -58,7 +58,7 @@ public final class RSAdvancements {
             .parent(ITEM_INFUSION)
             .icon(RSBlocks.TRAINER)
             .title("Do you think they eat eggs?")
-            .description("Create a shulker train with the shulker infuser")
+            .description("Create a shulker trainer with the shulker infuser")
             .frame(AdvancementType.GOAL)
             .criterion("craft_shulker_trainer", InventoryChangeTrigger.TriggerInstance.hasItems(RSBlocks.TRAINER.get())));
 

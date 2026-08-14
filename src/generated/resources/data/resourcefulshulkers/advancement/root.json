@@ -1,7 +1,14 @@
 {
   "criteria": {
     "shulker": {
-      "trigger": "minecraft:tick"
+      "conditions": {
+        "items": [
+          {
+            "items": "resourcefulshulkers:shulker"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
     }
   },
   "display": {
@@ -12,7 +19,7 @@
     },
     "icon": {
       "count": 1,
-      "id": "resourcefulshulkers:shulker_item"
+      "id": "resourcefulshulkers:shulker"
     },
     "show_toast": false,
     "title": {

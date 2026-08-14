@@ -43,12 +43,16 @@ public abstract class ShulkerItem extends Item {
         Player player = context.getPlayer();
         Direction face = context.getClickedFace();
         BlockPos pos = context.getClickedPos().relative(face);
+        ItemStack handStack = player.getItemInHand(context.getHand());
         Mob shulker = (Mob) entityType().create(level);
         if (shulker != null) {
             shulker.getEntityData().set(Shulker.DATA_ATTACH_FACE_ID, face);
             shulker.setPos(pos.getX(), pos.getY(), pos.getZ());
             level.addFreshEntity(shulker);
-            player.getItemInHand(context.getHand()).shrink(1);
+            if (!player.getAbilities().instabuild) {
+                handStack.shrink(1);
+            }
+            return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;
     }

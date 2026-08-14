@@ -1,6 +1,6 @@
 {
   "values": [
-    "resourcefulshulkers:shulker_item",
+    "resourcefulshulkers:shulker",
     {
       "id": "#resourcefulshulkers:shulkers/elemental",
       "required": false
