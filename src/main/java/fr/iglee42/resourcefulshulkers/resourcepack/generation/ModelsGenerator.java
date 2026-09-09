@@ -1,21 +1,25 @@
 package fr.iglee42.resourcefulshulkers.resourcepack.generation;
 
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
-import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
 import fr.iglee42.resourcefulshulkers.resourcepack.PathConstant;
+import fr.iglee42.resourcefulshulkers.shulkers.ShulkersManager;
+import fr.iglee42.resourcefulshulkers.types.TypesManager;
 
 import java.io.File;
 import java.io.FileWriter;
 
-import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
+import static fr.iglee42.resourcefulshulkers.RSIds.MODID;
 
 public class ModelsGenerator {
     public static void generate() {
-        ShulkersManager.TYPES.forEach(r->{
-            //itemFromParent(r.id().getPath().toLowerCase()+"_shell","item/generated",new TextureKey("layer0","resourcefulshulkers:item/shulker_shell"));
-            itemFromParent(r.id().getPath().toLowerCase()+"_shulker",MODID+":item/shulker",new TextureKey("0",r.getTexture().toString().replace(".png","")),new TextureKey("1",r.getTexture().toString().replace(".png","")));
-            itemFromParent(r.id().getPath().toLowerCase()+"_generating_box","item/shulker_box");
-            itemFromParent(r.id().getPath().toLowerCase()+"_shell",MODID+":item/base_shell");
+        TypesManager.forEachType(type->{
+            itemFromParent(type.definition().id().getPath()+"_shulker",MODID+":item/shulker",new TextureKey("shulker",type.definition().texture().toString()));
+        });
+
+        ShulkersManager.forEachShulker(shulker->{
+            itemFromParent(shulker.definition().id().getPath()+"_shulker",MODID+":item/shulker",new TextureKey("shulker",shulker.definition().texture().toString()));
+            itemFromParent(shulker.definition().id().getPath()+"_shell",MODID+":item/base_shell");
+            itemFromParent(shulker.definition().id().getPath()+"_generating_box","item/shulker_box");
         });
     }
 

@@ -1,0 +1,14 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "resourcefulshulkers:overworld_shulker"
+    }
+  ],
+  "type": "resourcefulshulkers:environment_infusion",
+  "base_entity": "minecraft:shulker",
+  "result_entity": "resourcefulshulkers:overworld_shulker",
+  "biomes": "#minecraft:is_overworld",
+  "particle": "minecraft:grass_block",
+  "max_y": 192
+}

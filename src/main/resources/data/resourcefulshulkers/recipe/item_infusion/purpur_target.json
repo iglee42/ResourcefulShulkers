@@ -1,0 +1,30 @@
+{
+  "type": "resourcefulshulkers:item_infusion",
+  "base_entity": "minecraft:armor_stand",
+  "result_entity": "minecraft:item",
+  "result_nbt": {
+    "Item": {
+      "id": "resourcefulshulkers:purpur_target",
+      "count": 1
+    }
+  },
+  "pedestal_ingredients": [
+    {
+      "item": "minecraft:purpur_block"
+    },{
+      "item": "minecraft:purpur_block"
+    },{
+      "item": "minecraft:purpur_block"
+    },{
+      "item": "minecraft:purpur_block"
+    },{
+      "item": "minecraft:end_stone_bricks"
+    },{
+      "item": "minecraft:end_stone_bricks"
+    },{
+      "item": "minecraft:end_stone_bricks"
+    },{
+      "item": "minecraft:end_stone_bricks"
+    }
+  ]
+}

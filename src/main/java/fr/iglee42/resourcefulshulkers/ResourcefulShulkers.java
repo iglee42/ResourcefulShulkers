@@ -1,99 +1,48 @@
 package fr.iglee42.resourcefulshulkers;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonParseException;
-import com.mojang.serialization.JsonOps;
-import fr.iglee42.igleelib.IgleeLibrary;
-import fr.iglee42.resourcefulshulkers.init.*;
-import fr.iglee42.resourcefulshulkers.recipes.ModRecipes;
-import fr.iglee42.resourcefulshulkers.resourcepack.PackType;
+import fr.iglee42.resourcefulshulkers.config.RSClientConfig;
+import fr.iglee42.resourcefulshulkers.config.RSCommonConfig;
+import fr.iglee42.resourcefulshulkers.config.RSServerConfig;
+import fr.iglee42.resourcefulshulkers.registries.RSRecipes;
+import fr.iglee42.resourcefulshulkers.registries.*;
 import fr.iglee42.resourcefulshulkers.resourcepack.PathConstant;
-import fr.iglee42.resourcefulshulkers.resourcepack.RSPackFinder;
-import fr.iglee42.resourcefulshulkers.utils.LazyIngredient;
-import fr.iglee42.resourcefulshulkers.utils.ShulkersManager;
-import fr.iglee42.resourcefulshulkers.utils.TypesManager;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.api.distmarker.Dist;
+import fr.iglee42.resourcefulshulkers.shulkers.ShulkersManager;
+import fr.iglee42.resourcefulshulkers.types.TypesManager;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(ResourcefulShulkers.MODID)
+@Mod(RSIds.MODID)
 public class ResourcefulShulkers {
-    public static final String MODID = "resourcefulshulkers";
 
-    public static final Logger LOGGER = LogManager.getLogger();
-
-    public static final MutableComponent PREFIX = Component.literal("[").withStyle(ChatFormatting.DARK_PURPLE).append(Component.literal("ResourcefulShulkers").withStyle(ChatFormatting.LIGHT_PURPLE)).append(Component.literal("] ").withStyle(ChatFormatting.DARK_PURPLE));
-
+    public static final Logger LOGGER = LogManager.getLogger("Resourceful Shulkers");
 
 
     public ResourcefulShulkers(IEventBus bus, ModContainer container) {
-        IgleeLibrary.addClassParser(LazyIngredient.class, je-> {
-            if (je.isJsonPrimitive() && je.getAsJsonPrimitive().isString()){
-                String item = je.getAsString();
-                if (item.startsWith("#")){
-                    return LazyIngredient.tag(item.substring(1));
-                } else {
-                    return LazyIngredient.item(item);
-                }
-            }
-            return LazyIngredient.EMPTY;
-        });
-        TypesManager.init();
-        ShulkersManager.init();
+        TypesManager.load();
+        ShulkersManager.load();
 
-        ModItems.ITEMS.register(bus);
-        ModBlocks.BLOCKS.register(bus);
-        ModCreativeTabs.CREATIVE_TABS.register(bus);
-        ModBlockEntities.BLOCK_ENTITIES.register(bus);
-        ModBlockEntities.MENUS.register(bus);
-        ModEntities.ENTITIES.register(bus);
-        ModComponents.COMPONENTS.register(bus);
+        RSItems.ITEMS.register(bus);
+        RSBlocks.BLOCKS.register(bus);
+        RSCreativeTabs.CREATIVE_TABS.register(bus);
+        RSBlockEntities.BLOCK_ENTITIES.register(bus);
+        RSBlockEntities.MENUS.register(bus);
+        RSEntities.ENTITIES.register(bus);
+        RSDataComponents.COMPONENTS.register(bus);
 
-        ModRecipes.SERIALIZER.register(bus);
+        RSRecipes.SERIALIZER.register(bus);
 
         PathConstant.init();
 
-        bus.addListener(this::commonSetup);
-        bus.addListener(ModCreativeTabs::addCreative);
+        bus.addListener(RSCreativeTabs::addCreative);
 
-        container.registerConfig(ModConfig.Type.COMMON,ResourcefulShulkersConfig.SPEC,"resourcefulshulkers/common.toml");
-        container.registerConfig(ModConfig.Type.CLIENT,ResourcefulShulkersConfig.Client.SPEC,"resourcefulshulkers/client.toml");
+        container.registerConfig(ModConfig.Type.CLIENT, RSClientConfig.SPEC,"resourcefulshulkers/client.toml");
+        container.registerConfig(ModConfig.Type.COMMON, RSCommonConfig.SPEC,"resourcefulshulkers/common.toml");
+        container.registerConfig(ModConfig.Type.SERVER, RSServerConfig.SPEC,"resourcefulshulkers/server.toml");
 
-        try {
-            if (FMLEnvironment.dist == Dist.CLIENT) {
-                Minecraft.getInstance().getResourcePackRepository().addPackFinder(new RSPackFinder(PackType.RESOURCE));
-            }
-        } catch (Exception ignored) {
-        }
     }
-    private void commonSetup(final FMLCommonSetupEvent event) {
-        //Code from Tinker's Construct
-        event.enqueueWork(() -> {
-            ImmutableSet.Builder<Block> builder = ImmutableSet.builder();
-            builder.addAll(BlockEntityType.SKULL.validBlocks);
-            builder.add(ModBlocks.SHULKER_HEAD.get(),ModBlocks.WALL_SHULKER_HEAD.get());
-            BlockEntityType.SKULL.validBlocks = builder.build();
-        });
-    }
-
-
 
 }

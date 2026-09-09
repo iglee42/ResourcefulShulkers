@@ -1,34 +1,33 @@
 package fr.iglee42.resourcefulshulkers.item;
 
-import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
-import fr.iglee42.resourcefulshulkers.utils.ShulkerType;
-import fr.iglee42.resourcefulshulkers.utils.TypesManager;
+import fr.iglee42.resourcefulshulkers.api.shulkers.IShulkerDefinition;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class ShellItem extends Item {
-    private final ResourceLocation id;
+    private final IShulkerDefinition definition;
 
-    public ShellItem(ResourceLocation id) {
+    public ShellItem(IShulkerDefinition definition) {
         super(new Item.Properties());
-        this.id = id;
+        this.definition = definition;
     }
 
-    public ResourceLocation getId() {
-        return id;
+    public IShulkerDefinition getDefinition() {
+        return definition;
     }
 
     @Override
-    public void appendHoverText(ItemStack p_41421_, @Nullable TooltipContext p_41422_, List<Component> tooltips, TooltipFlag p_41424_) {
-        tooltips.add(Component.translatable("tooltip.resourcefulshulkers.type", TypesManager.getTierDisplayName(ShulkerType.getById(getId()).type())).withStyle(ChatFormatting.GRAY));
-        super.appendHoverText(p_41421_, p_41422_, tooltips, p_41424_);
+    public void appendHoverText(ItemStack stack, @Nullable TooltipContext p_41422_, List<Component> tooltips, TooltipFlag p_41424_) {
+        RSTooltipHandler.tooltip(stack,tooltips)
+                .type(definition.type())
+                .apply();
+        super.appendHoverText(stack, p_41422_, tooltips, p_41424_);
     }
 }

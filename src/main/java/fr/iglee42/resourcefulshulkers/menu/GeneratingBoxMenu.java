@@ -1,27 +1,30 @@
 package fr.iglee42.resourcefulshulkers.menu;
 
+import fr.iglee42.resourcefulshulkers.RSIds;
 import fr.iglee42.resourcefulshulkers.blocks.entites.GeneratingBoxBlockEntity;
-import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
-import fr.iglee42.resourcefulshulkers.init.ModBlocks;
-import fr.iglee42.resourcefulshulkers.menu.slot.BoxShellSlot;
-import fr.iglee42.resourcefulshulkers.menu.slot.BoxUpgradeSlot;
-import net.minecraft.core.Direction;
+import fr.iglee42.resourcefulshulkers.menu.slot.UpgradeItemHandlerSlot;
+import fr.iglee42.resourcefulshulkers.registries.RSBlocks;
+import fr.iglee42.resourcefulshulkers.registries.RSBlockEntities;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class GeneratingBoxMenu extends AbstractContainerMenu {
+
+    public static final ResourceLocation EMPTY_SHELL_SLOT = RSIds.id("item/empty_shell");
+    public static final ResourceLocation EMPTY_UPGRADE_SLOT =  RSIds.id("item/empty_upgrade");
 
     private final GeneratingBoxBlockEntity blockEntity;
     private final Level level;
@@ -31,19 +34,19 @@ public class GeneratingBoxMenu extends AbstractContainerMenu {
     }
 
     public GeneratingBoxMenu(int id, Inventory playerInv, BlockEntity entity) {
-        super(ModBlockEntities.GENERATING_BOX_MENU.get(),id);
+        super(RSBlockEntities.GENERATING_BOX_MENU.get(),id);
         this.blockEntity = (GeneratingBoxBlockEntity) entity;
         this.level = playerInv.player.level();
         blockEntity.startOpen(playerInv.player);
         IItemHandler upgrades = blockEntity.getUpgrades();
-        for (int u = 0; u < 4; ++u){
-            this.addSlot(new BoxUpgradeSlot(upgrades,u,8+u*18,18*3));
+        for (int u = 0; u < upgrades.getSlots(); ++u){
+            this.addSlot(new UpgradeItemHandlerSlot(upgrades,u,8+u*18,18*3).setBackground(InventoryMenu.BLOCK_ATLAS,EMPTY_UPGRADE_SLOT));
         }
-        IItemHandler items = blockEntity.getInventory();
 
-        this.addSlot(new BoxShellSlot(items,0,8+8*18,18*3,blockEntity.getResourceGenerated().id()));
-        for(int l = 0; l < 9; ++l) {
-            this.addSlot(new SlotItemHandler(items, l + 1, 8 + l * 18, 18));
+        this.addSlot(new SlotItemHandler(blockEntity.getShell(),0,8+8*18,18*3).setBackground(InventoryMenu.BLOCK_ATLAS, EMPTY_SHELL_SLOT));
+        IItemHandler items = blockEntity.getOutputInventory();
+        for(int l = 0; l < blockEntity.getOutputInventory().getSlots(); ++l) {
+            this.addSlot(new SlotItemHandler(items, l, 8 + l * 18, 18));
         }
 
         for(int i1 = 0; i1 < 3; ++i1) {
@@ -87,7 +90,6 @@ public class GeneratingBoxMenu extends AbstractContainerMenu {
             if (!moveItemStackTo(sourceStack,TE_INVENTORY_FIRST_SLOT_INDEX, TE_INVENTORY_FIRST_SLOT_INDEX + TE_INSERTABLE_INVENTORY_SLOT_COUNT,false))
                 return ItemStack.EMPTY;
         } else {
-            System.out.println("Invalid slotIndex:" + index);
             return ItemStack.EMPTY;
         }
 
@@ -105,7 +107,7 @@ public class GeneratingBoxMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        for (Block block : ModBlocks.getAllBox()) {
+        for (Block block : RSBlocks.getAllGeneratingBox()) {
             if (stillValid(ContainerLevelAccess.create(level,blockEntity.getBlockPos()),player,block)) return true;
         }
         return false;
@@ -117,7 +119,7 @@ public class GeneratingBoxMenu extends AbstractContainerMenu {
         blockEntity.stopOpen(p_38940_);
     }
 
-    public GeneratingBoxBlockEntity getTile() {
+    public GeneratingBoxBlockEntity getBlockEntity() {
         return blockEntity;
     }
 }

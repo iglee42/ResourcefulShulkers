@@ -1,10 +1,9 @@
 package fr.iglee42.resourcefulshulkers.blocks;
 
-import fr.iglee42.resourcefulshulkers.ResourcefulShulkersConfig;
 import fr.iglee42.resourcefulshulkers.blocks.entites.ShulkerAbsorberBlockEntity;
-import fr.iglee42.resourcefulshulkers.blocks.entites.ShulkerInfuserBlockEntity;
-import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
-import net.minecraft.ChatFormatting;
+import fr.iglee42.resourcefulshulkers.config.RSServerConfig;
+import fr.iglee42.resourcefulshulkers.item.RSTooltipHandler;
+import fr.iglee42.resourcefulshulkers.registries.RSBlockEntities;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -46,7 +45,7 @@ public class ShulkerAbsorberBlock extends Block implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<T> type) {
-        return type.equals(ModBlockEntities.SHULKER_ABSORBER_BLOCK_ENTITY.get()) ? (lvl,pos,st,be)->((ShulkerAbsorberBlockEntity)be).tick(lvl,pos,st) : null;
+        return type.equals(RSBlockEntities.SHULKER_ABSORBER.get()) ? (lvl, pos, st, be)->((ShulkerAbsorberBlockEntity)be).tick(lvl,pos,st) : null;
     }
 
     @Override
@@ -74,15 +73,12 @@ public class ShulkerAbsorberBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack p_49816_, @Nullable Item.TooltipContext p_49817_, List<Component> tooltips, TooltipFlag p_49819_) {
-        tooltips.add(Component.literal("Warning: Don't put too many in a chunk, it can produce lags !").withStyle(ChatFormatting.YELLOW));
-        if (Screen.hasShiftDown()) {
-            tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_absorber"));
-            tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_absorber1", Component.literal(ResourcefulShulkersConfig.ABSORBER_AURA.get().toString()).withStyle(ChatFormatting.LIGHT_PURPLE)));
-            if (ResourcefulShulkersConfig.ABSORBER_WORKS_AS_TARGET.get()) tooltips.add(Component.translatable("tooltip.resourcefulshulkers.shulker_absorber2", Component.literal(ResourcefulShulkersConfig.ABSORBER_AURA.get().toString()).withStyle(ChatFormatting.LIGHT_PURPLE)));
-        }
-        else tooltips.add(Component.translatable("tooltip.resourcefulshulkers.press_shift"));
-        super.appendHoverText(p_49816_, p_49817_, tooltips, p_49819_);
+    public void appendHoverText(ItemStack stack, @Nullable Item.TooltipContext p_49817_, List<Component> tooltips, TooltipFlag p_49819_) {
+        RSTooltipHandler.tooltip(stack,tooltips)
+                .shift(Screen.hasShiftDown())
+                .args(1, RSServerConfig.ABSORBER_AURA.get())
+                .apply();
+        super.appendHoverText(stack, p_49817_, tooltips, p_49819_);
     }
 
 }

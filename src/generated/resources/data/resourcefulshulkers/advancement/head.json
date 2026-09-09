@@ -1,0 +1,26 @@
+{
+  "parent": "resourcefulshulkers:aura",
+  "criteria": {
+    "shulker": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.resourcefulshulkers.head.description"
+    },
+    "hidden": true,
+    "icon": {
+      "count": 1,
+      "id": "resourcefulshulkers:shulker_head"
+    },
+    "title": {
+      "translate": "advancements.resourcefulshulkers.head.title"
+    }
+  },
+  "requirements": [
+    [
+      "shulker"
+    ]
+  ]
+}

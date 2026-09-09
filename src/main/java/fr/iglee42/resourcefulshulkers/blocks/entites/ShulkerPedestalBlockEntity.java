@@ -1,7 +1,6 @@
 package fr.iglee42.resourcefulshulkers.blocks.entites;
 
-import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
-import fr.iglee42.resourcefulshulkers.network.data.ItemStackSyncPayload;
+import fr.iglee42.resourcefulshulkers.registries.RSBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -22,9 +21,7 @@ public class ShulkerPedestalBlockEntity extends BlockEntity {
     private ItemStackHandler inventory = new ItemStackHandler(1) {
         @Override
         protected void onContentsChanged(int slot) {
-            if(!level.isClientSide()) {
-                PacketDistributor.sendToAllPlayers(new ItemStackSyncPayload(worldPosition,slot,getStackInSlot(slot)));
-            }
+            setChanged();
         }
 
         @Override
@@ -35,11 +32,15 @@ public class ShulkerPedestalBlockEntity extends BlockEntity {
 
 
     public ShulkerPedestalBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.SHULKER_PEDESTAL_BLOCK_ENTITY.get(), pos,state);
+        super(RSBlockEntities.SHULKER_PEDESTAL.get(), pos,state);
     }
 
-
-
+    @Override
+    public void setChanged() {
+        super.setChanged();
+        if (level == null || level.isClientSide) return;
+        level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(),Block.UPDATE_ALL);
+    }
 
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
@@ -59,7 +60,6 @@ public class ShulkerPedestalBlockEntity extends BlockEntity {
 
     public void setStack(ItemStack stack) {
         this.inventory.setStackInSlot(0,stack);
-        if (!level.isClientSide()) level.sendBlockUpdated(getBlockPos(),getBlockState(),getBlockState(),Block.UPDATE_CLIENTS);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class ShulkerPedestalBlockEntity extends BlockEntity {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    public void dropContent() {
+    public void preDestroySideEffects() {
         SimpleContainer container = new SimpleContainer(inventory.getSlots());
         for (int i = 0; i < inventory.getSlots();i++){
             container.setItem(i,inventory.getStackInSlot(i));

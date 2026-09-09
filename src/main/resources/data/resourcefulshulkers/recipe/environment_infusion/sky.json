@@ -1,0 +1,14 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "resourcefulshulkers:sky_shulker"
+    }
+  ],
+  "type": "resourcefulshulkers:environment_infusion",
+  "base_entity": "minecraft:shulker",
+  "result_entity": "resourcefulshulkers:sky_shulker",
+  "biomes": "#minecraft:is_overworld",
+  "particle": "minecraft:light_blue_stained_glass",
+  "min_y": 192
+}

@@ -1,10 +1,7 @@
 package fr.iglee42.resourcefulshulkers.resourcepack;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Pair;
-import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
-import fr.iglee42.resourcefulshulkers.ResourcefulShulkersConfig;
+import fr.iglee42.resourcefulshulkers.RSIds;
 import fr.iglee42.resourcefulshulkers.resourcepack.generation.*;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
@@ -13,6 +10,7 @@ import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
+import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.repository.KnownPack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
@@ -31,7 +29,8 @@ import java.util.stream.Stream;
 public class InMemoryPack implements PackResources {
 
     //STATIC FIELDS
-    private static boolean hasGenerated = false;
+    private static boolean hasGeneratedAssets = false;
+    private static boolean hasGeneratedDatas = false;
 
     //RESOURCE PACK FIELDS
     private final PackType type;
@@ -41,20 +40,25 @@ public class InMemoryPack implements PackResources {
     public InMemoryPack(PackType type,Path rootPath) {
         this.type = type;
         this.path = rootPath;
-        generateData();
+        generateData(type);
     }
 
     //STATIC METHODS
-    public static void generateData() {
-        if (!hasGenerated) {
-            ModelsGenerator.generate();
-            BlockStatesGenerator.generate();
-            LangsGenerator.generate();
-            TagsGenerator.generate();
-            LootTablesGenerator.generate();
-            if (ResourcefulShulkersConfig.GENERATE_RECIPES.get())RecipesGenerator.generate();
-
-            hasGenerated = true;
+    public static void generateData(PackType type) {
+        if (type.equals(PackType.CLIENT_RESOURCES)){
+            if (!hasGeneratedAssets) {
+                ModelsGenerator.generate();
+                BlockStatesGenerator.generate();
+                LangsGenerator.generate();
+                hasGeneratedAssets = true;
+            }
+        } else if (type.equals(PackType.SERVER_DATA)){
+            if (!hasGeneratedDatas) {
+                TagsGenerator.generate();
+                LootTablesGenerator.generate();
+                RecipesGenerator.generate();
+                hasGeneratedDatas = true;
+            }
         }
     }
 
@@ -129,20 +133,9 @@ public class InMemoryPack implements PackResources {
     @Nullable
     @Override
     public <T> T getMetadataSection(MetadataSectionSerializer<T> deserializer) throws IOException {
-        JsonObject jsonobject = new JsonObject();
-        JsonObject packObject = new JsonObject();
-        packObject.addProperty("pack_format", 16);
-        packObject.addProperty("description", "RS Pack");
-        jsonobject.add("pack", packObject);
-        if (!jsonobject.has(deserializer.getMetadataSectionName())) {
-            return null;
-        } else {
-            try {
-                return deserializer.fromJson(jsonobject.get(deserializer.getMetadataSectionName()).getAsJsonObject());
-            } catch (JsonParseException jsonparseexception) {
-                return null;
-            }
-        }
+        if (deserializer.getMetadataSectionName().equals(PackMetadataSection.TYPE.getMetadataSectionName()))
+            return (T) new PackMetadataSection(Component.literal("Resourceful Shulkers generated resources"), type == PackType.SERVER_DATA ? 48 : 34);
+        return null;
     }
 
     @Override
@@ -159,7 +152,10 @@ public class InMemoryPack implements PackResources {
 
     public static PackLocationInfo getPackInfo(PackType type){
         return new PackLocationInfo(
-                "rs_"+type.getDirectory().toLowerCase(), Component.literal("RS Builtin Pack"), PackSource.BUILT_IN, Optional.of(new KnownPack(ResourcefulShulkers.MODID,type.getDirectory().toLowerCase(), SharedConstants.getCurrentVersion().getId()))
+                "rs_"+type.getDirectory().toLowerCase(),
+                Component.literal("RS Builtin Pack"),
+                PackSource.BUILT_IN,
+                Optional.of(new KnownPack(RSIds.MODID,type.getDirectory().toLowerCase(), SharedConstants.getCurrentVersion().getId()))
         );
     }
 

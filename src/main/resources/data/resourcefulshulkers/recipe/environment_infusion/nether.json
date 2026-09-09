@@ -1,0 +1,13 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "resourcefulshulkers:nether_shulker"
+    }
+  ],
+  "type": "resourcefulshulkers:environment_infusion",
+  "base_entity": "minecraft:shulker",
+  "result_entity": "resourcefulshulkers:nether_shulker",
+  "biomes": "#minecraft:is_nether",
+  "particle": "minecraft:nether_brick"
+}

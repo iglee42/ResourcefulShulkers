@@ -1,19 +1,16 @@
 package fr.iglee42.resourcefulshulkers.network.data;
 
-import net.minecraft.core.BlockPos;
+import fr.iglee42.resourcefulshulkers.RSIds;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-
-import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
 
 public record AuraSyncPayload(
         int aura
 ) implements CustomPacketPayload {
 
-    public static final Type<AuraSyncPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(MODID, "aura_sync"));
+    public static final Type<AuraSyncPayload> TYPE = new Type<>(RSIds.id("aura_sync"));
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;

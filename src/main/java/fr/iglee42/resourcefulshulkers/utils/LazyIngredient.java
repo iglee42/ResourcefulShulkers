@@ -1,5 +1,8 @@
 package fr.iglee42.resourcefulshulkers.utils;
 
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -10,6 +13,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 
+import java.util.Objects;
+import java.util.function.Function;
+
 public class LazyIngredient {
 
     public static final LazyIngredient EMPTY = new LazyIngredient(null,null,null){
@@ -18,6 +24,32 @@ public class LazyIngredient {
             return Ingredient.EMPTY;
         }
     };
+
+    private static final Codec<LazyIngredient> ITEM_CODEC = RecordCodecBuilder.create(instance->
+        instance.group(
+                Codec.STRING.fieldOf("item").forGetter(LazyIngredient::id),
+                DataComponentMap.CODEC.optionalFieldOf("components", DataComponentMap.EMPTY).forGetter(i->i.components)
+        ).apply(instance,LazyIngredient::item)
+    );
+
+    private static final Codec<LazyIngredient> TAG_CODEC = RecordCodecBuilder.create(instance->
+        instance.group(
+                Codec.STRING.fieldOf("tag").forGetter(LazyIngredient::id)
+        ).apply(instance,LazyIngredient::tag)
+    );
+
+    private static final Codec<LazyIngredient> TYPE_CODEC = Codec.xor(ITEM_CODEC,TAG_CODEC).xmap(
+            e->e.map(Function.identity(), Function.identity()),
+            i-> i.isItem() ? Either.left(i) : Either.right(i)
+    );
+
+    public static final Codec<LazyIngredient> STRING_CODEC = Codec.STRING.xmap(
+            s->s.startsWith("#") ? LazyIngredient.tag(s.substring(1)) :  LazyIngredient.item(s),
+        i->i.isTag() ? "#"+i.id() : i.id()
+        );
+
+    public static final Codec<LazyIngredient> CODEC = Codec.withAlternative(TYPE_CODEC, STRING_CODEC);
+
 
     private final Type type;
     private final String id;
@@ -56,9 +88,10 @@ public class LazyIngredient {
     }
 
     public Ingredient getIngredient(){
+        if (this.ingredient != null) return this.ingredient;
         if (isTag()) {
             var tag = ItemTags.create(ResourceLocation.parse(id));
-            return Ingredient.of(tag);
+            this.ingredient = Ingredient.of(tag);
         } else if (isItem()){
             Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(id));
             if (item != Items.AIR){
@@ -67,11 +100,29 @@ public class LazyIngredient {
                 else {
                     ItemStack stack = new ItemStack(item);
                     stack.applyComponents(components);
-                    return DataComponentIngredient.of(false,stack);
+                    this.ingredient = DataComponentIngredient.of(false,stack);
                 }
             }
         }
         return this.ingredient == null ? Ingredient.EMPTY : this.ingredient;
+    }
+
+    public boolean isConsideredEmptyWithoutTags(){
+        if (this == EMPTY) return true;
+        if (isTag()) return false;
+        return !BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(id));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LazyIngredient that)) return false;
+        return type == that.type && Objects.equals(id, that.id) && Objects.equals(components, that.components);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, id, components);
     }
 
     private enum Type {

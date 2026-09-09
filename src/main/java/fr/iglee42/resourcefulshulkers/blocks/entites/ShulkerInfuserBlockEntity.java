@@ -2,131 +2,122 @@ package fr.iglee42.resourcefulshulkers.blocks.entites;
 
 import fr.iglee42.igleelib.api.blockentities.SecondBlockEntity;
 import fr.iglee42.igleelib.api.utils.ITickableRecipe;
-import fr.iglee42.resourcefulshulkers.ResourcefulShulkersConfig;
 import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
-import fr.iglee42.resourcefulshulkers.init.ModBlockEntities;
+import fr.iglee42.resourcefulshulkers.config.RSServerConfig;
+import fr.iglee42.resourcefulshulkers.recipes.ShulkerInfuserInput;
+import fr.iglee42.resourcefulshulkers.recipes.ItemInfusionRecipe;
+import fr.iglee42.resourcefulshulkers.registries.RSBlockEntities;
+import fr.iglee42.resourcefulshulkers.registries.RSRecipes;
 import fr.iglee42.resourcefulshulkers.utils.CommonUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import static fr.iglee42.igleelib.api.utils.ModsUtils.spawnParticle;
 
 public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
-    
+
     private int progress = 0;
-
-    private boolean enabled;
-
     private ITickableRecipe<ShulkerInfuserBlockEntity> recipe;
 
 
     public ShulkerInfuserBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.SHULKER_INFUSER_BLOCK_ENTITY.get(),pos,state);
+        super(RSBlockEntities.SHULKER_INFUSER.get(), pos, state);
     }
 
-
-
     public void tickEntity(Level level, BlockPos pos, BlockState state) {
-        SecondBlockEntity.tick(level,pos,state,this);
+        SecondBlockEntity.tick(level, pos, state, this);
         if (level.isClientSide) return;
-        if (progress == 15*20 || recipe == null || !hasEnoughAura() || !recipe.canContinue(level,pos,state,progress,this) || getCurrentTarget() == null){
-            enabled = false;
+        if (recipe == null && level.getBestNeighborSignal(pos) > 0){
+            recipe = findRecipe().orElse(null);
+        }
+        if (recipe == null) return;
+        if (!recipe.canContinue(level, pos, state, progress, this)) {
             progress = 0;
+            recipe = null;
+            return;
         }
-        //Tick Recipe
-        if (enabled){
-            recipe.tick(level,pos,state,progress,this);
-            //Finish Recipe
-            if (progress == 15*20-1){
-                spawnParticle(ParticleTypes.FIREWORK,(ServerLevel) level,Vec3.atBottomCenterOf(pos).add(0,1,0),Vec3.atBottomCenterOf(pos).add(0,2,0),50);
-                recipe.finish(level,pos,state,this);
-            }
-            progress++;
-        }
+
+        recipe.tick(level, pos, state, progress, this);
+        progress++;
+
+        if (progress < RSServerConfig.INFUSER_DURATION.get()) return;
+
+        spawnParticle(ParticleTypes.FIREWORK, (ServerLevel) level, Vec3.atBottomCenterOf(pos).add(0, 1, 0), Vec3.atBottomCenterOf(pos).add(0, 2, 0), 50);
+        recipe.finish(level, pos, state, this);
+        progress = 0;
+        recipe = null;
+
     }
 
     @Override
     protected void second(Level level, BlockPos pos, BlockState state, SecondBlockEntity secondBlockEntity) {
-        if (!level.isClientSide) {
-            //Second recipe
-            if (enabled){
-                    if (hasEnoughAura()) {
-                        recipe.second(level,pos,state,progress,this);
-                        ShulkerAuraManager.get(level).extractAura(pos,ResourcefulShulkersConfig.NO_AI_AURA.get());
-                    }
-            }
+        if (level.isClientSide) return;
 
-            
-            //Freeze Target On the Infuser
+        Entity target = getCurrentTarget();
+        ShulkerAuraManager manager = ShulkerAuraManager.get(level);
 
-            Entity target = getCurrentTarget();
 
-            if (hasEnoughAura()){
-
+        int noAiAura = RSServerConfig.INFUSER_NO_AI_AURA.getAsInt();
+        if (noAiAura > -1) {
+            if (manager.extractAura(pos, noAiAura, true) >= noAiAura) {
                 Vec3 particlePos = Vec3.atBottomCenterOf(pos);
-                spawnParticle(ParticleTypes.END_ROD,(ServerLevel) level,particlePos.add(0.5, 1.05, 0), particlePos.add(0, 1.1, 0),0);
-                spawnParticle(ParticleTypes.END_ROD,(ServerLevel) level,particlePos.add(-0.5, 1.05, 0), particlePos.add(0, 1.1, 0),0);
-                spawnParticle(ParticleTypes.END_ROD,(ServerLevel) level,particlePos.add(0, 1.05, 0.5), particlePos.add(0, 1.1, 0),0);
-                spawnParticle(ParticleTypes.END_ROD,(ServerLevel) level,particlePos.add(0, 1.05, -0.5), particlePos.add(0, 1.1, 0),0);
+                spawnParticle(ParticleTypes.END_ROD, (ServerLevel) level, particlePos.add(0.5, 1.05, 0), particlePos.add(0, 1.1, 0), 0);
+                spawnParticle(ParticleTypes.END_ROD, (ServerLevel) level, particlePos.add(-0.5, 1.05, 0), particlePos.add(0, 1.1, 0), 0);
+                spawnParticle(ParticleTypes.END_ROD, (ServerLevel) level, particlePos.add(0, 1.05, 0.5), particlePos.add(0, 1.1, 0), 0);
+                spawnParticle(ParticleTypes.END_ROD, (ServerLevel) level, particlePos.add(0, 1.05, -0.5), particlePos.add(0, 1.1, 0), 0);
 
                 if (target instanceof Mob m) {
+                    m.setSilent(true);
                     m.setNoAi(true);
-                    ShulkerAuraManager.get(level).extractAura(pos,100);
+                    manager.extractAura(pos, noAiAura, false);
                 }
-            } else {
-                if (target instanceof Mob m && m.isNoAi())m.setNoAi(false);
+            } else if (target instanceof Mob m && m.isNoAi()) {
+                m.setSilent(false);
+                m.setNoAi(false);
             }
-
         }
+
+        if (recipe == null) return;
+        recipe.second(level, pos, state, progress, this);
+
+
+
     }
 
-    public Entity getCurrentTarget(){
-        return CommonUtils.getEntityOnBlock((ServerLevel) level,getBlockPos());
+    public List<ShulkerInfuserInput.PedestalEntry> getPedestals(){
+        if (level == null || level.isClientSide) return List.of();
+        List<ShulkerInfuserInput.PedestalEntry> pedestals = new ArrayList<>();
+        for (int[] offset : ItemInfusionRecipe.PEDESTAL_POSITION){
+            BlockPos pos = getBlockPos().offset(offset[0], offset[1], offset[2]);
+            if (!(level.getBlockEntity(pos) instanceof ShulkerPedestalBlockEntity pedestal)) continue;
+            pedestals.add(new ShulkerInfuserInput.PedestalEntry(pos, pedestal.getStack()));
+        }
+        return pedestals;
     }
 
-    //START
-    public void start(ITickableRecipe<ShulkerInfuserBlockEntity> recipe){
-        enabled = true;
+    public Entity getCurrentTarget() {
+        return CommonUtils.getEntityOnBlock((ServerLevel) level, getBlockPos());
+    }
+
+    public void start(ITickableRecipe<ShulkerInfuserBlockEntity> recipe) {
         this.recipe = recipe;
-        this.recipe.start(this.level,this.getBlockPos(),this.getBlockState(),this);
+        this.recipe.start(this.level, this.getBlockPos(), this.getBlockState(), this);
     }
 
-    public boolean hasEnoughAura() {
-        if (level.isClientSide) return false;
-        return ShulkerAuraManager.get(level).getAura(getBlockPos()) >= ResourcefulShulkersConfig.NO_AI_AURA.get();
-    }
-
-
-
-
-    @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.saveAdditional(tag, provider);
-        tag.putInt("progress",progress);
-        tag.putBoolean("enabled",enabled);
-    }
-
-    @Override
-    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.loadAdditional(tag,provider);
-        progress = tag.getInt("progress");
-        enabled = tag.getBoolean("enabled");
+    public Optional<ITickableRecipe<ShulkerInfuserBlockEntity>> findRecipe(){
+        if (level == null || level.isClientSide) return Optional.empty();
+        return RSRecipes.findShulkerInfuserRecipe(level, this).map(RecipeHolder::value);
     }
 
 }

@@ -1,55 +1,37 @@
 package fr.iglee42.resourcefulshulkers.utils;
 
 import fr.iglee42.igleelib.api.utils.ModsUtils;
-import fr.iglee42.resourcefulshulkers.item.UpgradeItem;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
+import fr.iglee42.resourcefulshulkers.blocks.entites.GeneratingBoxBlockEntity;
+import fr.iglee42.resourcefulshulkers.config.RSServerConfig;
 
-import static fr.iglee42.resourcefulshulkers.ResourcefulShulkers.MODID;
+import java.util.Arrays;
+import java.util.function.Supplier;
 
 public enum Upgrade {
-    SPEED(),
-    DURABILITY(),
-    QUANTITY(),
-    SHELL(),
+    SPEED(4),
+    DURABILITY(4, ()-> (int) (RSServerConfig.DURABILITY_REDUCTION.get() * 100)),
+    QUANTITY(4),
+    SHELL(4),
 
     ;
-    public static final int MAX = 4;
+    private final int maxAmount;
+    private final Supplier<Object>[] args;
 
-
-
-    Upgrade() {
-
+    Upgrade(int maxAmount, Supplier<Object>... args) {
+        this.maxAmount = maxAmount;
+        this.args = args;
     }
 
-    public static boolean inventoryContainsUpgrade(IItemHandler inventory, Upgrade upgrade){
-        for (int i = 0; i < inventory.getSlots(); i++){
-            if (inventory.getStackInSlot(i).getItem() instanceof UpgradeItem upg){
-                if (upg.getUpgrade() == upgrade) return true;
-            }
-        }
-        return false;
+    public int maxAmount() {
+        return maxAmount;
     }
 
-    public static int getFirstInventoryIndexWithUpgrade(IItemHandler inventory, Upgrade upgrade) {
-        for(int i = 0; i < inventory.getSlots(); ++i) {
-            ItemStack currentStack = inventory.getStackInSlot(i);
-            if (!currentStack.isEmpty() && currentStack.getItem() instanceof UpgradeItem u&& u.getUpgrade() == upgrade) {
-                return i;
-            }
-        }
-
-        return -1;
+    public Object[] getArgs(){
+        return Arrays.stream(args).map(Supplier::get).toArray();
     }
 
     public String getName(){
         return ModsUtils.getUpperName(name(),"_");
-    }
-
-    public MutableComponent getDescription(){
-        return Component.translatable("tooltip."+MODID+ "."+name().toLowerCase()+"_upgrade");
     }
 
 }

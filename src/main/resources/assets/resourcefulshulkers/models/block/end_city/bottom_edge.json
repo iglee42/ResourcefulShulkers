@@ -1,0 +1,32 @@
+{
+	"render_type": "translucent",
+	"texture_size": [48, 48],
+	"textures": {
+		"0": "resourcefulshulkers:block/end_city_side",
+		"1": "block/end_stone_bricks",
+		"particle": "resourcefulshulkers:block/end_city_side"
+	},
+	"elements": [
+		{
+			"name": "base",
+			"from": [0, 0, 0],
+			"to": [16, 8, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 0, 16]},
+			"faces": {
+				"north": {"uv": [5.33333, 13.33333, 10.66667, 16], "texture": "#0"},
+				"up": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"down": {"uv": [0, 0, 16, 16], "texture": "#1"}
+			}
+		},
+		{
+			"name": "glass",
+			"from": [0, 8, 2],
+			"to": [16, 16, 6],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-7, 8, 2]},
+			"faces": {
+				"north": {"uv": [5.33333, 10.66667, 10.66667, 13.33333], "texture": "#0"},
+				"south": {"uv": [5.33333, 10.66667, 10.66667, 13.33333], "texture": "#0"}
+			}
+		}
+	]
+}

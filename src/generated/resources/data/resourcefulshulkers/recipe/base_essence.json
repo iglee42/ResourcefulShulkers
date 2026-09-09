@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "igleelib:blaze_shard"
+    },
+    "D": {
+      "tag": "c:gems/diamond"
+    },
+    "I": {
+      "tag": "c:ingots/iron"
+    }
+  },
+  "pattern": [
+    " D ",
+    "IBI",
+    " D "
+  ],
+  "result": {
+    "count": 1,
+    "id": "resourcefulshulkers:base_essence"
+  }
+}
