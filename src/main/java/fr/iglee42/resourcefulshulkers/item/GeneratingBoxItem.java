@@ -26,7 +26,7 @@ public class GeneratingBoxItem extends BlockItem {
         if (stack.has(RSDataComponents.DURABILITY.get()))
             return stack.get(RSDataComponents.DURABILITY.get()).intValue();
         stack.set(RSDataComponents.DURABILITY.get(), RSServerConfig.getMaxDurability());
-        return 256;
+        return RSServerConfig.getMaxDurability();
     }
 
     public int getItemIndex(ItemStack stack) {
