@@ -5,16 +5,17 @@ import fr.iglee42.resourcefulshulkers.data.providers.*;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.data.AdvancementProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.minecraft.data.advancements.AdvancementProvider;
+import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.common.data.ForgeAdvancementProvider;
+import net.minecraftforge.data.event.GatherDataEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-@EventBusSubscriber(modid = RSIds.MODID)
+@Mod.EventBusSubscriber(modid = RSIds.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class RSDataGenerator {
 
     @SubscribeEvent
@@ -24,14 +25,14 @@ public class RSDataGenerator {
         ExistingFileHelper helper = event.getExistingFileHelper();
         CompletableFuture<HolderLookup.Provider> registries = event.getLookupProvider();
 
-        event.addProvider(new RSItemTagsProvider(output, registries, helper));
-        event.addProvider(new RSEntityTagsProvider(output, registries, helper));
-        event.addProvider(new RSBlockStatesProvider(output, helper));
-        event.addProvider(new RSItemModelProvider(output, helper));
-        event.addProvider(new RSLangProvider(output));
-        event.addProvider(new RSLootTableProvider(output,registries));
-        event.addProvider(new RSRecipeProvider(output,registries));
-        event.addProvider(new AdvancementProvider(output, registries, helper, List.of(new RSAdvancementProvider())));
+        generator.addProvider(event.includeServer(),new RSItemTagsProvider(output, registries, helper));
+        generator.addProvider(event.includeServer(),new RSEntityTagsProvider(output, registries, helper));
+        generator.addProvider(event.includeClient(), new RSBlockStatesProvider(output, helper));
+        generator.addProvider(event.includeClient(), new RSItemModelProvider(output, helper));
+        generator.addProvider(event.includeClient(), new RSLangProvider(output));
+        generator.addProvider(event.includeServer(),new RSLootTableProvider(output));
+        generator.addProvider(event.includeServer(),new RSRecipeProvider(output));
+        generator.addProvider(event.includeServer(),new ForgeAdvancementProvider(output, registries, helper, List.of(new RSAdvancementProvider())));
     }
 
 }

@@ -13,8 +13,9 @@ import fr.iglee42.resourcefulshulkers.registries.RSBlocks;
 import fr.iglee42.resourcefulshulkers.registries.RSEntities;
 import fr.iglee42.resourcefulshulkers.registries.RSItems;
 import fr.iglee42.resourcefulshulkers.types.TypesManager;
+import fr.iglee42.resourcefulshulkers.utils.RSExtraCodecs;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.fml.loading.FMLPaths;
+import net.minecraftforge.fml.loading.FMLPaths;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
@@ -29,7 +30,8 @@ public final class ShulkersManager {
 
     private static final TreeMap<ResourceLocation, RegisteredShulker> SHULKERS = new TreeMap<>(Comparator.comparing(ResourceLocation::getPath).thenComparing(ResourceLocation::getNamespace));
 
-    private static final Codec<ShulkerDefinition> VALIDATED_CODEC = ShulkerDefinition.CODEC.validate(
+    private static final Codec<ShulkerDefinition> VALIDATED_CODEC = RSExtraCodecs.validate(
+            ShulkerDefinition.CODEC,
             def->{
                 if (exists(def.id())) return DataResult.error(()->"Shulker already exists with id: " + def.id());
                 if (!TypesManager.exists(def.typeId())) return DataResult.error(()->"Type does not exist: " + def.typeId());

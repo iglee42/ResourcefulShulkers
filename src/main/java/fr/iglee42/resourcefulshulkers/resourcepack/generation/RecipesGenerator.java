@@ -19,7 +19,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.neoforge.common.Tags;
+import net.minecraftforge.common.Tags;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -53,10 +53,10 @@ public class RecipesGenerator {
             recipe.addProperty("result_entity",getShulkerId(shulker.registration().entityType()));
             JsonArray ingredients = new JsonArray();
             for (int i = 0; i < 4; i++) {
-                ingredients.add(Ingredient.CODEC_NONEMPTY.encodeStart(JsonOps.INSTANCE,shulker.item().getIngredient()).getOrThrow());
+                ingredients.add(shulker.item().getIngredient().toJson());
             }
             for (int i = 0; i < 4; i++) {
-                ingredients.add(Ingredient.CODEC_NONEMPTY.encodeStart(JsonOps.INSTANCE,Ingredient.of(shulker.type().registration().essenceItem().get())).getOrThrow());
+                ingredients.add(Ingredient.of(shulker.type().registration().essenceItem().get()).toJson());
             }
             recipe.add("pedestal_ingredients",ingredients);
             writer.write(new Gson().toJson(recipe));
@@ -76,12 +76,12 @@ public class RecipesGenerator {
             JsonObject nbts = new JsonObject();
             JsonObject itemJson = new JsonObject();
             itemJson.addProperty("id",BuiltInRegistries.ITEM.getKey(type.registration().essenceItem().get()).toString());
-            itemJson.addProperty("count",4);
+            itemJson.addProperty("Count",4);
             nbts.add("Item",itemJson);
             recipe.add("result_nbt",nbts);
             JsonArray ingredients = new JsonArray();
             for (int i = 0; i < 4; i++) {
-                ingredients.add(Ingredient.CODEC_NONEMPTY.encodeStart(JsonOps.INSTANCE,Ingredient.of(RSItems.BASE_ESSENCE.get())).getOrThrow());
+                ingredients.add(Ingredient.of(RSItems.BASE_ESSENCE.get()).toJson());
             }
             recipe.add("pedestal_ingredients",ingredients);
             writer.write(new Gson().toJson(recipe));
@@ -101,21 +101,21 @@ public class RecipesGenerator {
             JsonObject nbts = new JsonObject();
             JsonObject itemJson = new JsonObject();
             itemJson.addProperty("id",BuiltInRegistries.BLOCK.getKey(shulker.registration().generatingBox().get()).toString());
-            itemJson.addProperty("count",1);
+            itemJson.addProperty("Count",1);
             nbts.add("Item",itemJson);
             recipe.add("result_nbt",nbts);
             JsonArray ingredients = new JsonArray();
             for (int i = 0; i < 2; i++) {
-                ingredients.add(Ingredient.CODEC_NONEMPTY.encodeStart(JsonOps.INSTANCE,shulker.item().getIngredient()).getOrThrow());
+                ingredients.add(shulker.item().getIngredient().toJson());
             }
             for (int i = 0; i < 2; i++) {
-                ingredients.add(Ingredient.CODEC_NONEMPTY.encodeStart(JsonOps.INSTANCE,Ingredient.of(shulker.registration().shell().get())).getOrThrow());
+                ingredients.add(Ingredient.of(shulker.registration().shell().get()).toJson());
             }
             for (int i = 0; i < 2; i++) {
-                ingredients.add(Ingredient.CODEC_NONEMPTY.encodeStart(JsonOps.INSTANCE,Ingredient.of(shulker.type().registration().essenceItem().get())).getOrThrow());
+                ingredients.add(Ingredient.of(shulker.type().registration().essenceItem().get()).toJson());
             }
             for (int i = 0; i < 2; i++) {
-                ingredients.add(Ingredient.CODEC_NONEMPTY.encodeStart(JsonOps.INSTANCE,Ingredient.of(Tags.Items.CHESTS_WOODEN)).getOrThrow());
+                ingredients.add(Ingredient.of(Tags.Items.CHESTS_WOODEN).toJson());
             }
             recipe.add("pedestal_ingredients",ingredients);
             writer.write(new Gson().toJson(recipe));

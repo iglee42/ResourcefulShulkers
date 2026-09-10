@@ -5,7 +5,6 @@ import fr.iglee42.resourcefulshulkers.jei.JEIPlugin;
 import fr.iglee42.resourcefulshulkers.jei.ingredient.JEIEntityIngredient;
 import fr.iglee42.resourcefulshulkers.jei.ingredient.JEIEntityRenderer;
 import fr.iglee42.resourcefulshulkers.jei.renderers.BigItemstackRenderer;
-import fr.iglee42.resourcefulshulkers.jei.utils.CycleTicker;
 import fr.iglee42.resourcefulshulkers.recipes.ItemInfusionRecipe;
 import fr.iglee42.resourcefulshulkers.registries.RSBlocks;
 import fr.iglee42.resourcefulshulkers.registries.RSItems;
@@ -28,40 +27,32 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import static fr.iglee42.resourcefulshulkers.jei.categories.EnvironmentInfusionRecipeCategory.renderEntity;
-
-public class ItemInfusionRecipeCategory implements IRecipeCategory<RecipeHolder<ItemInfusionRecipe>> {
+public class ItemInfusionRecipeCategory implements IRecipeCategory<ItemInfusionRecipe> {
 
     public final static ResourceLocation ARROW = ResourceLocation.fromNamespaceAndPath(RSIds.MODID, "textures/gui/arrow.png");
 
 
-    public static final RecipeType<RecipeHolder<ItemInfusionRecipe>> RECIPE_TYPE = RecipeType.createRecipeHolderType(RSIds.id("item_infusion"));
+    public static final RecipeType<ItemInfusionRecipe> RECIPE_TYPE = RecipeType.create(RSIds.MODID, "item_infusion", ItemInfusionRecipe.class);
     private final IDrawable background;
     private final IDrawable icon;
-    private final CycleTicker cycler;
 
     public ItemInfusionRecipeCategory(IGuiHelper helper) {
         this.background = helper.createBlankDrawable(176, 92);
-        this.cycler = CycleTicker.createWithRandomOffset();
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(RSBlocks.SHULKER_INFUSER.get()));
     }
 
 
     @Override
-    public @NotNull RecipeType<RecipeHolder<ItemInfusionRecipe>> getRecipeType() {
+    public @NotNull RecipeType<ItemInfusionRecipe> getRecipeType() {
         return RECIPE_TYPE;
     }
 
@@ -81,27 +72,10 @@ public class ItemInfusionRecipeCategory implements IRecipeCategory<RecipeHolder<
     }
 
     @Override
-    public void draw(RecipeHolder<ItemInfusionRecipe> holder, IRecipeSlotsView recipeSlotsView, GuiGraphics stack, double mouseX, double mouseY) {
-        ItemInfusionRecipe recipe = holder.value();
+    public void draw(ItemInfusionRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics stack, double mouseX, double mouseY) {
         stack.blit(ARROW, 60, 15, 0, 0, 60, 15, 60, 15);
         Font font = Minecraft.getInstance().font;
         int y = 30;
-        float scale = 27.5f, yaw = -25.0f, pitch = -29.0f;
-        if (Minecraft.getInstance().player.tickCount % 10 == 0)
-            cycler.tick();
-        Optional<Holder<EntityType<?>>> baseEntityType = cycler.getCycled(recipe.baseEntity().stream().toList());
-        baseEntityType.map(Holder::value)
-                .ifPresent(type->{
-                    Entity baseEntity  = type.create(Minecraft.getInstance().level);
-                    if (!(baseEntity instanceof LivingEntity lv)) return;
-                    //renderEntity(stack,30, (int) (y +(lv.getBoundingBox().getYsize() * scale / 2 )), scale, yaw, pitch, lv);
-                });
-
-        if (recipe.resultEntity().create(Minecraft.getInstance().level) instanceof LivingEntity lv) {
-            lv.load(recipe.resultNbt());
-            //renderEntity(stack, 150, (int) (y +(lv.getBoundingBox().getYsize() * scale / 2)), scale, yaw, pitch, lv);
-        }
-
         String ingredientText = "Ingredients";
         stack.drawString(font, ChatFormatting.BLUE + "" + ChatFormatting.UNDERLINE + ingredientText, (getWidth() - font.width(ingredientText)) / 2, y + 15, 0,false);
 
@@ -112,8 +86,7 @@ public class ItemInfusionRecipeCategory implements IRecipeCategory<RecipeHolder<
 
 
     @Override
-    public void setRecipe(@Nonnull IRecipeLayoutBuilder builder, @Nonnull RecipeHolder<ItemInfusionRecipe> holder, @Nonnull IFocusGroup focusGroup) {
-        ItemInfusionRecipe recipe = holder.value();
+    public void setRecipe(@Nonnull IRecipeLayoutBuilder builder, @Nonnull ItemInfusionRecipe recipe, @Nonnull IFocusGroup focusGroup) {
         List<Ingredient> ingredients = new ArrayList<>(recipe.pedestalsIngredients());
         for (int index = 0; index < ingredients.size(); index++){
             Ingredient i = ingredients.get(index);
@@ -121,7 +94,7 @@ public class ItemInfusionRecipeCategory implements IRecipeCategory<RecipeHolder<
         }
 
 
-        recipe.baseEntity().stream().map(Holder::value).forEach(baseEntityType -> {
+        recipe.baseEntity(Minecraft.getInstance().level.registryAccess()).stream().map(Holder::value).forEach(baseEntityType -> {
             if (baseEntityType.equals(EntityType.SHULKER))
                 builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addItemLike(RSItems.SHULKER.get());
             else
@@ -129,9 +102,9 @@ public class ItemInfusionRecipeCategory implements IRecipeCategory<RecipeHolder<
                         .ifPresent(item -> builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addItemLike(item));
         });
 
-        builder.addInputSlot(0,10)
+        builder.addSlot(RecipeIngredientRole.INPUT,0,10)
                 .setCustomRenderer(JEIPlugin.ENTITY_TYPE, new JEIEntityRenderer(48))
-                .addIngredients(JEIPlugin.ENTITY_TYPE, JEIEntityIngredient.fromHolderSet(recipe.baseEntity()));
+                .addIngredients(JEIPlugin.ENTITY_TYPE, JEIEntityIngredient.fromHolderSet(recipe.baseEntity(Minecraft.getInstance().level.registryAccess())));
 
         Entity resultEntity = recipe.resultEntity().create(Minecraft.getInstance().level);
         if (resultEntity != null) {

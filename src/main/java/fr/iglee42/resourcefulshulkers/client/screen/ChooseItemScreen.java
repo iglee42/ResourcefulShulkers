@@ -4,6 +4,7 @@ import fr.iglee42.igleelib.api.utils.MouseUtil;
 import fr.iglee42.resourcefulshulkers.RSIds;
 import fr.iglee42.resourcefulshulkers.blocks.entites.GeneratingBoxBlockEntity;
 import fr.iglee42.resourcefulshulkers.blocks.entites.structure.endcity.EndCityBlockEntity;
+import fr.iglee42.resourcefulshulkers.network.RSPayloads;
 import fr.iglee42.resourcefulshulkers.network.data.GeneratorIndexChangePayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -16,7 +17,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -24,7 +24,7 @@ import java.util.List;
 public class ChooseItemScreen extends Screen {
 
     private static final ResourceLocation SLOT_TEXTURE =
-            ResourceLocation.withDefaultNamespace("textures/gui/sprites/container/slot.png");
+            RSIds.id("textures/gui/slot.png");
     private static final ResourceLocation BACKGROUND_TEXTURE = RSIds.id("textures/gui/item_choose_background.png");
 
     private static final int SLOT_SIZE = 16;
@@ -89,7 +89,7 @@ public class ChooseItemScreen extends Screen {
     }
 
     private int rows() {
-        return Math.clamp(pageSize(), 1, ROWS);
+        return Mth.clamp(pageSize(), 1, ROWS);
     }
 
     private boolean hasArrows() {
@@ -141,10 +141,7 @@ public class ChooseItemScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-    }
-
-
+    public void renderBackground(GuiGraphics p_283688_) {}
 
     @Override
     public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
@@ -156,13 +153,13 @@ public class ChooseItemScreen extends Screen {
         if (hasArrows()) {
             if (page > 0) {
                 boolean hovered = MouseUtil.isMouseOver(mouseX, mouseY, gridX + PADDING, arrowY(), ARROW_WIDTH, ARROW_HEIGHT);
-                graphics.blit(ResourceLocation.withDefaultNamespace("textures/gui/sprites/transferable_list/move_up"
+                graphics.blit(RSIds.id("textures/gui/move_up"
                                 + (hovered ? "_highlighted" : "") + ".png"),
                         gridX + PADDING, arrowY(), 12, 16, 0, 13, 16, 32, 32);
             }
             if (page < pageCount() - 1) {
                 boolean hovered = MouseUtil.isMouseOver(mouseX, mouseY, gridX + PADDING + ARROW_WIDTH, arrowY(), ARROW_WIDTH, ARROW_HEIGHT);
-                graphics.blit(ResourceLocation.withDefaultNamespace("textures/gui/sprites/transferable_list/move_down"
+                graphics.blit(RSIds.id("textures/gui/move_down"
                                 + (hovered ? "_highlighted" : "") + ".png"),
                         gridX + PADDING + ARROW_WIDTH, arrowY(), 12, 16, 16, 13, 16, 32, 32);
             }
@@ -268,7 +265,7 @@ public class ChooseItemScreen extends Screen {
 
         int index = hoveredIndex(mouseX, mouseY);
         if (index > -1) {
-            PacketDistributor.sendToServer(new GeneratorIndexChangePayload(pos, slot, index));
+            RSPayloads.sendToServer(new GeneratorIndexChangePayload(pos, slot, index));
             playClickSound();
             onClose();
         }

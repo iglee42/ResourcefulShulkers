@@ -1,7 +1,7 @@
 package fr.iglee42.resourcefulshulkers.blocks;
 
 import fr.iglee42.igleelib.api.utils.ITickableRecipe;
-import fr.iglee42.igleelib.common.network.data.CreateGhostBlockPayload;
+import fr.iglee42.igleelib.api.utils.ModsUtils;
 import fr.iglee42.resourcefulshulkers.blocks.entites.ShulkerInfuserBlockEntity;
 import fr.iglee42.resourcefulshulkers.item.RSTooltipHandler;
 import fr.iglee42.resourcefulshulkers.recipes.ItemInfusionRecipe;
@@ -11,11 +11,11 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
@@ -31,7 +31,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -89,7 +88,7 @@ public class ShulkerInfuserBlock extends Block implements EntityBlock {
     }
 
     @Override
-    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
         return BASE_SHAPE;
     }
 
@@ -100,16 +99,16 @@ public class ShulkerInfuserBlock extends Block implements EntityBlock {
 
 
     @Override
-    public @NotNull InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult p_60508_) {
+    public @NotNull InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (level.isClientSide) return InteractionResult.sidedSuccess(true);
         if (!(level.getBlockEntity(pos) instanceof ShulkerInfuserBlockEntity be)) return InteractionResult.PASS;
         if (!player.getMainHandItem().isEmpty()) return InteractionResult.PASS;
         if (player.isCrouching()) {
             for (int[] pedestalOffset : ItemInfusionRecipe.PEDESTAL_POSITION) {
                 BlockPos pedestalPos = new BlockPos(pos.getX() + pedestalOffset[0], pos.getY() + pedestalOffset[1], pos.getZ() + pedestalOffset[2]);
-                PacketDistributor.sendToPlayer((ServerPlayer) player,new CreateGhostBlockPayload(pedestalPos, RSBlocks.SHULKER_PEDESTAL.get().defaultBlockState(), 100));
+                ModsUtils.placeGhostBlock((ServerLevel) level,pedestalPos, RSBlocks.SHULKER_PEDESTAL.get().defaultBlockState(), 100);
             }
-            return InteractionResult.SUCCESS_NO_ITEM_USED;
+            return InteractionResult.SUCCESS;
         }
 
         Entity target = be.getCurrentTarget();
@@ -121,12 +120,12 @@ public class ShulkerInfuserBlock extends Block implements EntityBlock {
         ITickableRecipe<ShulkerInfuserBlockEntity> recipe = be.findRecipe().orElse(null);
         if (recipe == null) return InteractionResult.FAIL;
         be.start(recipe);
-        return InteractionResult.SUCCESS_NO_ITEM_USED;
+        return InteractionResult.SUCCESS;
     }
 
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Item.TooltipContext p_49817_, List<Component> tooltips, TooltipFlag p_49819_) {
+    public void appendHoverText(ItemStack stack, @Nullable BlockGetter p_49817_, List<Component> tooltips, TooltipFlag p_49819_) {
         RSTooltipHandler.addTooltip(stack, tooltips, Screen.hasShiftDown());
         super.appendHoverText(stack, p_49817_, tooltips, p_49819_);
     }

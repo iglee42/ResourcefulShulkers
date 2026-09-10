@@ -3,23 +3,23 @@ package fr.iglee42.resourcefulshulkers.aura;
 import fr.iglee42.resourcefulshulkers.RSIds;
 import fr.iglee42.resourcefulshulkers.config.RSClientConfig;
 import fr.iglee42.resourcefulshulkers.config.RSServerConfig;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.StringRepresentable;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
-import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;
 
-@EventBusSubscriber(modid = RSIds.MODID, value = Dist.CLIENT)
-public class AuraOverlay implements LayeredDraw.Layer {
+@Mod.EventBusSubscriber(modid = RSIds.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+public class AuraOverlay implements IGuiOverlay {
 
     private static final int BAR_WIDTH = 24;
     private static final int BAR_HEIGHT = 84;
@@ -27,15 +27,26 @@ public class AuraOverlay implements LayeredDraw.Layer {
     private static int chunkAura;
 
     @SubscribeEvent
-    public static void registerOverlay(RegisterGuiLayersEvent event){
-        event.registerAbove(VanillaGuiLayers.HOTBAR,RSIds.id("aura"),new AuraOverlay());
+    public static void registerOverlay(RegisterGuiOverlaysEvent event){
+        event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "aura",new AuraOverlay());
+    }
+
+    private static Anchor getAnchor(){
+        return RSClientConfig.AURA_BAR_ANCHOR.get();
+    }
+
+    public static void set(int chunkAura) {
+        AuraOverlay.chunkAura = chunkAura;
+    }
+    public static int getChunkAura() {
+        return chunkAura;
     }
 
     @Override
-    public void render(GuiGraphics gui, DeltaTracker deltaTracker) {
+    public void render(ForgeGui forgeGui, GuiGraphics gui, float partialTick, int screenWidth, int screenHeight) {
         Anchor anchor = getAnchor();
-        int baseX = anchor.getSerializedName().contains("left") ? 0 : gui.guiWidth() - BAR_WIDTH;
-        int baseY = anchor.getSerializedName().contains("top") ? 0 : (anchor.getSerializedName().contains("middle") ? (gui.guiHeight() - BAR_HEIGHT) / 2 : gui.guiHeight() - BAR_HEIGHT - 2);
+        int baseX = anchor.getSerializedName().contains("left") ? 0 : screenWidth - BAR_WIDTH;
+        int baseY = anchor.getSerializedName().contains("top") ? 0 : (anchor.getSerializedName().contains("middle") ? (screenHeight - BAR_HEIGHT) / 2 : screenHeight - BAR_HEIGHT - 2);
         int x = anchor.getX(baseX, RSClientConfig.AURA_BAR_OFFSET_X.get());
         int y = anchor.getY(baseY, RSClientConfig.AURA_BAR_OFFSET_Y.get());
         if (x >= 0 && y >= 0 && chunkAura > 0) {
@@ -52,17 +63,6 @@ public class AuraOverlay implements LayeredDraw.Layer {
                 }
             }
         }
-    }
-
-    private static Anchor getAnchor(){
-        return RSClientConfig.AURA_BAR_ANCHOR.get();
-    }
-
-    public static void set(int chunkAura) {
-        AuraOverlay.chunkAura = chunkAura;
-    }
-    public static int getChunkAura() {
-        return chunkAura;
     }
 
     public static enum Anchor implements StringRepresentable {

@@ -6,7 +6,7 @@ import fr.iglee42.resourcefulshulkers.registries.RSBlocks;
 import fr.iglee42.resourcefulshulkers.registries.RSItems;
 import fr.iglee42.resourcefulshulkers.registries.RSTags;
 import net.minecraft.data.PackOutput;
-import net.neoforged.neoforge.common.data.LanguageProvider;
+import net.minecraftforge.common.data.LanguageProvider;
 
 public class RSLangProvider extends LanguageProvider {
     public RSLangProvider(PackOutput output) {
@@ -73,26 +73,5 @@ public class RSLangProvider extends LanguageProvider {
 
         add("message.resoucefulshulkers.obstructed_block", "Position obstructed by block ! Clear a 3x3x3 area.");
         add("message.resoucefulshulkers.obstructed_entity", "Position obstructed by entity ! Clear a 3x3x3 area.");
-
-        add(RSTags.Items.BEE_DROPS, "Bee Shulker Drops");
-        add(RSTags.Items.CHICKEN_DROPS, "Chicken Shulker Drops");
-        add(RSTags.Items.COW_DROPS, "Cow Shulker Drops");
-        add(RSTags.Items.FISH_DROPS, "Fish Shulker Drops");
-        add(RSTags.Items.FROG_DROPS, "Frog Shulker Drops");
-        add(RSTags.Items.RABBIT_DROPS, "Rabbit Shulker Drops");
-        add(RSTags.Items.SHEEP_DROPS, "Sheep Shulker Drops");
-        add(RSTags.Items.SPIDER_DROPS, "Spider Shulker Drops");
-        add(RSTags.Items.ZOMBIE_DROPS, "Zombie Shulker Drops");
-        add(RSTags.Items.CREEPER_DROPS, "Creeper Shulker Drops");
-        add(RSTags.Items.SKELETON_DROPS, "Skeleton Shulker Drops");
-        add(RSTags.Items.OBSIDIAN_DROPS, "Obsidian Shulker Drops");
-        add(RSTags.Items.GUARDIAN_DROPS, "Guardian Shulker Drops");
-        add(RSTags.Items.WARDEN_DROPS, "Warden Shulker Drops");
-        add(RSTags.Items.XP_DROPS, "XP Shulker Drops");
-        add(RSTags.Items.WITHER_DROPS, "Wither Shulker Drops");
-        add(RSTags.Items.ENDER_DRAGON_DROPS, "Ender Dragon Shulker Drops");
-        add(RSTags.Items.ESSENCES, "Essences");
-        add(RSTags.Items.SHULKERS, "Shulkers");
-        add(RSTags.Items.SHULKER_SHELLS, "Shulker Shells");
     }
 }

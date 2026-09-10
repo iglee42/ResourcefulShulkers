@@ -6,7 +6,9 @@ import fr.iglee42.resourcefulshulkers.registries.RSBlocks;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -29,6 +31,7 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -112,7 +115,6 @@ public class StructureBlock extends BaseEntityBlock {
         return Block.box(x1, y1, z1, x2, y2, z2);
     }
 
-    private static final MapCodec<StructureBlock> CODEC = simpleCodec(StructureBlock::new);
 
     public static final EnumProperty<Part> PART = EnumProperty.create("part", Part.class);
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -123,17 +125,12 @@ public class StructureBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
-    protected RenderShape getRenderShape(BlockState state) {
+    public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean piston) {
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean piston) {
         if (level.getBlockEntity(pos) instanceof StructureBlockEntity be){
             be.getMain().ifPresent(main->level.destroyBlock(main.getBlockPos(), true));
         }
@@ -146,14 +143,14 @@ public class StructureBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
         Direction dir = state.getValue(FACING);
         Part part = state.getValue(PART);
         return SHAPES.get(dir).get(part);
     }
 
     @Override
-    protected boolean isPathfindable(BlockState state, PathComputationType type) {
+    public boolean isPathfindable(BlockState p_60475_, BlockGetter p_60476_, BlockPos p_60477_, PathComputationType p_60478_) {
         return false;
     }
 
@@ -163,17 +160,16 @@ public class StructureBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (level.isClientSide) return InteractionResult.SUCCESS;
         if (player.isSpectator()) return InteractionResult.CONSUME;
         if (!(level.getBlockEntity(pos) instanceof StructureBlockEntity be)) return InteractionResult.PASS;
-        be.getMain().ifPresent(main-> player.openMenu(main, main.getBlockPos()));
+        be.getMain().ifPresent(main-> NetworkHooks.openScreen((ServerPlayer) player,main, main.getBlockPos()));
         return InteractionResult.CONSUME;
     }
 
-
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
         if (level.getBlockEntity(pos) instanceof StructureBlockEntity be) {
             return be.getMain().map(main -> main.getBlockState().getBlock().asItem().getDefaultInstance()).orElse(RSBlocks.END_CITY.get().asItem().getDefaultInstance());
         }

@@ -4,8 +4,11 @@ import fr.iglee42.resourcefulshulkers.api.types.ITypeDefinition;
 import fr.iglee42.resourcefulshulkers.utils.LazyIngredient;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
 
 /**
  * Describes a single kind of Shulker known to Resourceful Shulkers.
@@ -90,7 +93,7 @@ public interface IShulkerDefinition {
      * @return {@code true} if {@link #item()} resolves to a non-empty ingredient
      */
     default boolean hasItem(){
-        return !item().getIngredient().hasNoItems();
+        return item().getIngredient().getItems().length > 0 && Arrays.stream(item().getIngredient().getItems()).noneMatch(it->it.is(Items.BARRIER));
     }
 
 }

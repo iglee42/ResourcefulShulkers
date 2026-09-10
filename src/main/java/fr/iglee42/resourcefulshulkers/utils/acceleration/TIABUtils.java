@@ -1,10 +1,10 @@
 package fr.iglee42.resourcefulshulkers.utils.acceleration;
 
+import com.haoict.tiab.common.entities.TimeAcceleratorEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import org.mangorage.tiab.common.entities.TimeAcceleratorEntity;
 
 import java.util.Optional;
 

@@ -1,0 +1,30 @@
+{
+  "type": "resourcefulshulkers:item_infusion",
+  "base_entity": "minecraft:shulker",
+  "result_entity": "minecraft:item",
+  "result_nbt": {
+    "Item": {
+      "id": "resourcefulshulkers:speed_upgrade",
+      "Count": 1
+    }
+  },
+  "pedestal_ingredients": [
+    {
+      "item": "resourcefulshulkers:upgrade_base"
+    },{
+      "item": "minecraft:sugar"
+    },{
+      "item": "minecraft:sugar"
+    },{
+      "item": "minecraft:sugar"
+    },{
+      "item": "minecraft:sugar"
+    },{
+      "tag": "resourcefulshulkers:essences"
+    },{
+      "tag": "resourcefulshulkers:essences"
+    },{
+      "tag": "resourcefulshulkers:essences"
+    }
+  ]
+}

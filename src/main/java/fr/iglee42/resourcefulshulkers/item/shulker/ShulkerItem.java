@@ -19,15 +19,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-@EventBusSubscriber(modid = RSIds.MODID)
+@Mod.EventBusSubscriber(modid = RSIds.MODID)
 public abstract class ShulkerItem extends Item {
 
     public ShulkerItem(Item.Properties props) {
@@ -63,7 +63,7 @@ public abstract class ShulkerItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable TooltipContext p_41422_, List<Component> tooltips, TooltipFlag p_41424_) {
+    public void appendHoverText(ItemStack stack, @Nullable Level p_41422_, List<Component> tooltips, TooltipFlag p_41424_) {
         RSTooltipHandler.tooltip(stack, tooltips).shift(Screen.hasShiftDown()).append("shulker_pickup").apply();
         super.appendHoverText(stack, p_41422_, tooltips, p_41424_);
     }

@@ -11,8 +11,9 @@ import fr.iglee42.resourcefulshulkers.RSIds;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
 import fr.iglee42.resourcefulshulkers.registries.RSEntities;
 import fr.iglee42.resourcefulshulkers.registries.RSItems;
+import fr.iglee42.resourcefulshulkers.utils.RSExtraCodecs;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.fml.loading.FMLPaths;
+import net.minecraftforge.fml.loading.FMLPaths;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +31,8 @@ public final class TypesManager {
 
     private static final Map<ResourceLocation, RegisteredType> TYPES = new HashMap<>();
 
-    private static final Codec<TypeDefinition> VALIDATED_CODEC = TypeDefinition.CODEC.validate(
+    private static final Codec<TypeDefinition> VALIDATED_CODEC = RSExtraCodecs.validate(
+            TypeDefinition.CODEC,
             def->{
                 if (def.id().equals(RSIds.id("elemental"))) return DataResult.error(()->"Type cannot be elemental type !");
                 if (exists(def.id())) return DataResult.error(()->"Type already exists with id: " + def.id());

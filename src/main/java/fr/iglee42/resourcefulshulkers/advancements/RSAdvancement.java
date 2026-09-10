@@ -1,12 +1,7 @@
 package fr.iglee42.resourcefulshulkers.advancements;
 
 import fr.iglee42.resourcefulshulkers.RSIds;
-import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.advancements.AdvancementProgress;
-import net.minecraft.advancements.AdvancementType;
-import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.advancements.Criterion;
+import net.minecraft.advancements.*;
 import net.minecraft.advancements.critereon.ImpossibleTrigger;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -36,11 +31,11 @@ public final class RSAdvancement {
     private final String title;
     private final String description;
     private final @Nullable ResourceLocation background;
-    private final AdvancementType frame;
+    private final FrameType frame;
     private final boolean showToast;
     private final boolean announceToChat;
     private final boolean hidden;
-    private final Map<String, Criterion<?>> criteria;
+    private final Map<String, CriterionTriggerInstance> criteria;
 
     private RSAdvancement(Builder builder) {
         this.id = builder.id;
@@ -54,7 +49,7 @@ public final class RSAdvancement {
         this.announceToChat = builder.announceToChat;
         this.hidden = builder.hidden;
         this.criteria = builder.criteria.isEmpty()
-                ? Map.of(CODE_CRITERION, CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()))
+                ? Map.of(CODE_CRITERION, new ImpossibleTrigger.TriggerInstance())
                 : Map.copyOf(builder.criteria);
     }
 
@@ -91,7 +86,7 @@ public final class RSAdvancement {
     }
 
     public void awardTo(@NotNull ServerPlayer player) {
-        AdvancementHolder holder = resolve(player.getServer());
+        Advancement holder = resolve(player.getServer());
         if (holder == null) return;
         PlayerAdvancements advancements = player.getAdvancements();
         AdvancementProgress progress = advancements.getOrStartProgress(holder);
@@ -102,7 +97,7 @@ public final class RSAdvancement {
     }
 
     public void revokeFrom(@NotNull ServerPlayer player) {
-        AdvancementHolder holder = resolve(player.getServer());
+        Advancement holder = resolve(player.getServer());
         if (holder == null) return;
         PlayerAdvancements advancements = player.getAdvancements();
         for (String criterion : advancements.getOrStartProgress(holder).getCompletedCriteria()) {
@@ -111,15 +106,15 @@ public final class RSAdvancement {
     }
 
     public boolean isDone(@NotNull ServerPlayer player) {
-        AdvancementHolder holder = resolve(player.getServer());
+        Advancement holder = resolve(player.getServer());
         return holder != null && player.getAdvancements().getOrStartProgress(holder).isDone();
     }
 
-    public @Nullable AdvancementHolder resolve(@Nullable MinecraftServer server) {
-        return server == null ? null : server.getAdvancements().get(id);
+    public @Nullable Advancement resolve(@Nullable MinecraftServer server) {
+        return server == null ? null : server.getAdvancements().getAdvancement(id);
     }
 
-    public @NotNull Advancement.Builder toVanillaBuilder(@Nullable AdvancementHolder parentHolder) {
+    public @NotNull Advancement.Builder toVanillaBuilder(@Nullable Advancement parentHolder) {
         Advancement.Builder builder = Advancement.Builder.recipeAdvancement();
         if (parentHolder != null) builder.parent(parentHolder);
         builder.display(icon.get(),
@@ -141,13 +136,13 @@ public final class RSAdvancement {
     public static final class Builder {
 
         private final ResourceLocation id;
-        private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
+        private final Map<String, CriterionTriggerInstance> criteria = new LinkedHashMap<>();
         private @Nullable RSAdvancement parent;
         private Supplier<ItemStack> icon = () -> new ItemStack(Items.BARRIER);
         private String title = "";
         private String description = "";
         private @Nullable ResourceLocation background;
-        private AdvancementType frame = AdvancementType.TASK;
+        private FrameType frame = FrameType.TASK;
         private boolean showToast = true;
         private boolean announceToChat = true;
         private boolean hidden = false;
@@ -196,7 +191,7 @@ public final class RSAdvancement {
             return this;
         }
 
-        public Builder frame(AdvancementType frame) {
+        public Builder frame(FrameType frame) {
             this.frame = frame;
             return this;
         }
@@ -216,7 +211,7 @@ public final class RSAdvancement {
             return this;
         }
 
-        public Builder criterion(String name, Criterion<?> criterion) {
+        public Builder criterion(String name, CriterionTriggerInstance criterion) {
             this.criteria.put(name, criterion);
             return this;
         }

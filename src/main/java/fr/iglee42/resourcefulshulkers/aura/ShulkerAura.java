@@ -4,18 +4,11 @@ import com.mojang.serialization.Codec;
 import fr.iglee42.resourcefulshulkers.api.aura.IShulkerAura;
 import fr.iglee42.resourcefulshulkers.config.RSServerConfig;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 
 public class ShulkerAura implements IShulkerAura {
 
     public static final Codec<ShulkerAura> CODEC = Codec.intRange(0, RSServerConfig.getMaxAura())
             .xmap(ShulkerAura::new, ShulkerAura::getAura);
-
-    public static final StreamCodec<FriendlyByteBuf, ShulkerAura> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.INT, ShulkerAura::getAura,
-            ShulkerAura::new
-    );
 
     private int aura;
 

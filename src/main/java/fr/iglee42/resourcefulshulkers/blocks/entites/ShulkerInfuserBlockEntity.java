@@ -4,8 +4,8 @@ import fr.iglee42.igleelib.api.blockentities.SecondBlockEntity;
 import fr.iglee42.igleelib.api.utils.ITickableRecipe;
 import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
 import fr.iglee42.resourcefulshulkers.config.RSServerConfig;
-import fr.iglee42.resourcefulshulkers.recipes.ShulkerInfuserInput;
 import fr.iglee42.resourcefulshulkers.recipes.ItemInfusionRecipe;
+import fr.iglee42.resourcefulshulkers.recipes.ShulkerInfuserInput;
 import fr.iglee42.resourcefulshulkers.registries.RSBlockEntities;
 import fr.iglee42.resourcefulshulkers.registries.RSRecipes;
 import fr.iglee42.resourcefulshulkers.utils.CommonUtils;
@@ -14,7 +14,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -68,7 +67,7 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
         ShulkerAuraManager manager = ShulkerAuraManager.get(level);
 
 
-        int noAiAura = RSServerConfig.INFUSER_NO_AI_AURA.getAsInt();
+        int noAiAura = RSServerConfig.INFUSER_NO_AI_AURA.get();
         if (noAiAura > -1) {
             if (manager.extractAura(pos, noAiAura, true) >= noAiAura) {
                 Vec3 particlePos = Vec3.atBottomCenterOf(pos);
@@ -117,7 +116,7 @@ public class ShulkerInfuserBlockEntity extends SecondBlockEntity {
 
     public Optional<ITickableRecipe<ShulkerInfuserBlockEntity>> findRecipe(){
         if (level == null || level.isClientSide) return Optional.empty();
-        return RSRecipes.findShulkerInfuserRecipe(level, this).map(RecipeHolder::value);
+        return RSRecipes.findShulkerInfuserRecipe(level, this);
     }
 
 }

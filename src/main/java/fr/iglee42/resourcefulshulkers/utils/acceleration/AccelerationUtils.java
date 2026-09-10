@@ -4,13 +4,12 @@ import fr.iglee42.resourcefulshulkers.config.RSServerConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 
 public final class AccelerationUtils {
 
     public static final String TIAB = "tiab";
     public static final String GAG = "gag";
-    public static final String JUST_DIRE_THINGS = "justdirethings";
 
     private AccelerationUtils() {}
 
@@ -25,10 +24,6 @@ public final class AccelerationUtils {
             if (GAGUtils.isPouched(level, blockPos))
                 return true;
 
-        if (ModList.get().isLoaded(JUST_DIRE_THINGS))
-            if (JDTUtils.isTimeWand(level, blockPos))
-                return true;
-
         return false;
     }
 
@@ -39,10 +34,6 @@ public final class AccelerationUtils {
 
         if (ModList.get().isLoaded(GAG))
             if (GAGUtils.isAccelerationEntity(entity))
-                return true;
-
-        if (ModList.get().isLoaded(JUST_DIRE_THINGS))
-            if (JDTUtils.isAccelerationEntity(entity))
                 return true;
 
         return false;

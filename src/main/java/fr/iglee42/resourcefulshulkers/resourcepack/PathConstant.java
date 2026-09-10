@@ -2,7 +2,7 @@ package fr.iglee42.resourcefulshulkers.resourcepack;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import net.neoforged.fml.loading.FMLPaths;
+import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -55,27 +55,27 @@ public class PathConstant {
         LANGS_PATH = ASSETS_PATH.resolve("lang");
         MODELS_PATH = ASSETS_PATH.resolve("models");
 
-        RECIPES_PATH = DATAS_PATH.resolve("recipe");
-        LOOT_TABLES_PATH = DATAS_PATH.resolve("loot_table/blocks");
+        RECIPES_PATH = DATAS_PATH.resolve("recipes");
+        LOOT_TABLES_PATH = DATAS_PATH.resolve("loot_tables/blocks");
         TAGS_PATH = DATAS_PATH.resolve("tags");
 
 
-        ITEMS_TAGS_PATH = TAGS_PATH.resolve("item");
-        ENTITY_TYPES_TAGS_PATH = TAGS_PATH.resolve("entity_type");
+        ITEMS_TAGS_PATH = TAGS_PATH.resolve("items");
+        ENTITY_TYPES_TAGS_PATH = TAGS_PATH.resolve("entity_types");
 
         ITEM_MODELS_PATH = MODELS_PATH.resolve("item");
         BLOCK_MODELS_PATH = MODELS_PATH.resolve("block");
 
         MC_DATA_PATH = ROOT_PATH.resolve("data/minecraft");
         MC_TAGS_PATH = MC_DATA_PATH.resolve("tags");
-        MC_BLOCK_TAGS_PATH = MC_TAGS_PATH.resolve("block");
-        MC_ITEM_TAGS_PATH = MC_TAGS_PATH.resolve("item");
+        MC_BLOCK_TAGS_PATH = MC_TAGS_PATH.resolve("blocks");
+        MC_ITEM_TAGS_PATH = MC_TAGS_PATH.resolve("items");
         MC_MINEABLE_TAGS_PATH = MC_BLOCK_TAGS_PATH.resolve("mineable");
 
-        COMMON_DATA_PATH = ROOT_PATH.resolve("data/c");
+        COMMON_DATA_PATH = ROOT_PATH.resolve("data/forge");
         COMMON_TAGS_PATH = COMMON_DATA_PATH.resolve("tags");
-        COMMON_BLOCK_TAGS_PATH = COMMON_TAGS_PATH.resolve("block");
-        COMMON_ITEM_TAGS_PATH = COMMON_TAGS_PATH.resolve("item");
+        COMMON_BLOCK_TAGS_PATH = COMMON_TAGS_PATH.resolve("blocks");
+        COMMON_ITEM_TAGS_PATH = COMMON_TAGS_PATH.resolve("items");
 
         BLOCK_STATES_PATH.toFile().mkdirs();
         LANGS_PATH.toFile().mkdirs();

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": {
+      "item": "minecraft:end_stone_bricks"
+    },
+    "S": {
+      "item": "minecraft:purpur_slab"
+    }
+  },
+  "pattern": [
+    "S",
+    "E",
+    "S"
+  ],
+  "result": {
+    "item": "resourcefulshulkers:shulker_pedestal"
+  },
+  "show_notification": true
+}

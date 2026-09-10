@@ -63,7 +63,7 @@ public class ResourceShulkerBullet extends ShulkerBullet {
     protected void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         if (tag.contains("targetPos", CompoundTag.TAG_INT_ARRAY)){
-            this.targetPos = NbtUtils.readBlockPos(tag, "targetPos").orElse(null);
+            this.targetPos = NbtUtils.readBlockPos(tag.getCompound("targetPos"));
         }
     }
 
@@ -148,7 +148,9 @@ public class ResourceShulkerBullet extends ShulkerBullet {
         baseTick();
         if (!this.level().isClientSide) {
             if (this.targetPos == null) {
-                this.applyGravity();
+                if (!this.isNoGravity()) {
+                    this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.04D, 0.0D));
+                }
             } else {
                 this.targetDeltaX = Mth.clamp(this.targetDeltaX * 1.025, -1.0, 1.0);
                 this.targetDeltaY = Mth.clamp(this.targetDeltaY * 1.025, -1.0, 1.0);
@@ -158,8 +160,8 @@ public class ResourceShulkerBullet extends ShulkerBullet {
             }
 
             HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
-            if (hitresult.getType() != HitResult.Type.MISS && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult)) {
-                this.hitTargetOrDeflectSelf(hitresult);
+            if (hitresult.getType() != HitResult.Type.MISS && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
+                this.onHit(hitresult);
             }
         }
 

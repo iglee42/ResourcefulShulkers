@@ -1,0 +1,31 @@
+{
+  "type": "resourcefulshulkers:item_infusion",
+  "base_entity": "#resourcefulshulkers:shulkers/resource",
+  "result_entity": "minecraft:item",
+  "aura": 50000,
+  "result_nbt": {
+    "Item": {
+      "id": "resourcefulshulkers:end_city_tier_2",
+      "Count": 1
+    }
+  },
+  "pedestal_ingredients": [
+    {
+      "item": "resourcefulshulkers:quantity_upgrade"
+    },{
+      "item": "resourcefulshulkers:quantity_upgrade"
+    },{
+      "item": "minecraft:nether_star"
+    },{
+      "item": "minecraft:nether_star"
+    },{
+      "item": "minecraft:enchanted_golden_apple"
+    },{
+      "item": "minecraft:enchanted_golden_apple"
+    },{
+      "item": "resourcefulshulkers:end_city"
+    },{
+      "tag": "resourcefulshulkers:essences"
+    }
+  ]
+}

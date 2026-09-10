@@ -23,12 +23,11 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +35,7 @@ import java.util.function.Supplier;
 
 import static fr.iglee42.resourcefulshulkers.RSIds.MODID;
 
-@EventBusSubscriber(modid = RSIds.MODID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = RSIds.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class RSClientRenderers {
 
     private static final ModelLayerLocation SHULKER_LAYER = new ModelLayerLocation(RSIds.id("shulker_head"), "main");
@@ -83,17 +82,5 @@ public class RSClientRenderers {
         Supplier<LayerDefinition> shulkerHead = (()->LayerDefinition.create(meshDefinition, 64, 64));
 
         event.registerLayerDefinition(SHULKER_LAYER, shulkerHead);
-    }
-
-    @SubscribeEvent
-    public static void registerClientExtensions(RegisterClientExtensionsEvent event){
-        List<Item> boxes = new ArrayList<>();
-        ShulkersManager.forEachShulker(shulker->{
-            boxes.add(shulker.generatingBox().get().asItem());
-        });
-        event.registerItem(
-                new GeneratingBoxItemExtension(),
-                boxes.toArray(new Item[0])
-        );
     }
 }

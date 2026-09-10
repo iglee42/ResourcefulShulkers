@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.iglee42.resourcefulshulkers.ResourcefulShulkers;
 import fr.iglee42.resourcefulshulkers.advancements.RSAdvancements;
+import fr.iglee42.resourcefulshulkers.network.RSPayloads;
 import fr.iglee42.resourcefulshulkers.network.data.AuraSyncPayload;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -17,10 +18,9 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -29,7 +29,7 @@ import java.util.Map;
 
 import static fr.iglee42.resourcefulshulkers.RSIds.MODID;
 
-@EventBusSubscriber(modid = MODID)
+@Mod.EventBusSubscriber(modid = MODID)
 public final class ShulkerAuraManager extends SavedData {
 
     private final Map<ChunkPos, ShulkerAura> auraByChunk = new HashMap<>();
@@ -38,7 +38,7 @@ public final class ShulkerAuraManager extends SavedData {
 
     private ShulkerAuraManager() {}
 
-    public ShulkerAuraManager(CompoundTag tag, HolderLookup.Provider provider) {
+    public ShulkerAuraManager(CompoundTag tag) {
         ListTag list = tag.getList("entries", Tag.TAG_COMPOUND);
         for (Tag t : list) {
             Entry.CODEC.parse(NbtOps.INSTANCE, t).resultOrPartial(ResourcefulShulkers.LOGGER::error).ifPresent(entry -> auraByChunk.put(entry.pos(), entry.aura()));
@@ -46,7 +46,7 @@ public final class ShulkerAuraManager extends SavedData {
     }
 
     @Override
-    public @NotNull CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
+    public @NotNull CompoundTag save(CompoundTag tag) {
         ListTag list = new ListTag();
         auraByChunk.forEach((chunkPos, aura) -> {
             Entry entry = new Entry(chunkPos, aura);
@@ -57,11 +57,13 @@ public final class ShulkerAuraManager extends SavedData {
     }
 
     @SubscribeEvent
-    public static void onWorldTick(LevelTickEvent.Post event) {
-        if (event.getLevel().isClientSide)
+    public static void onWorldTick(TickEvent.LevelTickEvent event) {
+        if (event.phase != TickEvent.Phase.END)
             return;
-        ShulkerAuraManager manager = ShulkerAuraManager.get(event.getLevel());
-        manager.tick(event.getLevel());
+        if (event.level.isClientSide)
+            return;
+        ShulkerAuraManager manager = ShulkerAuraManager.get(event.level);
+        manager.tick(event.level);
     }
 
     @Nonnull
@@ -70,7 +72,7 @@ public final class ShulkerAuraManager extends SavedData {
             throw new RuntimeException("Shulker Aura can't be accessed on Client Side");
         }
         DimensionDataStorage storage = ((ServerLevel)level).getDataStorage();
-        return storage.computeIfAbsent(new Factory<>(ShulkerAuraManager::new,ShulkerAuraManager::new), "auramanager");
+        return storage.computeIfAbsent(ShulkerAuraManager::new,ShulkerAuraManager::new, "auramanager");
     }
 
     @NotNull
@@ -121,7 +123,7 @@ public final class ShulkerAuraManager extends SavedData {
                             if (chunkAura > 0) {
                                 RSAdvancements.AURA.awardTo(serverPlayer);
                             }
-                    PacketDistributor.sendToPlayer(serverPlayer,new AuraSyncPayload(chunkAura));
+                    RSPayloads.sendToPlayer(new AuraSyncPayload(chunkAura),serverPlayer);
                 }
             });
 

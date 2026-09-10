@@ -1,8 +1,10 @@
 package fr.iglee42.resourcefulshulkers.recipes;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.mojang.datafixers.util.Either;
 import fr.iglee42.igleelib.api.utils.ITickableRecipe;
 import fr.iglee42.resourcefulshulkers.advancements.RSAdvancements;
 import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
@@ -10,19 +12,16 @@ import fr.iglee42.resourcefulshulkers.blocks.entites.ShulkerInfuserBlockEntity;
 import fr.iglee42.resourcefulshulkers.blocks.entites.ShulkerPedestalBlockEntity;
 import fr.iglee42.resourcefulshulkers.recipes.ShulkerInfuserInput.PedestalEntry;
 import fr.iglee42.resourcefulshulkers.registries.RSRecipes;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.RegistryCodecs;
+import fr.iglee42.resourcefulshulkers.utils.RSExtraCodecs;
+import net.minecraft.core.*;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -35,12 +34,16 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static fr.iglee42.igleelib.api.utils.ModsUtils.spawnParticle;
+import static fr.iglee42.resourcefulshulkers.utils.RSExtraCodecs.readHolderSetValues;
 
 public class ItemInfusionRecipe implements Recipe<ShulkerInfuserInput>, ITickableRecipe<ShulkerInfuserBlockEntity> {
 
@@ -55,13 +58,27 @@ public class ItemInfusionRecipe implements Recipe<ShulkerInfuserInput>, ITickabl
             {2, 0, -2}
     };
 
-    private final HolderSet<EntityType<?>> baseEntity;
+    private final List<String> baseEntityValues;
+    private @Nullable HolderSet<EntityType<?>> baseEntity;
     private final EntityType<?> resultEntity;
     private final CompoundTag resultNBT;
     private final List<Ingredient> pedestalsIngredients;
     private final int auraConsumed;
 
-    public ItemInfusionRecipe(HolderSet<EntityType<?>> baseEntity, List<Ingredient> pedestalsIngredients, int auraConsumed, CompoundTag resultNBT, EntityType<?> resultEntity) {
+    private final ResourceLocation id;
+
+    public ItemInfusionRecipe(ResourceLocation id, List<String> baseEntityValues, List<Ingredient> pedestalsIngredients, int auraConsumed, CompoundTag resultNBT, EntityType<?> resultEntity) {
+        this.id = id;
+        this.baseEntityValues = baseEntityValues;
+        this.resultEntity = resultEntity;
+        this.resultNBT = resultNBT;
+        this.pedestalsIngredients = pedestalsIngredients.stream().filter(i -> !i.isEmpty()).toList();
+        this.auraConsumed = auraConsumed;
+    }
+
+    private ItemInfusionRecipe(ResourceLocation id, HolderSet<EntityType<?>> baseEntity, List<Ingredient> pedestalsIngredients, int auraConsumed, CompoundTag resultNBT, EntityType<?> resultEntity) {
+        this.id = id;
+        this.baseEntityValues = new ArrayList<>(baseEntity.stream().map(h->h.unwrapKey().get().location().toString()).toList());
         this.baseEntity = baseEntity;
         this.resultEntity = resultEntity;
         this.resultNBT = resultNBT;
@@ -160,11 +177,11 @@ public class ItemInfusionRecipe implements Recipe<ShulkerInfuserInput>, ITickabl
         }
         if (!matchIngredients(pedestalsIngredients, input.getPedestals(), false).matches()) return false;
         if (input.getTarget() == null) return false;
-        return input.getTarget().getType().is(baseEntity);
+        return baseEntity(level.registryAccess()).contains(input.getTarget().getType().builtInRegistryHolder());
     }
 
     @Override
-    public ItemStack assemble(ShulkerInfuserInput input, HolderLookup.Provider registries) {
+    public ItemStack assemble(ShulkerInfuserInput input, RegistryAccess registries) {
         return getResultItem(registries);
     }
 
@@ -174,8 +191,13 @@ public class ItemInfusionRecipe implements Recipe<ShulkerInfuserInput>, ITickabl
     }
 
     @Override
-    public ItemStack getResultItem(HolderLookup.Provider registries) {
+    public ItemStack getResultItem(RegistryAccess registries) {
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public ResourceLocation getId() {
+        return id;
     }
 
 
@@ -189,7 +211,10 @@ public class ItemInfusionRecipe implements Recipe<ShulkerInfuserInput>, ITickabl
         return Type.INSTANCE;
     }
 
-    public HolderSet<EntityType<?>> baseEntity() {
+    public HolderSet<EntityType<?>> baseEntity(HolderLookup.Provider registries) {
+        if (baseEntity == null) {
+            baseEntity = RSExtraCodecs.resolveHolderSet(ForgeRegistries.ENTITY_TYPES, baseEntityValues, registries);
+        }
         return baseEntity;
     }
 
@@ -223,32 +248,63 @@ public class ItemInfusionRecipe implements Recipe<ShulkerInfuserInput>, ITickabl
 
     public static class Serializer implements RecipeSerializer<ItemInfusionRecipe> {
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, ItemInfusionRecipe> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.holderSet(Registries.ENTITY_TYPE), ItemInfusionRecipe::baseEntity,
-                Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()), ItemInfusionRecipe::pedestalsIngredients,
-                ByteBufCodecs.INT, ItemInfusionRecipe::auraConsumed,
-                ByteBufCodecs.COMPOUND_TAG, ItemInfusionRecipe::resultNbt,
-                ByteBufCodecs.registry(Registries.ENTITY_TYPE), ItemInfusionRecipe::resultEntity,
-                ItemInfusionRecipe::new
-        );
-        private static final MapCodec<ItemInfusionRecipe> CODEC = RecordCodecBuilder.mapCodec(
-                instance -> instance.group(
-                                RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("base_entity").forGetter(e -> e.baseEntity),
-                                Ingredient.CODEC_NONEMPTY.listOf(1, 8).fieldOf("pedestal_ingredients").forGetter(e -> e.pedestalsIngredients),
-                                Codec.INT.fieldOf("aura").orElse(1500).forGetter(e -> e.auraConsumed),
-                                CompoundTag.CODEC.fieldOf("result_nbt").orElse(new CompoundTag()).forGetter(e -> e.resultNBT),
-                                BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("result_entity").forGetter(e -> e.resultEntity)
-                        ).apply(instance, ItemInfusionRecipe::new)
-        );
-
         @Override
-        public MapCodec<ItemInfusionRecipe> codec() {
-            return CODEC;
+        public ItemInfusionRecipe fromJson(ResourceLocation id, JsonObject json) {
+            List<String> base = readHolderSetValues(json.get("base_entity"));
+            List<Ingredient> ingredients = itemsFromJson(json.getAsJsonArray("pedestal_ingredients"));
+            int aura = GsonHelper.getAsInt(json, "aura", 1500);
+            JsonElement nbtElt = json.get("result_nbt");
+            CompoundTag nbt = nbtElt != null ? CraftingHelper.getNBT(nbtElt) : new CompoundTag();
+            EntityType<?> result = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.parse(json.get("result_entity").getAsString()));
+            if (result == null) throw new JsonParseException("Unknown entity type: " + json.get("result_entity").getAsString());
+            return new ItemInfusionRecipe(id, base, ingredients, aura, nbt, result);
+        }
+
+        private static NonNullList<Ingredient> itemsFromJson(JsonArray array) {
+            if (array.isEmpty()) throw new JsonParseException("Too few ingredients for item infusion recipes");
+            if (array.size() > 8) throw new JsonParseException("Too many ingredients for item infusion recipes");
+            NonNullList<Ingredient> nonnulllist = NonNullList.create();
+
+            for(int i = 0; i < array.size(); ++i) {
+                Ingredient ingredient = Ingredient.fromJson(array.get(i), false);
+                nonnulllist.add(ingredient);
+            }
+
+            return nonnulllist;
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ItemInfusionRecipe> streamCodec() {
-            return STREAM_CODEC;
+        public @Nullable ItemInfusionRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
+            Either<List<String>,HolderSet<EntityType<?>>> base;
+            if (buf.readBoolean()) {
+                base = Either.right(RSExtraCodecs.decodeHolderSet(buf, BuiltInRegistries.ENTITY_TYPE));
+            } else {
+                base = Either.left(buf.readCollection(ArrayList::new, FriendlyByteBuf::readUtf));
+            }
+            List<Ingredient> ingredients = buf.readList(Ingredient::fromNetwork);
+            int aura = buf.readInt();
+            CompoundTag nbt = buf.readNbt();
+            var result = buf.readById(BuiltInRegistries.ENTITY_TYPE);
+            if (base.left().isPresent()){
+                return new ItemInfusionRecipe(id, base.left().get(), ingredients, aura, nbt, result);
+            } else {
+                return new ItemInfusionRecipe(id, base.right().get(), ingredients, aura, nbt, result);
+            }
+        }
+
+        @Override
+        public void toNetwork(FriendlyByteBuf buf, ItemInfusionRecipe recipe) {
+            if (recipe.baseEntity != null) {
+                buf.writeBoolean(true);
+                RSExtraCodecs.encodeHolderSet(buf,recipe.baseEntity,BuiltInRegistries.ENTITY_TYPE);
+            } else {
+                buf.writeBoolean(false);
+                buf.writeCollection(recipe.baseEntityValues, FriendlyByteBuf::writeUtf);
+            }
+            buf.writeCollection(recipe.pedestalsIngredients(), (b, i) -> i.toNetwork(b));
+            buf.writeInt(recipe.auraConsumed());
+            buf.writeNbt(recipe.resultNbt());
+            buf.writeRegistryId(ForgeRegistries.ENTITY_TYPES, recipe.resultEntity());
         }
     }
 }

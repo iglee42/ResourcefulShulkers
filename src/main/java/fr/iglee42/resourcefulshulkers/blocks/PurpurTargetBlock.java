@@ -12,6 +12,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.TargetBlock;
@@ -27,7 +28,7 @@ public class PurpurTargetBlock extends TargetBlock implements EntityBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext p_49817_, List<Component> tooltips, TooltipFlag p_49819_) {
+    public void appendHoverText(ItemStack stack, BlockGetter p_49817_, List<Component> tooltips, TooltipFlag p_49819_) {
         RSTooltipHandler.addTooltip(stack, tooltips, Screen.hasShiftDown());
         super.appendHoverText(stack, p_49817_, tooltips, p_49819_);
     }

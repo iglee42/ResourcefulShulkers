@@ -32,7 +32,7 @@ public class TrainerBlock extends StructuredBlock {
 
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
@@ -48,7 +48,7 @@ public class TrainerBlock extends StructuredBlock {
 
 
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext ctx, List<Component> tooltips, TooltipFlag p_49819_) {
+    public void appendHoverText(ItemStack stack, BlockGetter ctx, List<Component> tooltips, TooltipFlag p_49819_) {
         RSTooltipHandler.tooltip(stack, tooltips)
                 .args(0, 4)
                 .shift(Screen.hasShiftDown())

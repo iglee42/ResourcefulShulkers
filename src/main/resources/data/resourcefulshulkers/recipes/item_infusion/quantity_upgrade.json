@@ -1,0 +1,30 @@
+{
+  "type": "resourcefulshulkers:item_infusion",
+  "base_entity": "minecraft:shulker",
+  "result_entity": "minecraft:item",
+  "result_nbt": {
+    "Item": {
+      "id": "resourcefulshulkers:quantity_upgrade",
+      "Count": 1
+    }
+  },
+  "pedestal_ingredients": [
+    {
+      "item": "resourcefulshulkers:upgrade_base"
+    },{
+      "item": "minecraft:diamond"
+    },{
+      "item": "minecraft:diamond"
+    },{
+      "item": "minecraft:diamond"
+    },{
+      "item": "minecraft:diamond"
+    },{
+      "tag": "resourcefulshulkers:essences"
+    },{
+      "tag": "resourcefulshulkers:essences"
+    },{
+      "tag": "resourcefulshulkers:essences"
+    }
+  ]
+}

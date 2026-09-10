@@ -1,0 +1,29 @@
+{
+  "parent": "resourcefulshulkers:root",
+  "criteria": {
+    "shulker": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.resourcefulshulkers.aura.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "resourcefulshulkers:shulker_absorber"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.resourcefulshulkers.aura.title"
+    }
+  },
+  "requirements": [
+    [
+      "shulker"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

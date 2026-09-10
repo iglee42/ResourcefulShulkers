@@ -73,7 +73,7 @@ public class ShulkerAbsorberBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Item.TooltipContext p_49817_, List<Component> tooltips, TooltipFlag p_49819_) {
+    public void appendHoverText(ItemStack stack, @Nullable BlockGetter p_49817_, List<Component> tooltips, TooltipFlag p_49819_) {
         RSTooltipHandler.tooltip(stack,tooltips)
                 .shift(Screen.hasShiftDown())
                 .args(1, RSServerConfig.ABSORBER_AURA.get())

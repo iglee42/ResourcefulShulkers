@@ -8,7 +8,7 @@ import fr.iglee42.resourcefulshulkers.blocks.entites.handlers.UpgradeHandler;
 import fr.iglee42.resourcefulshulkers.config.RSServerConfig;
 import fr.iglee42.resourcefulshulkers.item.GeneratingBoxItem;
 import fr.iglee42.resourcefulshulkers.registries.RSBlockEntities;
-import fr.iglee42.resourcefulshulkers.registries.RSDataComponents;
+import fr.iglee42.resourcefulshulkers.registries.RSNBT;
 import fr.iglee42.resourcefulshulkers.menu.GeneratingBoxMenu;
 import fr.iglee42.resourcefulshulkers.shulkers.ShulkerDefinition;
 import fr.iglee42.resourcefulshulkers.shulkers.ShulkersManager;
@@ -17,7 +17,6 @@ import fr.iglee42.resourcefulshulkers.utils.acceleration.AccelerationUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -46,8 +45,8 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -194,7 +193,7 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     }
 
     public static int generatedAmount(int quantityUpgradeCount){
-        return Mth.ceil(RSServerConfig.BOX_BASE_AMOUNT.getAsInt() + quantityUpgradeCount * RSServerConfig.QUANTITY_MULTIPLIER.get());
+        return Mth.ceil(RSServerConfig.BOX_BASE_AMOUNT.get() + quantityUpgradeCount * RSServerConfig.QUANTITY_MULTIPLIER.get());
     }
 
 
@@ -214,13 +213,13 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     // Serialization
 
     @Override
-    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         CompoundTag inventory = tag.getCompound("inventory");
-        this.outputInventory.deserializeNBT(registries, inventory.getCompound("output"));
-        this.shell.deserializeNBT(registries, inventory.getCompound("shell"));
-        this.upgrades.deserializeNBT(registries, inventory.getCompound("upgrades"));
+        this.outputInventory.deserializeNBT(inventory.getCompound("output"));
+        this.shell.deserializeNBT(inventory.getCompound("shell"));
+        this.upgrades.deserializeNBT(inventory.getCompound("upgrades"));
 
         this.durability = tag.getInt("durability");
 
@@ -238,16 +237,16 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.saveAdditional(tag, provider);
-        save(tag, provider, false);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        save(tag, false);
     }
 
-    public void save(CompoundTag tag, HolderLookup.Provider registries, boolean forSync) {
+    public void save(CompoundTag tag, boolean forSync) {
         CompoundTag inventory = new CompoundTag();
-        inventory.put("output", this.outputInventory.serializeNBT(registries));
-        inventory.put("shell", this.shell.serializeNBT(registries));
-        inventory.put("upgrades", this.upgrades.serializeNBT(registries));
+        inventory.put("output", this.outputInventory.serializeNBT());
+        inventory.put("shell", this.shell.serializeNBT());
+        inventory.put("upgrades", this.upgrades.serializeNBT());
         tag.put("inventory", inventory);
 
         tag.putInt("durability", this.durability);
@@ -262,9 +261,9 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     }
 
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
+    public CompoundTag getUpdateTag() {
         CompoundTag tag = new CompoundTag();
-        save(tag, provider, true);
+        save(tag, true);
         return tag;
     }
 
@@ -280,19 +279,19 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
         level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_ALL);
     }
 
-    @Override
+    /*@Override
     protected void collectImplicitComponents(DataComponentMap.Builder builder) {
         super.collectImplicitComponents(builder);
-        builder.set(RSDataComponents.DURABILITY, durability);
-        builder.set(RSDataComponents.ITEM_INDEX, itemIndex);
+        builder.set(RSNBT.DURABILITY, durability);
+        builder.set(RSNBT.ITEM_INDEX, itemIndex);
     }
 
     @Override
     protected void applyImplicitComponents(DataComponentInput input) {
         super.applyImplicitComponents(input);
-        this.durability = input.getOrDefault(RSDataComponents.DURABILITY, RSServerConfig.getMaxDurability());
-        this.itemIndex = GeneratingBoxItem.validateIndex(definition(), input.getOrDefault(RSDataComponents.ITEM_INDEX,0));
-    }
+        this.durability = input.getOrDefault(RSNBT.DURABILITY, RSServerConfig.getMaxDurability());
+        this.itemIndex = GeneratingBoxItem.validateIndex(definition(), input.getOrDefault(RSNBT.ITEM_INDEX,0));
+    }*/
 
     // Opening/Closing Animation
     private void updateAnimation(Level level, BlockPos pos, BlockState state) {
@@ -337,13 +336,13 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     }
 
     public AABB getBoundingBox(BlockState state) {
-        return Shulker.getProgressAabb(1.0F, Direction.UP, 0.5F * this.getAnimationProgress(1.0F));
+        return Shulker.getProgressAabb(Direction.UP, 0.5F * this.getAnimationProgress(1.0F));
     }
 
     private void moveCollidedEntities(Level level, BlockPos pos, BlockState state) {
         if (state.getBlock() instanceof GeneratingBoxBlock) {
             Direction direction = Direction.UP;
-            AABB aabb = Shulker.getProgressDeltaAabb(1.0F, direction, this.animationProgressOld, this.animationProgress).move(pos);
+            AABB aabb = Shulker.getProgressDeltaAabb(direction, this.animationProgressOld, this.animationProgress).move(pos);
             List<Entity> list = level.getEntities(null, aabb);
             if (!list.isEmpty()) {
                 for (Entity entity : list) {
@@ -465,6 +464,9 @@ public class GeneratingBoxBlockEntity extends SecondBlockEntity implements MenuP
     public void setItemIndex(int index) {
         this.itemIndex = Mth.clamp(index, 0, availableItems().size()-1);
         setChanged();
+    }
+    public void setDurability(int durability) {
+        this.durability = durability;
     }
 }
 

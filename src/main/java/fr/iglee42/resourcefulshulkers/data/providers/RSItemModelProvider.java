@@ -4,8 +4,8 @@ import fr.iglee42.resourcefulshulkers.RSIds;
 import fr.iglee42.resourcefulshulkers.registries.RSBlocks;
 import fr.iglee42.resourcefulshulkers.registries.RSItems;
 import net.minecraft.data.PackOutput;
-import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.minecraftforge.client.model.generators.ItemModelProvider;
+import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class RSItemModelProvider extends ItemModelProvider {
     public RSItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
@@ -14,11 +14,6 @@ public class RSItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        simpleBlockItem(RSBlocks.SHULKER_PEDESTAL.get());
-        simpleBlockItem(RSBlocks.SHULKER_INFUSER.get());
-        simpleBlockItem(RSBlocks.SHULKER_ABSORBER.get());
-        simpleBlockItem(RSBlocks.PURPUR_TARGET.get());
-
         basicItem(RSItems.BASE_ESSENCE.get());
         basicItem(RSItems.UPGRADE_BASE.get());
         basicItem(RSItems.DURABILITY_UPGRADE.get());

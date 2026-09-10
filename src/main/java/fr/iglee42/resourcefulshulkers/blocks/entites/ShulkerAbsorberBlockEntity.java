@@ -75,12 +75,12 @@ public class ShulkerAbsorberBlockEntity extends SecondBlockEntity {
         if (level.isClientSide) return;
         ShulkerAuraManager manager = ShulkerAuraManager.get(level);
 
-        if (manager.insertAura(blockPos, RSServerConfig.ABSORBER_AURA.getAsInt(), true) >= RSServerConfig.ABSORBER_AURA.get() && getCurrentTarget() != null && getCurrentTarget().getType() == EntityType.SHULKER){
+        if (manager.insertAura(blockPos, RSServerConfig.ABSORBER_AURA.get(), true) >= RSServerConfig.ABSORBER_AURA.get() && getCurrentTarget() != null && getCurrentTarget().getType() == EntityType.SHULKER){
             progress++;
             ((Shulker)getCurrentTarget()).setNoAi(true);
             level.sendBlockUpdated(blockPos,blockState,blockState,Block.UPDATE_CLIENTS);
-            if (progress == RSServerConfig.ABSORBER_DURATION.getAsInt()){
-                manager.insertAura(blockPos, RSServerConfig.ABSORBER_AURA.getAsInt(), false);
+            if (progress == RSServerConfig.ABSORBER_DURATION.get()){
+                manager.insertAura(blockPos, RSServerConfig.ABSORBER_AURA.get(), false);
                 getCurrentTarget().remove(Entity.RemovalReason.KILLED);
                 Block.popResource(level,blockPos.above(),new ItemStack(RSItems.SHULKER_HEAD.get()));
                 progress = 0;
@@ -96,19 +96,19 @@ public class ShulkerAbsorberBlockEntity extends SecondBlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.saveAdditional(tag,provider);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.putInt("progress",progress);
     }
 
     @Override
-    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.loadAdditional(tag,provider);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         progress = tag.getInt("progress");
     }
 
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
+    public CompoundTag getUpdateTag() {
         CompoundTag tag = new CompoundTag();
         tag.putInt("progress",progress);
         return tag;

@@ -3,11 +3,8 @@ package fr.iglee42.resourcefulshulkers.advancements;
 import fr.iglee42.resourcefulshulkers.RSIds;
 import fr.iglee42.resourcefulshulkers.registries.RSBlocks;
 import fr.iglee42.resourcefulshulkers.registries.RSItems;
-import net.minecraft.advancements.AdvancementType;
-import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.advancements.Criterion;
+import net.minecraft.advancements.FrameType;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
-import net.minecraft.advancements.critereon.PlayerTrigger;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
@@ -59,7 +56,7 @@ public final class RSAdvancements {
             .icon(RSBlocks.TRAINER)
             .title("Do you think they eat eggs?")
             .description("Create a shulker trainer with the shulker infuser")
-            .frame(AdvancementType.GOAL)
+            .frame(FrameType.GOAL)
             .criterion("craft_shulker_trainer", InventoryChangeTrigger.TriggerInstance.hasItems(RSBlocks.TRAINER.get())));
 
     public static final RSAdvancement END_CITY = register(RSAdvancement.builder("end_city")
@@ -67,7 +64,7 @@ public final class RSAdvancements {
             .icon(RSBlocks.END_CITY)
             .title("The City at the End of the mod?")
             .description("Create an end city with the shulker infuser")
-            .frame(AdvancementType.GOAL)
+            .frame(FrameType.GOAL)
             .criterion("craft_end_city", InventoryChangeTrigger.TriggerInstance.hasItems(RSBlocks.END_CITY.get())));
 
     public static final RSAdvancement END_CITY_2 = register(RSAdvancement.builder("end_city_2")
@@ -75,7 +72,7 @@ public final class RSAdvancements {
             .icon(RSBlocks.END_CITY_TIER_2)
             .title("Too much resources !")
             .description("Craft a tier 2 end city with the shulker infuser")
-            .frame(AdvancementType.CHALLENGE)
+            .frame(FrameType.CHALLENGE)
             .hidden(true)
             .criterion("craft_end_city", InventoryChangeTrigger.TriggerInstance.hasItems(RSBlocks.END_CITY_TIER_2.get())));
 

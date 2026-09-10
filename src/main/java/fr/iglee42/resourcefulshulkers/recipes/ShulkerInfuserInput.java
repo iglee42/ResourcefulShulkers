@@ -4,15 +4,16 @@ import fr.iglee42.resourcefulshulkers.blocks.entites.ShulkerInfuserBlockEntity;
 import fr.iglee42.resourcefulshulkers.blocks.entites.ShulkerPedestalBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 
 import java.util.List;
 
-public class ShulkerInfuserInput implements RecipeInput {
+public class ShulkerInfuserInput implements Container {
 
     private final Entity target;
     private final List<PedestalEntry> pedestals;
@@ -32,7 +33,28 @@ public class ShulkerInfuserInput implements RecipeInput {
     }
 
     @Override
-    public int size() {
+    public ItemStack removeItem(int p_18942_, int p_18943_) {
+        return null;
+    }
+
+    @Override
+    public ItemStack removeItemNoUpdate(int p_18951_) {
+        return null;
+    }
+
+    @Override
+    public void setItem(int p_18944_, ItemStack p_18945_) {}
+
+    @Override
+    public void setChanged() {}
+
+    @Override
+    public boolean stillValid(Player p_18946_) {
+        return true;
+    }
+
+    @Override
+    public int getContainerSize() {
         return pedestals.size();
     }
 
@@ -55,6 +77,11 @@ public class ShulkerInfuserInput implements RecipeInput {
 
     public BlockPos getBlockPos() {
         return blockPos;
+    }
+
+    @Override
+    public void clearContent() {
+
     }
 
     public record PedestalEntry(BlockPos pos, ItemStack stack) {

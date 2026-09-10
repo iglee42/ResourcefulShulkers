@@ -32,7 +32,7 @@ public class BigItemstackRenderer implements IIngredientRenderer<ItemStack> {
     public List<Component> getTooltip(ItemStack ingredient, TooltipFlag tooltipFlag) {
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
-        return ingredient.getTooltipLines(Item.TooltipContext.of(player.level()),player, tooltipFlag);
+        return ingredient.getTooltipLines(player, tooltipFlag);
     }
 
     public Font getFontRenderer(Minecraft minecraft, ItemStack ingredient) {

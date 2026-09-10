@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "tag": "forge:storage_blocks/diamond"
+    },
+    "E": {
+      "item": "minecraft:end_stone_bricks"
+    },
+    "G": {
+      "tag": "forge:storage_blocks/gold"
+    },
+    "R": {
+      "item": "minecraft:end_rod"
+    },
+    "S": {
+      "item": "minecraft:purpur_slab"
+    }
+  },
+  "pattern": [
+    "RSR",
+    "SDS",
+    "GEG"
+  ],
+  "result": {
+    "item": "resourcefulshulkers:shulker_absorber"
+  },
+  "show_notification": true
+}

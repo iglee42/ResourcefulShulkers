@@ -31,8 +31,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -147,17 +147,17 @@ public class TrainerBlockEntity extends StructuredBlockEntity {
         IRegisteredShulker shulker = shulkers.getShulkerDefinitionForSlot(slot).registration();
         ItemStack stack = !shulker.definition().hasItem() || shulker.shell() == null || shulker.shell().get() == null ? ItemStack.EMPTY : shulker.shell().get().getDefaultInstance();
         if (stack.isEmpty()) return ItemStack.EMPTY;
-        int count = Mth.ceil(RSServerConfig.TRAINER_BASE_AMOUNT.getAsInt() + upgrades.getUpgradeCount(Upgrade.QUANTITY) * RSServerConfig.QUANTITY_MULTIPLIER.get());
+        int count = Mth.ceil(RSServerConfig.TRAINER_BASE_AMOUNT.get() + upgrades.getUpgradeCount(Upgrade.QUANTITY) * RSServerConfig.QUANTITY_MULTIPLIER.get());
         return stack.copyWithCount(count);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         CompoundTag inventory = tag.getCompound("inventory");
-        this.outputInventory.deserializeNBT(registries, inventory.getCompound("output"));
-        this.shulkers.deserializeNBT(registries, inventory.getCompound("shulkers"));
-        this.upgrades.deserializeNBT(registries, inventory.getCompound("upgrades"));
+        this.outputInventory.deserializeNBT(inventory.getCompound("output"));
+        this.shulkers.deserializeNBT(inventory.getCompound("shulkers"));
+        this.upgrades.deserializeNBT(inventory.getCompound("upgrades"));
 
         if (tag.contains("accelerated", CompoundTag.TAG_BYTE))
             this.accelerated = tag.getBoolean("accelerated");
@@ -175,16 +175,16 @@ public class TrainerBlockEntity extends StructuredBlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        save(tag, registries, false);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        save(tag, false);
     }
 
-    private void save(CompoundTag tag , HolderLookup.Provider registries, boolean forSync){
+    private void save(CompoundTag tag, boolean forSync){
         CompoundTag inventory = new CompoundTag();
-        inventory.put("output", this.outputInventory.serializeNBT(registries));
-        inventory.put("shulkers", this.shulkers.serializeNBT(registries));
-        inventory.put("upgrades", this.upgrades.serializeNBT(registries));
+        inventory.put("output", this.outputInventory.serializeNBT());
+        inventory.put("shulkers", this.shulkers.serializeNBT());
+        inventory.put("upgrades", this.upgrades.serializeNBT());
         tag.put("inventory", inventory);
 
         if (forSync) {
@@ -201,9 +201,9 @@ public class TrainerBlockEntity extends StructuredBlockEntity {
     }
 
     @Override
-    public @NotNull CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        CompoundTag tag = super.getUpdateTag(registries);
-        save(tag, registries, true);
+    public @NotNull CompoundTag getUpdateTag() {
+        CompoundTag tag = super.getUpdateTag();
+        save(tag, true);
         return tag;
     }
 

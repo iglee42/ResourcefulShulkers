@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -60,8 +61,10 @@ public class CustomShulkerRenderer extends MobRenderer<CustomShulker, ShulkerMod
         return DEFAULT_TEXTURE_LOCATION;
     }
 
-    protected void setupRotations(CustomShulker shulker, PoseStack poseStack, float bob, float yBodyRot, float partialTick, float scale) {
-        super.setupRotations(shulker, poseStack, bob, yBodyRot + 180.0F, partialTick, scale);
-        poseStack.rotateAround(shulker.getAttachFace().getOpposite().getRotation(), 0.0F, 0.5F, 0.0F);
+    protected void setupRotations(CustomShulker shulker, PoseStack poseStack, float p_115909_, float yBodyRot, float scale) {
+        super.setupRotations(shulker, poseStack, p_115909_, yBodyRot + 180.0F, scale);
+        poseStack.translate(0.0D, 0.5D, 0.0D);
+        poseStack.mulPose(shulker.getAttachFace().getOpposite().getRotation());
+        poseStack.translate(0.0D, -0.5D, 0.0D);
     }
 }

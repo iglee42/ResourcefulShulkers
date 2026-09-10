@@ -2,20 +2,15 @@ package fr.iglee42.resourcefulshulkers.client.blockentites;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import fr.iglee42.resourcefulshulkers.blocks.entites.structure.endcity.EndCityBlockEntity;
 import fr.iglee42.resourcefulshulkers.blocks.entites.structure.trainer.TrainerBlockEntity;
 import fr.iglee42.resourcefulshulkers.entity.shulkers.ResourceShulker;
-import fr.iglee42.resourcefulshulkers.item.GeneratingBoxItem;
 import fr.iglee42.resourcefulshulkers.item.shulker.ResourceShulkerItem;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.data.ModelData;
 
 import static fr.iglee42.resourcefulshulkers.client.blockentites.EndCityRenderer.POSITIONS;
 

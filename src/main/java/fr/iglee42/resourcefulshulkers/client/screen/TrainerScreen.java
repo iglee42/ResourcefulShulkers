@@ -35,20 +35,20 @@ public class TrainerScreen extends AbstractContainerScreen<TrainerMenu> {
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
-        renderBackground(graphics, mouseX, mouseY, delta);
+        renderBackground(graphics);
         super.render(graphics, mouseX, mouseY, delta);
 
 
         for (int slot = 4; slot < 8; slot++) {
             int[] pos = SHULKER_SLOTS[slot];
-            graphics.blitSprite(DISABLED_SLOT, x + pos[0], y + pos[1], 16, 16);
+            graphics.blit(DISABLED_SLOT, x + pos[0], y + pos[1],16,16, 0, 0, 16, 16,16,16);
         }
         for (int slot = 0; slot < 8; slot ++){
-            graphics.blitSprite(DISABLED_SLOT, x + 8 + slot *18,y+86, 16,16 );
+            graphics.blit(DISABLED_SLOT, x + 8 + slot *18,y+86,16,160,0, 16,16,16,16);
         }
 
         for (int slot = 2; slot < 4; slot ++){
-            graphics.blitSprite(DISABLED_SLOT, x + 8 + slot *18,y+108, 16,16 );
+            graphics.blit(DISABLED_SLOT, x + 8 + slot *18,y+108,16,160,0, 16,16,16,16);
         }
 
         int shulkersY = y + 6;

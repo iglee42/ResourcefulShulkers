@@ -1,12 +1,11 @@
 package fr.iglee42.resourcefulshulkers.config;
 
-import net.neoforged.neoforge.common.ModConfigSpec;
-import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
-import net.neoforged.neoforge.common.ModConfigSpec.Builder;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec.*;
 
 public class RSCommonConfig {
     public static final Builder BUILDER = new Builder();
-    public static final ModConfigSpec SPEC;
+    public static final ForgeConfigSpec SPEC;
 
     public static final BooleanValue GENERATE_RESOURCE_RECIPES;
     public static final BooleanValue GENERATE_TYPE_RECIPES;

@@ -2,10 +2,10 @@ package fr.iglee42.resourcefulshulkers.blocks.entites.structure.endcity;
 
 import fr.iglee42.resourcefulshulkers.api.shulkers.IShulkerDefinition;
 import fr.iglee42.resourcefulshulkers.item.GeneratingBoxItem;
-import fr.iglee42.resourcefulshulkers.registries.RSDataComponents;
+import fr.iglee42.resourcefulshulkers.registries.RSNBT;
 import fr.iglee42.resourcefulshulkers.shulkers.ShulkerDefinition;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -48,7 +48,7 @@ public class GeneratingBoxHandler extends ItemStackHandler {
         if (durability <= 0) return false;
         if (!simulate) {
             ItemStack copy = stack.copy();
-            copy.set(RSDataComponents.DURABILITY.get(), durability - 1);
+            RSNBT.set(copy, RSNBT.DURABILITY, durability - 1);
             setStackInSlot(slot, copy);
             onContentsChanged(slot);
         }
@@ -68,7 +68,7 @@ public class GeneratingBoxHandler extends ItemStackHandler {
         int newIndex = box.validateIndex(index);
         if (oldIndex != newIndex){
             ItemStack copy = stack.copy();
-            copy.set(RSDataComponents.ITEM_INDEX.get(), index);
+            RSNBT.set(copy, RSNBT.ITEM_INDEX, index);
             setStackInSlot(slot, copy);
             onContentsChanged(slot);
         }

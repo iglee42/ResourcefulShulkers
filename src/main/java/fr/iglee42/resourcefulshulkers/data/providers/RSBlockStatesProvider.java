@@ -6,10 +6,10 @@ import fr.iglee42.resourcefulshulkers.registries.RSBlocks;
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
-import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.minecraftforge.client.model.generators.BlockStateProvider;
+import net.minecraftforge.client.model.generators.ConfiguredModel;
+import net.minecraftforge.client.model.generators.ModelFile;
+import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class RSBlockStatesProvider extends BlockStateProvider {
 
@@ -20,9 +20,10 @@ public class RSBlockStatesProvider extends BlockStateProvider {
     @Override
     protected void registerStatesAndModels() {
         simpleBlock(RSBlocks.PURPUR_TARGET.get());
-        simpleBlock(RSBlocks.SHULKER_ABSORBER.get(), models().getExistingFile(RSIds.id("block/shulker_absorber")));
-        simpleBlock(RSBlocks.SHULKER_INFUSER.get(), models().getExistingFile(RSIds.id("block/shulker_infuser")));
-        simpleBlock(RSBlocks.SHULKER_PEDESTAL.get(), models().getExistingFile(RSIds.id("block/shulker_pedestal")));
+        simpleBlockItem(RSBlocks.PURPUR_TARGET.get(),models().getExistingFile(RSIds.id("block/purpur_target")));
+        simpleBlockWithItem(RSBlocks.SHULKER_ABSORBER.get(), models().getExistingFile(RSIds.id("block/shulker_absorber")));
+        simpleBlockWithItem(RSBlocks.SHULKER_INFUSER.get(), models().getExistingFile(RSIds.id("block/shulker_infuser")));
+        simpleBlockWithItem(RSBlocks.SHULKER_PEDESTAL.get(), models().getExistingFile(RSIds.id("block/shulker_pedestal")));
         simpleBlock(RSBlocks.SHULKER_HEAD.get(), models().getExistingFile(ResourceLocation.withDefaultNamespace("block/skull")));
         simpleBlock(RSBlocks.WALL_SHULKER_HEAD.get(), models().getExistingFile(ResourceLocation.withDefaultNamespace("block/skull")));
 
@@ -30,7 +31,6 @@ public class RSBlockStatesProvider extends BlockStateProvider {
         simpleBlock(RSBlocks.END_CITY_TIER_2.get(), models().getExistingFile(RSIds.id("block/end_city/main_2")));
         simpleBlock(RSBlocks.TRAINER.get(), models().getExistingFile(RSIds.id("block/shulker_trainer")));
         generateStructure();
-
 
     }
 

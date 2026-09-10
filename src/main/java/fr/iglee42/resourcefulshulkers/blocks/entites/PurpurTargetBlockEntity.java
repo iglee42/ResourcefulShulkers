@@ -35,8 +35,8 @@ public class PurpurTargetBlockEntity extends BlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        CompoundTag updateTag = super.getUpdateTag(registries);
+    public CompoundTag getUpdateTag() {
+        CompoundTag updateTag = super.getUpdateTag();
         if (ownerUUID != null) {
             updateTag.putUUID("ownerUUID", ownerUUID);
         }
@@ -49,8 +49,8 @@ public class PurpurTargetBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         ownerUUID = tag.hasUUID("ownerUUID") ? tag.getUUID("ownerUUID") : null;
     }
 }

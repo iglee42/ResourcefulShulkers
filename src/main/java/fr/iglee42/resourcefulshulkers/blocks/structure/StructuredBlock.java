@@ -8,6 +8,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,6 +23,7 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -81,21 +84,21 @@ public abstract class StructuredBlock extends Block implements EntityBlock {
     }
 
     @Override
-    protected @NotNull InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (level.isClientSide) return InteractionResult.SUCCESS;
         if (player.isSpectator()) return InteractionResult.CONSUME;
         if (!(level.getBlockEntity(pos) instanceof StructuredBlockEntity be)) return InteractionResult.PASS;
-        player.openMenu(be, pos);
+        NetworkHooks.openScreen((ServerPlayer) player,be, pos);
         return InteractionResult.CONSUME;
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean piston) {
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean piston) {
         if (state.getBlock() != newState.getBlock()) {
 
             AABB box = new AABB(pos).inflate(1).move(0, 1, 0);
             BlockPos.betweenClosedStream(box).forEach(p -> {
-                if (level.getBlockState(p).is(RSBlocks.STRUCTURE))
+                if (level.getBlockState(p).is(RSBlocks.STRUCTURE.get()))
                     level.destroyBlock(p, false);
             });
         }
@@ -107,7 +110,7 @@ public abstract class StructuredBlock extends Block implements EntityBlock {
 
 
     @Override
-    protected @NotNull RenderShape getRenderShape(BlockState state) {
+    public @NotNull RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
 }

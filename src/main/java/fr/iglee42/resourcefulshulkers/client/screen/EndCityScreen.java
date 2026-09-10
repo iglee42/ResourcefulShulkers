@@ -17,7 +17,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.Nullable;
 
 import static fr.iglee42.resourcefulshulkers.menu.EndCityMenu.SHULKER_SLOTS;
@@ -26,7 +26,7 @@ public class EndCityScreen extends AbstractContainerScreen<EndCityMenu> {
     public static final ResourceLocation TEXTURE =
             RSIds.id("textures/gui/end_city.png");
 
-    public static final ResourceLocation DISABLED_SLOT = ResourceLocation.withDefaultNamespace("container/crafter/disabled_slot");
+    public static final ResourceLocation DISABLED_SLOT = RSIds.id("textures/gui/disabled_slot.png");
 
     public static final int TOTAL_SLOTS = 8;
 
@@ -48,7 +48,7 @@ public class EndCityScreen extends AbstractContainerScreen<EndCityMenu> {
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
-        renderBackground(graphics, mouseX, mouseY, delta);
+        renderBackground(graphics);
         super.render(graphics, mouseX, mouseY, delta);
 
         int tier = menu.getBlockEntity().getTier();
@@ -57,8 +57,8 @@ public class EndCityScreen extends AbstractContainerScreen<EndCityMenu> {
 
         for (int slot = activeSlots; slot < TOTAL_SLOTS; slot++) {
             int[] pos = SHULKER_SLOTS[slot];
-            graphics.blitSprite(DISABLED_SLOT, x + pos[0], y + pos[1], 16, 16);
-            graphics.blitSprite(DISABLED_SLOT, x + 8 + slot *18,y+86, 16,16 );
+            graphics.blit(DISABLED_SLOT, x + pos[0], y + pos[1], 16,160, 0,16,16,16,16);
+            graphics.blit(DISABLED_SLOT, x + 8 + slot *18,y+86,16,160,0, 16,16,16,16);
         }
 
         int shulkersY = y + 6;
@@ -103,11 +103,6 @@ public class EndCityScreen extends AbstractContainerScreen<EndCityMenu> {
         graphics.drawString(font,addedDurabilityText , x+154 ,y + 90 , 4210752,false);
 
         renderTooltip(graphics, mouseX, mouseY);
-    }
-
-    @Override
-    protected void renderSlotContents(GuiGraphics guiGraphics, ItemStack itemstack, Slot slot, @Nullable String countString) {
-        super.renderSlotContents(guiGraphics, itemstack, slot, countString);
     }
 
     public void drawCenteredString(GuiGraphics graphics, Font font, Component text, int x, int y, int color) {

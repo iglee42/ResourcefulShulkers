@@ -3,7 +3,7 @@ package fr.iglee42.resourcefulshulkers.blocks.entites.handlers;
 import fr.iglee42.resourcefulshulkers.api.shulkers.IShulkerDefinition;
 import fr.iglee42.resourcefulshulkers.item.ShellItem;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.HashSet;
 import java.util.Set;

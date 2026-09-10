@@ -48,8 +48,8 @@ public class StructureBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
 
         if (mainPossiblePos != null) {
             tag.put("main_pos", NbtUtils.writeBlockPos(mainPossiblePos));
@@ -62,9 +62,9 @@ public class StructureBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        mainPossiblePos = NbtUtils.readBlockPos(tag, "main_pos").orElse(null);
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        mainPossiblePos = NbtUtils.readBlockPos(tag.getCompound("main_pos"));
         setChanged();
     }
 
@@ -81,8 +81,8 @@ public class StructureBlockEntity extends BlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        CompoundTag tag = super.getUpdateTag(registries);
+    public CompoundTag getUpdateTag() {
+        CompoundTag tag = super.getUpdateTag();
         if (mainPossiblePos != null) {
             tag.put("main_pos", NbtUtils.writeBlockPos(mainPossiblePos));
         } else {

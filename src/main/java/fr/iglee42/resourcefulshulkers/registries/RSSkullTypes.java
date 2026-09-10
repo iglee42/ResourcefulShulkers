@@ -1,18 +1,20 @@
 package fr.iglee42.resourcefulshulkers.registries;
 
+import com.google.common.collect.ImmutableSet;
 import fr.iglee42.resourcefulshulkers.RSIds;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
-@EventBusSubscriber(modid = RSIds.MODID)
+@Mod.EventBusSubscriber(modid = RSIds.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public enum RSSkullTypes implements SkullBlock.Type, StringRepresentable {
 
     SHULKER("shulker", ()-> RSBlocks.SHULKER_HEAD.get(), ()-> RSBlocks.WALL_SHULKER_HEAD.get());
@@ -25,7 +27,6 @@ public enum RSSkullTypes implements SkullBlock.Type, StringRepresentable {
         this.name = name;
         this.block = block;
         this.wallBlock = wallBlock;
-        SkullBlock.Type.TYPES.put(name, this);
     }
 
     @Override
@@ -34,10 +35,13 @@ public enum RSSkullTypes implements SkullBlock.Type, StringRepresentable {
     }
 
     @SubscribeEvent
-    public static void modifyBlockEntities(BlockEntityTypeAddBlocksEvent event){
-        for (RSSkullTypes type : RSSkullTypes.values()) {
-            event.modify(BlockEntityType.SKULL, type.block.get(), type.wallBlock.get());
-        }
+    public static void modifyBlockEntities(FMLCommonSetupEvent event){
+        event.enqueueWork(()->{
+            ImmutableSet.Builder<Block> builder = ImmutableSet.builder();
+            builder.addAll(BlockEntityType.SKULL.validBlocks);
+            builder.add(RSSkullTypes.SHULKER.block.get(), RSSkullTypes.SHULKER.wallBlock.get());
+            BlockEntityType.SKULL.validBlocks = builder.build();
+        });
     }
 
 }

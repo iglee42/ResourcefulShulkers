@@ -1,0 +1,38 @@
+{
+  "criteria": {
+    "shulker": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "resourcefulshulkers:shulker"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "background": "minecraft:textures/block/purpur_block.png",
+    "description": {
+      "translate": "advancements.resourcefulshulkers.root.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "resourcefulshulkers:shulker"
+    },
+    "show_toast": false,
+    "title": {
+      "translate": "advancements.resourcefulshulkers.root.title"
+    }
+  },
+  "requirements": [
+    [
+      "shulker"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

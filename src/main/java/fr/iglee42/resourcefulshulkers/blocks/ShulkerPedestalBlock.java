@@ -6,13 +6,14 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -64,35 +65,30 @@ public class ShulkerPedestalBlock extends Block implements EntityBlock {
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult p_60508_) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (level.isClientSide) return InteractionResult.sidedSuccess(true);
         if (level.getBlockEntity(pos) instanceof ShulkerPedestalBlockEntity be) {
+            if (player.getMainHandItem().isEmpty()){
                 ItemEntity item = new ItemEntity(level, player.getX(), player.getY(), player.getZ(), be.getStack());
                 item.setNoPickUpDelay();
                 level.addFreshEntity(item);
                 be.setStack(ItemStack.EMPTY);
                 level.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
                 return InteractionResult.SUCCESS;
-        }
-        return super.useWithoutItem(state, level, pos, player, p_60508_);
-    }
-
-    @Override
-    protected ItemInteractionResult useItemOn(ItemStack p_316304_, BlockState state, Level level, BlockPos pos, Player player, InteractionHand p_316595_, BlockHitResult p_316140_) {
-        if (level.isClientSide) return ItemInteractionResult.sidedSuccess(true);
-        if (level.getBlockEntity(pos) instanceof ShulkerPedestalBlockEntity be){
-            if (be.getStack().isEmpty()){
-                ItemStack copy = player.getMainHandItem().copy();
-                ItemStack baseStack = player.getMainHandItem().copy();
-                copy.setCount(1);
-                be.setStack(copy);
-                player.getMainHandItem().setCount(player.getMainHandItem().getCount()-1);
-                level.sendBlockUpdated(pos,state,state,Block.UPDATE_CLIENTS);
-                if (baseStack.getCount() != player.getMainHandItem().getCount()) level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.25F, 1.0F);
-                return ItemInteractionResult.CONSUME;
+            } else {
+                if (be.getStack().isEmpty()){
+                    ItemStack copy = player.getMainHandItem().copy();
+                    ItemStack baseStack = player.getMainHandItem().copy();
+                    copy.setCount(1);
+                    be.setStack(copy);
+                    player.getMainHandItem().setCount(player.getMainHandItem().getCount()-1);
+                    level.sendBlockUpdated(pos,state,state,Block.UPDATE_CLIENTS);
+                    if (baseStack.getCount() != player.getMainHandItem().getCount()) level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.25F, 1.0F);
+                    return InteractionResult.CONSUME;
+                }
             }
         }
-        return super.useItemOn(p_316304_, state, level, pos, player, p_316595_, p_316140_);
+        return super.use(state, level, pos, player, hand, hitResult);
     }
 
     @Override

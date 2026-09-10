@@ -1,40 +1,36 @@
 package fr.iglee42.resourcefulshulkers.network.data;
 
-import fr.iglee42.resourcefulshulkers.RSIds;
 import fr.iglee42.resourcefulshulkers.blocks.entites.GeneratingBoxBlockEntity;
 import fr.iglee42.resourcefulshulkers.blocks.entites.structure.endcity.EndCityBlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 public record GeneratorIndexChangePayload(
         BlockPos pos,
         int slot,
         int index
-) implements CustomPacketPayload {
+) {
 
-    public static final Type<GeneratorIndexChangePayload> TYPE = new Type<>(RSIds.id("index_change"));
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public GeneratorIndexChangePayload(FriendlyByteBuf buf) {
+        this(buf.readBlockPos(), buf.readInt(), buf.readInt());
     }
 
+    public void toBytes(FriendlyByteBuf buf) {
+        buf.writeBlockPos(pos);
+        buf.writeInt(slot);
+        buf.writeInt(index);
+    }
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, GeneratorIndexChangePayload> STREAM_CODEC = StreamCodec.composite(
-            BlockPos.STREAM_CODEC, GeneratorIndexChangePayload::pos,
-            ByteBufCodecs.INT, GeneratorIndexChangePayload::slot,
-            ByteBufCodecs.INT, GeneratorIndexChangePayload::index,
-            GeneratorIndexChangePayload::new
-    );
-
-    public static void handle(GeneratorIndexChangePayload payload, IPayloadContext ctx){
+    public static void handle(GeneratorIndexChangePayload payload, Supplier<NetworkEvent.Context> ctxSupplier){
+        NetworkEvent.Context ctx = ctxSupplier.get();
         ctx.enqueueWork(()->{
-            if (!(ctx.player() instanceof ServerPlayer player)) return;
+            ServerPlayer player;
+            if ((player = ctx.getSender()) == null) return;
             Level level = player.level();
             BlockPos pos = payload.pos();
 

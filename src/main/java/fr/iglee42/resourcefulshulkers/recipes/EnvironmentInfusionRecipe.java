@@ -1,8 +1,9 @@
 package fr.iglee42.resourcefulshulkers.recipes;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.mojang.datafixers.util.Either;
 import fr.iglee42.igleelib.api.utils.ITickableRecipe;
 import fr.iglee42.resourcefulshulkers.advancements.RSAdvancements;
 import fr.iglee42.resourcefulshulkers.aura.ShulkerAuraManager;
@@ -13,12 +14,11 @@ import net.minecraft.core.*;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -32,24 +32,49 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static fr.iglee42.igleelib.api.utils.ModsUtils.spawnParticle;
+import static fr.iglee42.resourcefulshulkers.utils.RSExtraCodecs.readHolderSetValues;
 
 public class EnvironmentInfusionRecipe implements Recipe<ShulkerInfuserInput>, ITickableRecipe<ShulkerInfuserBlockEntity> {
 
-    private final HolderSet<EntityType<?>> baseEntity;
+
+    private final List<String> baseEntityValues;
+    private @Nullable HolderSet<EntityType<?>> baseEntity;
     private final EntityType<?> resultEntity;
     private final CompoundTag resultNbt;
-    private final HolderSet<Biome> allowedBiomes;
+    private final List<String> allowedBiomesValues;
+    private @Nullable HolderSet<Biome> allowedBiomes;
     private final Item particle;
     private final int minY, maxY;
     private final int auraConsumed;
 
+    private final ResourceLocation id;
 
-    public EnvironmentInfusionRecipe(HolderSet<EntityType<?>> baseEntity, HolderSet<Biome> allowedBiomes, Item particle, int auraConsumed, int minY, int maxY, CompoundTag resultNbt, EntityType<?> resultEntity) {
+    public EnvironmentInfusionRecipe(ResourceLocation id, List<String> baseEntityValues, List<String> allowedBiomesValues, Item particle, int auraConsumed, int minY, int maxY, CompoundTag resultNbt, EntityType<?> resultEntity) {
+        this.id = id;
+        this.baseEntityValues = baseEntityValues;
+        this.resultEntity = resultEntity;
+        this.allowedBiomesValues = allowedBiomesValues;
+        this.particle = particle;
+        this.minY = minY;
+        this.maxY = maxY;
+        this.auraConsumed = auraConsumed;
+        this.resultNbt = resultNbt;
+    }
+
+    private EnvironmentInfusionRecipe(ResourceLocation id, HolderSet<EntityType<?>> baseEntity, List<String> allowedBiomesValues, Item particle, int auraConsumed, int minY, int maxY, CompoundTag resultNbt, EntityType<?> resultEntity) {
+        this.id = id;
+        this.baseEntityValues = new ArrayList<>(baseEntity.stream().map(h->h.unwrapKey().get().location().toString()).toList());
         this.baseEntity = baseEntity;
         this.resultEntity = resultEntity;
-        this.allowedBiomes = allowedBiomes;
+        this.allowedBiomesValues = allowedBiomesValues;
         this.particle = particle;
         this.minY = minY;
         this.maxY = maxY;
@@ -63,15 +88,15 @@ public class EnvironmentInfusionRecipe implements Recipe<ShulkerInfuserInput>, I
             ShulkerAuraManager auraManager = ShulkerAuraManager.get(level);
             if (auraManager.extractAura(input.getBlockPos(), auraConsumed, true) < auraConsumed) return false;
         }
-        if (!allowedBiomes.contains(input.getBiome())) return false;
+        if (!allowedBiomes(level.registryAccess()).contains(input.getBiome())) return false;
         if (input.getBlockPos().getY() < (minY != -128 ? minY : level.getMinBuildHeight())) return false;
         if (input.getBlockPos().getY() > (maxY != -128 ? maxY : level.getMaxBuildHeight())) return false;
         if (input.getTarget() == null) return false;
-        return input.getTarget().getType().is(baseEntity);
+        return baseEntity(level.registryAccess()).contains(input.getTarget().getType().builtInRegistryHolder());
     }
 
     @Override
-    public ItemStack assemble(ShulkerInfuserInput input, HolderLookup.Provider registries) {
+    public ItemStack assemble(ShulkerInfuserInput input, RegistryAccess registries) {
         return getResultItem(registries);
     }
 
@@ -81,8 +106,13 @@ public class EnvironmentInfusionRecipe implements Recipe<ShulkerInfuserInput>, I
     }
 
     @Override
-    public ItemStack getResultItem(HolderLookup.Provider registries) {
+    public ItemStack getResultItem(RegistryAccess registries) {
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public ResourceLocation getId() {
+        return id;
     }
 
 
@@ -100,8 +130,7 @@ public class EnvironmentInfusionRecipe implements Recipe<ShulkerInfuserInput>, I
     public void tick(Level level, BlockPos pos, BlockState state, int progress, ShulkerInfuserBlockEntity be) {
         if (level.isClientSide) return;
         Vec3 center = Vec3.atBottomCenterOf(pos);
-        if (progress >= 5 * 20)
-            spawnItemParticle((ServerLevel) level, center, new Vec3(2, 0, 0), new Vec3(0, 4, 0));
+        if (progress >= 5 * 20) spawnItemParticle((ServerLevel) level, center, new Vec3(2, 0, 0), new Vec3(0, 4, 0));
     }
 
     private void spawnItemParticle(ServerLevel level, Vec3 pos, Vec3 startOffset, Vec3 endOffset) {
@@ -154,8 +183,7 @@ public class EnvironmentInfusionRecipe implements Recipe<ShulkerInfuserInput>, I
         newEntity.setPos(target.position());
         target.remove(Entity.RemovalReason.KILLED);
         level.addFreshEntity(newEntity);
-        level.getEntitiesOfClass(Player.class, Shapes.box(0, -2.5, 0, 5, 5, 5).move(pos.getX(), pos.getY(), pos.getZ()).bounds())
-                .forEach(RSAdvancements.ENVIRONMENT_INFUSION::awardTo);
+        level.getEntitiesOfClass(Player.class, Shapes.box(0, -2.5, 0, 5, 5, 5).move(pos.getX(), pos.getY(), pos.getZ()).bounds()).forEach(RSAdvancements.ENVIRONMENT_INFUSION::awardTo);
 
         ShulkerAuraManager manager = ShulkerAuraManager.get(level);
         manager.extractAura(pos, auraConsumed, false);
@@ -166,7 +194,10 @@ public class EnvironmentInfusionRecipe implements Recipe<ShulkerInfuserInput>, I
         return matches(new ShulkerInfuserInput(be), level);
     }
 
-    public HolderSet<EntityType<?>> baseEntity() {
+    public HolderSet<EntityType<?>> baseEntity(HolderLookup.Provider registries) {
+        if (baseEntity == null) {
+            baseEntity = RSExtraCodecs.resolveHolderSet(ForgeRegistries.ENTITY_TYPES, baseEntityValues, registries);
+        }
         return baseEntity;
     }
 
@@ -178,7 +209,10 @@ public class EnvironmentInfusionRecipe implements Recipe<ShulkerInfuserInput>, I
         return resultNbt;
     }
 
-    public HolderSet<Biome> allowedBiomes() {
+    public HolderSet<Biome> allowedBiomes(HolderLookup.Provider registries) {
+        if (allowedBiomes == null) {
+            allowedBiomes = RSExtraCodecs.resolveHolderSet(ForgeRegistries.BIOMES, allowedBiomesValues, registries);
+        }
         return allowedBiomes;
     }
 
@@ -201,45 +235,69 @@ public class EnvironmentInfusionRecipe implements Recipe<ShulkerInfuserInput>, I
     public static class Type implements RecipeType<EnvironmentInfusionRecipe> {
         public static final Type INSTANCE = new Type();
         public static final String ID = "environment_infusion";
+
         private Type() {
         }
     }
 
     public static class Serializer implements RecipeSerializer<EnvironmentInfusionRecipe> {
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, EnvironmentInfusionRecipe> STREAM_CODEC = RSExtraCodecs.composite(
-                ByteBufCodecs.holderSet(Registries.ENTITY_TYPE), EnvironmentInfusionRecipe::baseEntity,
-                ByteBufCodecs.holderSet(Registries.BIOME), EnvironmentInfusionRecipe::allowedBiomes,
-                ByteBufCodecs.registry(Registries.ITEM), EnvironmentInfusionRecipe::particle,
-                ByteBufCodecs.INT, EnvironmentInfusionRecipe::auraConsumed,
-                ByteBufCodecs.INT, EnvironmentInfusionRecipe::minY,
-                ByteBufCodecs.INT, EnvironmentInfusionRecipe::maxY,
-                ByteBufCodecs.COMPOUND_TAG, EnvironmentInfusionRecipe::resultNbt,
-                ByteBufCodecs.registry(Registries.ENTITY_TYPE), EnvironmentInfusionRecipe::resultEntity,
-                EnvironmentInfusionRecipe::new
-        );
-        private static final MapCodec<EnvironmentInfusionRecipe> CODEC = RecordCodecBuilder.mapCodec(
-                p_340782_ -> p_340782_.group(
-                                RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("base_entity").forGetter(e -> e.baseEntity),
-                                Biome.LIST_CODEC.fieldOf("biomes").forGetter(e -> e.allowedBiomes),
-                                BuiltInRegistries.ITEM.byNameCodec().fieldOf("particle").forGetter(e -> e.particle),
-                                Codec.INT.fieldOf("aura").orElse(1500).forGetter(e -> e.auraConsumed),
-                                Codec.INT.fieldOf("min_y").orElse(-128).forGetter(e -> e.minY),
-                                Codec.INT.fieldOf("max_y").orElse(-128).forGetter(e -> e.maxY),
-                                CompoundTag.CODEC.fieldOf("result_nbt").orElse(new CompoundTag()).forGetter(e -> e.resultNbt),
-                                BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("result_entity").forGetter(e -> e.resultEntity)
-                        )
-                        .apply(p_340782_, EnvironmentInfusionRecipe::new)
-        );
-
         @Override
-        public MapCodec<EnvironmentInfusionRecipe> codec() {
-            return CODEC;
+        public EnvironmentInfusionRecipe fromJson(ResourceLocation id, JsonObject json) {
+            List<String> base = readHolderSetValues(json.get("base_entity"));
+            List<String> biomes = readHolderSetValues(json.get("biomes"));
+            Item particle = GsonHelper.getAsItem(json, "particle");
+            int aura = GsonHelper.getAsInt(json, "aura", 1500);
+            int minY = GsonHelper.getAsInt(json, "min_y", -128);
+            int maxY = GsonHelper.getAsInt(json, "max_y", -128);
+            JsonElement nbtElt = json.get("result_nbt");
+            CompoundTag nbt = nbtElt != null ? CraftingHelper.getNBT(nbtElt) : new CompoundTag();
+            EntityType<?> result = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.parse(json.get("result_entity").getAsString()));
+            if (result == null)
+                throw new JsonParseException("Unknown entity type: " + json.get("result_entity").getAsString());
+            return new EnvironmentInfusionRecipe(id, base, biomes, particle, aura, minY, maxY, nbt, result);
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, EnvironmentInfusionRecipe> streamCodec() {
-            return STREAM_CODEC;
+        public @Nullable EnvironmentInfusionRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
+
+            Either<List<String>,HolderSet<EntityType<?>>> base;
+            if (buf.readBoolean()) {
+                base = Either.right(RSExtraCodecs.decodeHolderSet(buf, BuiltInRegistries.ENTITY_TYPE));
+            } else {
+                base = Either.left(buf.readCollection(ArrayList::new, FriendlyByteBuf::readUtf));
+            }
+            var biomes = buf.readCollection(ArrayList::new, FriendlyByteBuf::readUtf);
+            Item item = buf.readRegistryIdUnsafe(ForgeRegistries.ITEMS);
+            int aura = buf.readInt();
+            int minY = buf.readInt();
+            int maxY = buf.readInt();
+            CompoundTag tag = buf.readNbt();
+            var result = buf.readById(BuiltInRegistries.ENTITY_TYPE);
+
+            if (base.left().isPresent()) {
+                return new EnvironmentInfusionRecipe(id, base.left().get(), biomes, item, aura, minY, maxY, tag, result);
+            } else {
+                return new EnvironmentInfusionRecipe(id, base.right().get(), biomes, item, aura, minY, maxY, tag, result);
+            }
+        }
+
+        @Override
+        public void toNetwork(FriendlyByteBuf buf, EnvironmentInfusionRecipe recipe) {
+            if (recipe.baseEntity != null) {
+                buf.writeBoolean(true);
+                RSExtraCodecs.encodeHolderSet(buf,recipe.baseEntity,BuiltInRegistries.ENTITY_TYPE);
+            } else {
+                buf.writeBoolean(false);
+                buf.writeCollection(recipe.baseEntityValues, FriendlyByteBuf::writeUtf);
+            }
+            buf.writeCollection(recipe.allowedBiomesValues, FriendlyByteBuf::writeUtf);
+            buf.writeRegistryId(ForgeRegistries.ITEMS, recipe.particle);
+            buf.writeInt(recipe.auraConsumed());
+            buf.writeInt(recipe.minY());
+            buf.writeInt(recipe.maxY());
+            buf.writeNbt(recipe.resultNbt());
+            buf.writeId(BuiltInRegistries.ENTITY_TYPE, recipe.resultEntity());
         }
     }
 }

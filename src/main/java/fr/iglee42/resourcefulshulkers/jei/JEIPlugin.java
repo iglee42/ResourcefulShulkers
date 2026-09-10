@@ -1,32 +1,32 @@
 package fr.iglee42.resourcefulshulkers.jei;
 
-import com.direwolf20.justdirethings.client.jei.JEIIntegration;
 import fr.iglee42.resourcefulshulkers.client.screen.EndCityScreen;
 import fr.iglee42.resourcefulshulkers.client.screen.GeneratingBoxScreen;
-import fr.iglee42.resourcefulshulkers.jei.categories.*;
+import fr.iglee42.resourcefulshulkers.jei.categories.BoxOutputRecipeCategory;
+import fr.iglee42.resourcefulshulkers.jei.categories.EnvironmentInfusionRecipeCategory;
+import fr.iglee42.resourcefulshulkers.jei.categories.ItemInfusionRecipeCategory;
+import fr.iglee42.resourcefulshulkers.jei.categories.ShellOutputRecipeCategory;
 import fr.iglee42.resourcefulshulkers.jei.handlers.ChooseItemPanelBoundsHandler;
 import fr.iglee42.resourcefulshulkers.jei.ingredient.JEIEntityHelper;
 import fr.iglee42.resourcefulshulkers.jei.ingredient.JEIEntityIngredient;
 import fr.iglee42.resourcefulshulkers.jei.ingredient.JEIEntityRenderer;
+import fr.iglee42.resourcefulshulkers.recipes.EnvironmentInfusionRecipe;
 import fr.iglee42.resourcefulshulkers.recipes.ItemInfusionRecipe;
 import fr.iglee42.resourcefulshulkers.registries.RSBlocks;
-import fr.iglee42.resourcefulshulkers.recipes.EnvironmentInfusionRecipe;
 import fr.iglee42.resourcefulshulkers.shulkers.ShulkersManager;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeManager;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @JeiPlugin
@@ -77,24 +77,23 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipes(EnvironmentInfusionRecipeCategory.RECIPE_TYPE,
                 rm.getAllRecipesFor(EnvironmentInfusionRecipe.Type.INSTANCE)
                         .stream()
-                        .filter(r->r.value()
+                        .filter(r->r
                                 .getIngredients()
                                 .stream()
-                                .noneMatch(Ingredient::hasNoItems))
+                                .noneMatch(i-> Arrays.stream(i.getItems()).anyMatch(it->it.is(Items.BARRIER))))
                         .toList());
         registration.addRecipes(ItemInfusionRecipeCategory.RECIPE_TYPE,
                 rm.getAllRecipesFor(ItemInfusionRecipe.Type.INSTANCE)
                         .stream()
-                        .filter(r->r.value()
+                        .filter(r->r
                                 .pedestalsIngredients()
                                 .stream()
-                                .noneMatch(Ingredient::hasNoItems))
+                                .noneMatch(i-> Arrays.stream(i.getItems()).anyMatch(it->it.is(Items.BARRIER))))
                         .toList());
     }
 
     @Override
     public void registerIngredients(IModIngredientRegistration registration) {
-        registration.register(ENTITY_TYPE, List.of(), new JEIEntityHelper(), new JEIEntityRenderer(16), BuiltInRegistries.ENTITY_TYPE.byNameCodec()
-                .xmap(JEIEntityIngredient::new, JEIEntityIngredient::entityType));
+        registration.register(ENTITY_TYPE, List.of(), new JEIEntityHelper(), new JEIEntityRenderer(16));
     }
 }

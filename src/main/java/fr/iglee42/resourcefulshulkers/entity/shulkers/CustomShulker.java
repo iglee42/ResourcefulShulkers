@@ -123,7 +123,7 @@ public abstract class CustomShulker extends Shulker {
             double bestDistance = Double.MAX_VALUE;
             BlockPos best = null;
 
-            int targetRadius = RSServerConfig.TARGET_RADIUS.getAsInt();
+            int targetRadius = RSServerConfig.TARGET_RADIUS.get();
             for (int dx = -targetRadius; dx <= targetRadius; dx++) {
                 for (int dy = -targetRadius; dy <= targetRadius; dy++) {
                     for (int dz = -targetRadius; dz <= targetRadius; dz++) {

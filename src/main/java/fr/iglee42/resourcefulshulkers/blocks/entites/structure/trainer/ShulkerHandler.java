@@ -1,15 +1,10 @@
 package fr.iglee42.resourcefulshulkers.blocks.entites.structure.trainer;
 
 import fr.iglee42.resourcefulshulkers.api.shulkers.IShulkerDefinition;
-import fr.iglee42.resourcefulshulkers.entity.shulkers.ResourceShulker;
-import fr.iglee42.resourcefulshulkers.item.GeneratingBoxItem;
 import fr.iglee42.resourcefulshulkers.item.shulker.ResourceShulkerItem;
-import fr.iglee42.resourcefulshulkers.item.shulker.ShulkerItem;
-import fr.iglee42.resourcefulshulkers.registries.RSDataComponents;
-import fr.iglee42.resourcefulshulkers.registries.RSTags;
 import fr.iglee42.resourcefulshulkers.shulkers.ShulkerDefinition;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.HashSet;
 import java.util.Set;

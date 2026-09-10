@@ -9,7 +9,7 @@ import fr.iglee42.resourcefulshulkers.blocks.entites.handlers.UpgradeHandler;
 import fr.iglee42.resourcefulshulkers.config.RSServerConfig;
 import fr.iglee42.resourcefulshulkers.menu.EndCityMenu;
 import fr.iglee42.resourcefulshulkers.registries.RSBlockEntities;
-import fr.iglee42.resourcefulshulkers.registries.RSDataComponents;
+import fr.iglee42.resourcefulshulkers.registries.RSNBT;
 import fr.iglee42.resourcefulshulkers.shulkers.ShulkerDefinition;
 import fr.iglee42.resourcefulshulkers.utils.Upgrade;
 import fr.iglee42.resourcefulshulkers.utils.acceleration.AccelerationUtils;
@@ -30,8 +30,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -141,7 +141,7 @@ public class EndCityBlockEntity extends StructuredBlockEntity {
             shells.extractItem(shellSlot, 1, false);
             int newDurability = Math.min(shulkers.getDurabilityOfSlot(slot) + added, RSServerConfig.getMaxDurability());
             ItemStack shulkerStack = shulkers.getStackInSlot(slot).copy();
-            shulkerStack.set(RSDataComponents.DURABILITY, newDurability);
+            RSNBT.set(shulkerStack, RSNBT.DURABILITY, newDurability);
             shulkers.setStackInSlot(slot, shulkerStack);
             setChanged();
         }
@@ -209,14 +209,14 @@ public class EndCityBlockEntity extends StructuredBlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         this.tier = tag.getInt("tier");
         CompoundTag inventory = tag.getCompound("inventory");
-        this.outputInventory.deserializeNBT(registries, inventory.getCompound("output"));
-        this.shulkers.deserializeNBT(registries, inventory.getCompound("shulkers"));
-        this.shells.deserializeNBT(registries, inventory.getCompound("shell"));
-        this.upgrades.deserializeNBT(registries, inventory.getCompound("upgrades"));
+        this.outputInventory.deserializeNBT(inventory.getCompound("output"));
+        this.shulkers.deserializeNBT(inventory.getCompound("shulkers"));
+        this.shells.deserializeNBT(inventory.getCompound("shell"));
+        this.upgrades.deserializeNBT(inventory.getCompound("upgrades"));
 
         if (tag.contains("accelerated", CompoundTag.TAG_BYTE))
             this.accelerated = tag.getBoolean("accelerated");
@@ -234,19 +234,19 @@ public class EndCityBlockEntity extends StructuredBlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        save(tag, registries, false);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        save(tag, false);
     }
 
-    private void save(CompoundTag tag , HolderLookup.Provider registries, boolean forSync){
+    private void save(CompoundTag tag, boolean forSync){
         tag.putInt("tier", tier);
 
         CompoundTag inventory = new CompoundTag();
-        inventory.put("output", this.outputInventory.serializeNBT(registries));
-        inventory.put("shulkers", this.shulkers.serializeNBT(registries));
-        inventory.put("shell", this.shells.serializeNBT(registries));
-        inventory.put("upgrades", this.upgrades.serializeNBT(registries));
+        inventory.put("output", this.outputInventory.serializeNBT());
+        inventory.put("shulkers", this.shulkers.serializeNBT());
+        inventory.put("shell", this.shells.serializeNBT());
+        inventory.put("upgrades", this.upgrades.serializeNBT());
         tag.put("inventory", inventory);
 
         if (forSync) {
@@ -263,9 +263,9 @@ public class EndCityBlockEntity extends StructuredBlockEntity {
     }
 
     @Override
-    public @NotNull CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        CompoundTag tag = super.getUpdateTag(registries);
-        save(tag, registries, true);
+    public @NotNull CompoundTag getUpdateTag() {
+        CompoundTag tag = super.getUpdateTag();
+        save(tag, true);
         return tag;
     }
 

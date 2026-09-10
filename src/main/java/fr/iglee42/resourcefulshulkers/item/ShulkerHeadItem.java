@@ -39,7 +39,7 @@ public class ShulkerHeadItem extends StandingAndWallBlockItem {
 
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable TooltipContext p_40573_, List<Component> tooltips, TooltipFlag p_40575_) {
+    public void appendHoverText(ItemStack stack, @Nullable Level p_40573_, List<Component> tooltips, TooltipFlag p_40575_) {
         RSTooltipHandler.tooltip(stack, tooltips)
                 .header(Component.translatable("tooltip.resourcefulshulkers.head"))
                 .apply();

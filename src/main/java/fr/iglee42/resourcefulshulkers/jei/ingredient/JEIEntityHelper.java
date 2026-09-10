@@ -17,7 +17,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
-import net.neoforged.neoforge.common.DeferredSpawnEggItem;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -47,11 +47,6 @@ public class JEIEntityHelper implements IIngredientHelper<JEIEntityIngredient> {
 
     @Override
     public String getUniqueId(JEIEntityIngredient ingredient, UidContext context) {
-        return getUid(ingredient, context);
-    }
-
-    @Override
-    public String getUid(JEIEntityIngredient ingredient, UidContext context) {
         return Objects.requireNonNull(BuiltInRegistries.ENTITY_TYPE.getKey(ingredient.entityType())).toString();
     }
 
@@ -90,7 +85,7 @@ public class JEIEntityHelper implements IIngredientHelper<JEIEntityIngredient> {
             Item it = BuiltInRegistries.ITEM.get(BuiltInRegistries.ENTITY_TYPE.getKey(ingredient.entityType()));
             if (it != null && it != Items.AIR) return new ItemStack(it);
         }
-        SpawnEggItem item = DeferredSpawnEggItem.byId(ingredient.entityType());
+        SpawnEggItem item = ForgeSpawnEggItem.fromEntityType(ingredient.entityType());
         if (item == null) {
             return ItemStack.EMPTY;
         }

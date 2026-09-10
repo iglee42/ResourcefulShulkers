@@ -1,15 +1,16 @@
 package fr.iglee42.resourcefulshulkers.config;
 
 import fr.iglee42.resourcefulshulkers.aura.AuraOverlay;
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec.*;
 
 public class RSClientConfig {
-    public static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
-    public static final ModConfigSpec SPEC;
+    public static final Builder BUILDER = new Builder();
+    public static final ForgeConfigSpec SPEC;
 
-    public static final ModConfigSpec.EnumValue<AuraOverlay.Anchor> AURA_BAR_ANCHOR;
-    public static final ModConfigSpec.IntValue AURA_BAR_OFFSET_X;
-    public static final ModConfigSpec.IntValue AURA_BAR_OFFSET_Y;
+    public static final EnumValue<AuraOverlay.Anchor> AURA_BAR_ANCHOR;
+    public static final IntValue AURA_BAR_OFFSET_X;
+    public static final IntValue AURA_BAR_OFFSET_Y;
 
     static {
 

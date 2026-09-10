@@ -1,18 +1,22 @@
 package fr.iglee42.resourcefulshulkers.item;
 
 import fr.iglee42.resourcefulshulkers.api.shulkers.IShulkerDefinition;
-import fr.iglee42.resourcefulshulkers.blocks.entites.GeneratingBoxBlockEntity;
+import fr.iglee42.resourcefulshulkers.client.items.GeneratingBoxItemExtension;
 import fr.iglee42.resourcefulshulkers.config.RSServerConfig;
-import fr.iglee42.resourcefulshulkers.registries.RSDataComponents;
+import fr.iglee42.resourcefulshulkers.registries.RSNBT;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class GeneratingBoxItem extends BlockItem {
     private final IShulkerDefinition shulker;
@@ -23,17 +27,14 @@ public class GeneratingBoxItem extends BlockItem {
     }
 
     public int getDurability(ItemStack stack) {
-        if (stack.has(RSDataComponents.DURABILITY.get()))
-            return stack.get(RSDataComponents.DURABILITY.get()).intValue();
-        stack.set(RSDataComponents.DURABILITY.get(), RSServerConfig.getMaxDurability());
-        return RSServerConfig.getMaxDurability();
+        return RSNBT.getOrDefaultSet(stack, RSNBT.DURABILITY, RSServerConfig.getMaxDurability());
     }
 
     public int getItemIndex(ItemStack stack) {
-        int index = stack.getOrDefault(RSDataComponents.ITEM_INDEX, 0);
+        int index = RSNBT.getOrDefault(stack, RSNBT.ITEM_INDEX, 0);
         int safeIndex = validateIndex(index);
         if (safeIndex != index)
-            stack.set(RSDataComponents.ITEM_INDEX, safeIndex);
+            stack.getOrCreateTag().putInt(RSNBT.ITEM_INDEX, safeIndex);
         return safeIndex;
     }
 
@@ -67,14 +68,18 @@ public class GeneratingBoxItem extends BlockItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable TooltipContext p_41422_, List<Component> tooltips, TooltipFlag p_41424_) {
+    public void appendHoverText(ItemStack stack, @Nullable Level p_41422_, List<Component> tooltips, TooltipFlag p_41424_) {
         int color = getBarColor(stack);
         RSTooltipHandler.tooltip(stack, tooltips)
                 .type(shulker.type())
                 .header(Component.translatable("gui.resourcefulshulkers.durability", Component.literal(getDurability(stack) + "").withStyle(style -> style.withColor(color)), RSServerConfig.getMaxDurability()))
-                .header(Component.translatable("gui.resourcefulshulkers.generating", Component.translatable(definition().item().getIngredient().getItems()[getItemIndex(stack)].getDescriptionId())))
+                .header(Component.translatable("gui.resourcefulshulkers.generating", Component.translatable((definition().hasItem()?definition().item().getIngredient().getItems()[getItemIndex(stack)] : Items.AIR.getDefaultInstance()).getDescriptionId())))
                 .apply();
         super.appendHoverText(stack, p_41422_, tooltips, p_41424_);
     }
 
+    @Override
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+        consumer.accept(new GeneratingBoxItemExtension());
+    }
 }

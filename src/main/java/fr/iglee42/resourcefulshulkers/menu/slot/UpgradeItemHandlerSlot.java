@@ -2,8 +2,8 @@ package fr.iglee42.resourcefulshulkers.menu.slot;
 
 import fr.iglee42.resourcefulshulkers.item.UpgradeItem;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.SlotItemHandler;
 
 public class UpgradeItemHandlerSlot extends SlotItemHandler {
     public UpgradeItemHandlerSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {

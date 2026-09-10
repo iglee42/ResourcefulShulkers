@@ -3,18 +3,21 @@ package fr.iglee42.resourcefulshulkers.utils;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.component.DataComponentMap;
+import fr.iglee42.resourcefulshulkers.utils.codecs.XorCodec;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
+import net.minecraftforge.common.crafting.PartialNBTIngredient;
 
 import java.util.Objects;
 import java.util.function.Function;
+
+import static fr.iglee42.resourcefulshulkers.utils.RSExtraCodecs.withAlternative;
 
 public class LazyIngredient {
 
@@ -28,7 +31,7 @@ public class LazyIngredient {
     private static final Codec<LazyIngredient> ITEM_CODEC = RecordCodecBuilder.create(instance->
         instance.group(
                 Codec.STRING.fieldOf("item").forGetter(LazyIngredient::id),
-                DataComponentMap.CODEC.optionalFieldOf("components", DataComponentMap.EMPTY).forGetter(i->i.components)
+                CompoundTag.CODEC.optionalFieldOf("nbt", new CompoundTag()).forGetter(i->i.nbt)
         ).apply(instance,LazyIngredient::item)
     );
 
@@ -38,7 +41,7 @@ public class LazyIngredient {
         ).apply(instance,LazyIngredient::tag)
     );
 
-    private static final Codec<LazyIngredient> TYPE_CODEC = Codec.xor(ITEM_CODEC,TAG_CODEC).xmap(
+    private static final Codec<LazyIngredient> TYPE_CODEC = new XorCodec<>(ITEM_CODEC,TAG_CODEC).xmap(
             e->e.map(Function.identity(), Function.identity()),
             i-> i.isItem() ? Either.left(i) : Either.right(i)
     );
@@ -48,30 +51,30 @@ public class LazyIngredient {
         i->i.isTag() ? "#"+i.id() : i.id()
         );
 
-    public static final Codec<LazyIngredient> CODEC = Codec.withAlternative(TYPE_CODEC, STRING_CODEC);
+    public static final Codec<LazyIngredient> CODEC = withAlternative(TYPE_CODEC, STRING_CODEC);
 
 
     private final Type type;
     private final String id;
-    private final DataComponentMap components;
+    private final CompoundTag nbt;
     private Ingredient ingredient;
 
-    private LazyIngredient(Type type, String id, DataComponentMap components) {
+    private LazyIngredient(Type type, String id, CompoundTag nbt) {
         this.type = type;
         this.id = id;
-        this.components = components;
+        this.nbt = nbt;
     }
 
     public static LazyIngredient item(String id){
-        return item(id, DataComponentMap.EMPTY);
+        return item(id, new CompoundTag());
     }
 
-    public static LazyIngredient item(String id, DataComponentMap nbt){
+    public static LazyIngredient item(String id, CompoundTag nbt){
         return new LazyIngredient(Type.ITEM, id, nbt);
     }
 
     public static LazyIngredient tag(String id){
-        return new LazyIngredient(Type.TAG, id, DataComponentMap.EMPTY);
+        return new LazyIngredient(Type.TAG, id, new CompoundTag());
     }
 
 
@@ -95,12 +98,13 @@ public class LazyIngredient {
         } else if (isItem()){
             Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(id));
             if (item != Items.AIR){
-                if (components == null || components.isEmpty())
+                if (nbt == null || nbt.isEmpty())
                     this.ingredient = Ingredient.of(item);
                 else {
                     ItemStack stack = new ItemStack(item);
-                    stack.applyComponents(components);
-                    this.ingredient = DataComponentIngredient.of(false,stack);
+                    stack.setTag(nbt);
+                    this.ingredient = PartialNBTIngredient
+                            .of(nbt, stack.getItem());
                 }
             }
         }
@@ -117,12 +121,12 @@ public class LazyIngredient {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof LazyIngredient that)) return false;
-        return type == that.type && Objects.equals(id, that.id) && Objects.equals(components, that.components);
+        return type == that.type && Objects.equals(id, that.id) && Objects.equals(nbt, that.nbt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, id, components);
+        return Objects.hash(type, id, nbt);
     }
 
     private enum Type {

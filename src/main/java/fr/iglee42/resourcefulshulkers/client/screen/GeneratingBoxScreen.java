@@ -45,7 +45,7 @@ public class GeneratingBoxScreen extends AbstractContainerScreen<GeneratingBoxMe
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
-        renderBackground(graphics, mouseX, mouseY, delta);
+        renderBackground(graphics);
         super.render(graphics, mouseX, mouseY, delta);
 
         int progress = menu.getBlockEntity().getProgress();

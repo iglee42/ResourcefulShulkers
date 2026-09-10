@@ -2,12 +2,12 @@ package fr.iglee42.resourcefulshulkers.config;
 
 import fr.iglee42.resourcefulshulkers.aura.AuraOverlay;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.ModConfigSpec;
-import net.neoforged.neoforge.common.ModConfigSpec.*;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec.*;
 
 public class RSServerConfig {
     public static final Builder BUILDER = new Builder();
-    public static final ModConfigSpec SPEC;
+    public static final ForgeConfigSpec SPEC;
 
     public static final IntValue MAX_AURA;
 
@@ -53,7 +53,7 @@ public class RSServerConfig {
         BUILDER.pop();
 
         BUILDER.push("shulker_infuser");
-        INFUSER_DURATION = BUILDER.comment("The duration of an infusion recipe").defineInRange("default_duration", 200, 1, Integer.MAX_VALUE);
+        INFUSER_DURATION = BUILDER.comment("The duration of an infusion recipes").defineInRange("default_duration", 200, 1, Integer.MAX_VALUE);
         INFUSER_NO_AI_AURA = BUILDER.comment("The amount of aura consumed by a shulker infuser to keep an entity without AI and silent (Set to -1 to disable this behaviour)").defineInRange("no_ai_aura", 100, -1, Integer.MAX_VALUE);
         BUILDER.pop();
 

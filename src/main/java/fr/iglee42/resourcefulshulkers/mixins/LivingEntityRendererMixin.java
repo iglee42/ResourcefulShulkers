@@ -13,11 +13,31 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 @Mixin(LivingEntityRenderer.class)
 public class LivingEntityRendererMixin {
 
-    @ModifyConstant(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", constant = @Constant(intValue = -1))
-    private <T extends LivingEntity> int rs$rgbDyeShulker(int constant, @Local(name = "p_115308_")T entity){
+    @ModifyConstant(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", constant = @Constant(floatValue = 1.0F,ordinal = 3))
+    private <T extends LivingEntity> float rs$rDyeShulker(float constant, @Local(name = "p_115308_")T entity){
         if (entity instanceof ResourceShulker rs){
             if (rs.definition().id().equals(RSIds.id("dye"))){
-                return RSColors.getRGBColor().toARGB();
+                return RSColors.getRGBColor().getRedFloat();
+            }
+        }
+        return constant;
+    }
+
+    @ModifyConstant(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", constant = @Constant(floatValue = 1.0F,ordinal = 4))
+    private <T extends LivingEntity> float rs$gDyeShulker(float constant, @Local(name = "p_115308_")T entity){
+        if (entity instanceof ResourceShulker rs){
+            if (rs.definition().id().equals(RSIds.id("dye"))){
+                return RSColors.getRGBColor().getGreenFloat();
+            }
+        }
+        return constant;
+    }
+
+    @ModifyConstant(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", constant = @Constant(floatValue = 1.0F,ordinal = 5))
+    private <T extends LivingEntity> float rs$bDyeShulker(float constant, @Local(name = "p_115308_")T entity){
+        if (entity instanceof ResourceShulker rs){
+            if (rs.definition().id().equals(RSIds.id("dye"))){
+                return RSColors.getRGBColor().getBlueFloat();
             }
         }
         return constant;

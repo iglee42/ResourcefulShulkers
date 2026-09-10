@@ -15,8 +15,8 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.Direction;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class GeneratingBoxRenderer implements BlockEntityRenderer<GeneratingBoxBlockEntity> {
@@ -39,7 +39,12 @@ public class GeneratingBoxRenderer implements BlockEntityRenderer<GeneratingBoxB
       modelpart.setPos(0.0F, 24.0F - entity.getAnimationProgress(partialTick) * 0.5F * 16.0F, 0.0F);
       modelpart.yRot = 270.0F * entity.getAnimationProgress(partialTick) * ((float)Math.PI / 180F);
       VertexConsumer vertexconsumer = material.buffer(bufferSource, RenderType::entityCutoutNoCull);
-      this.model.renderToBuffer(poseStack, vertexconsumer, packedLight, packedOverlay, isDyeShulker ? RSColors.getRGBColor().toARGB() : -1);
+      int argb = isDyeShulker ? RSColors.getRGBColor().toARGB() : 0xffffffff;
+      float alpha = (argb >> 24 & 0xFF) / 255.0F;
+      float red = (argb >> 16 & 0xFF) / 255.0F;
+      float green = (argb >> 8 & 0xFF) / 255.0F;
+      float blue = (argb & 0xFF) / 255.0F;
+      this.model.renderToBuffer(poseStack, vertexconsumer, packedLight, packedOverlay, red, green, blue, alpha);
       poseStack.popPose();
    }
 

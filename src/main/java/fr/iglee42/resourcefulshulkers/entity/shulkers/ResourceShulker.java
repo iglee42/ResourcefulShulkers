@@ -96,7 +96,7 @@ public class ResourceShulker extends CustomShulker{
             if (target != null) {
                 ResourceShulker.this.getLookControl().setLookAt(Vec3.atCenterOf(target));
                 double dist = ResourceShulker.this.blockPosition().distSqr(target);
-                int targetRadius = RSServerConfig.TARGET_RADIUS.getAsInt();
+                int targetRadius = RSServerConfig.TARGET_RADIUS.get();
                 if (dist < targetRadius * targetRadius) {
                     if (this.attackTime <= 0) {
                         this.attackTime = 20 + ResourceShulker.this.random.nextInt(10) * 20 / 2;

@@ -1,3 +1,5 @@
+import dev.ithundxr.silk.ChangelogText
+
 buildscript {
     repositories {
         maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
@@ -12,68 +14,75 @@ plugins {
     id 'idea'
     id 'java-library'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.43-beta'
-    id 'dev.ithundxr.silk' version '1.0.1'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'dev.ithundxr.silk' version '0.11.15'
     id 'me.modmuss50.mod-publish-plugin' version '1.1.0'
 }
+
+apply plugin: 'org.spongepowered.mixin'
 
 group = mod_group_id
 version = minecraft_version + "-" +mod_version
 
 String gitHash = calculateGitHash()
-String changelogText = silk.getChangelog()
+String changelogText = ChangelogText.getChangelogText(project).toString()
 
 base {
     archivesName = mod_name
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 
-neoForge {
-
-    version = project.neo_version
+minecraft {
+    mappings channel: 'official', version: minecraft_version
 
     accessTransformers = project.files("src/main/resources/META-INF/accesstransformer.cfg")
 
     runs {
         client {
-            client()
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            workingDirectory project.file('run')
         }
 
         server {
-            server()
-            programArgument '--nogui'
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            workingDirectory project.file('run-server')
+            args 'nogui'
         }
 
         gameTestServer {
-            type = "gameTestServer"
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            workingDirectory project.file('run')
         }
 
         data {
-            data()
+            workingDirectory project.file('run')
 
-            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+            args '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
         }
 
 
         configureEach {
-            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            property 'forge.enabledGameTestNamespaces', project.mod_id
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
 
-            logLevel = org.slf4j.event.Level.INFO
-        }
-    }
-    mods {
-        "${mod_id}" {
-            sourceSet(sourceSets.main)
-        }
-    }
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+mixin {
+    add sourceSets.main, "${mod_id}.refmap.json"
+
+    config "${mod_id}.mixins.json"
+}
 
 repositories {
 
@@ -106,26 +115,35 @@ repositories {
 
 dependencies {
 
-    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
-    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
-    runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    implementation "fr.iglee42:IgleeLib:${minecraft_version}-${lib_version}"
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
+    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 
-    runtimeOnly "curse.maven:atlasviewer-633577:6088094"
-    runtimeOnly "curse.maven:configured-457570:7276577"
+    implementation fg.deobf("fr.iglee42:IgleeLib:${minecraft_version}-${lib_version}")
 
-    implementation "curse.maven:just-dire-things-1002348:7463040"
-    implementation "curse.maven:gag-694962:7261542"
-    implementation "curse.maven:time-in-a-bottle-895919:7555622"
+    //runtimeOnly "curse.maven:atlasviewer-633577:6088094"
+    //runtimeOnly "curse.maven:configured-457570:7276577"
+
+    //implementation "curse.maven:just-dire-things-1002348:7463040"
+    compileOnly "curse.maven:gag-694962:6120294"
+    implementation fg.deobf("curse.maven:time-in-a-bottle-895919:4744787")
+
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.5"))
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.5.5")) {
+        jarJar.ranged(it, "[0.5.5,)")
+    }
+
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
     var replaceProperties = [
             minecraft_version      : minecraft_version,
             minecraft_version_range: minecraft_version_range,
-            neo_version            : neo_version,
-            neo_version_range      : neo_version_range,
+            forge_version          : forge_version,
+            forge_version_range    : forge_version_range,
             loader_version_range   : loader_version_range,
             mod_id                 : mod_id,
             mod_name               : mod_name,
@@ -144,7 +162,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
 
 sourceSets.main.resources.srcDir generateModMetadata
 
-neoForge.ideSyncTask generateModMetadata
+jar.finalizedBy('reobfJar')
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
@@ -154,9 +172,9 @@ publishMods {
     file = tasks.jar.archiveFile
     displayName = "$mod_name $mod_version for mc$minecraft_version"
     version = project.version
-    changelog = silk.changelog
+    changelog = changelogText
     type = STABLE
-    modLoaders.add("neoforge")
+    modLoaders.add("forge")
     dryRun = providers.environmentVariable("DRY_RUN").map { it == "true" }.orElse(false).get()
 
     def modrinthProjectId = providers.gradleProperty("publish_modrinth_project_id").orNull

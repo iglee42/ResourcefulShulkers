@@ -44,10 +44,14 @@ public class ResourceShulkerBulletRenderer extends EntityRenderer<ResourceShulke
         poseStack.scale(-0.5F, -0.5F, 0.5F);
         this.model.setupAnim(bullet, 0.0F, 0.0F, 0.0F, f, f1);
         VertexConsumer solidBuffer = bufferSource.getBuffer(this.model.renderType(TEXTURE_LOCATION));
-        this.model.renderToBuffer(poseStack, solidBuffer, packedLight, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.opaque(bullet.shulkerDefinition().color()));
+        int color = bullet.shulkerDefinition().color();
+        float red = (float)(color >> 16 & 255) / 255.0F;
+        float green = (float)(color >> 8 & 255) / 255.0F;
+        float blue = (float)(color & 255) / 255.0F;
+        this.model.renderToBuffer(poseStack, solidBuffer, packedLight, OverlayTexture.NO_OVERLAY, red, green, blue, 1.0F);
         poseStack.scale(1.5F, 1.5F, 1.5F);
         VertexConsumer translucentBuffer = bufferSource.getBuffer(RENDER_TYPE);
-        this.model.renderToBuffer(poseStack, translucentBuffer, packedLight, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.color(38, bullet.shulkerDefinition().color()));
+        this.model.renderToBuffer(poseStack, translucentBuffer, packedLight, OverlayTexture.NO_OVERLAY, red,green,blue,38/255.0F);
         poseStack.popPose();
         super.render(bullet, yaw, pt, poseStack, bufferSource, packedLight);
     }
