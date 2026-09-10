@@ -209,7 +209,7 @@ publishMods {
         style {
             link = "BUTTON"
             look = "MODERN"
-            thumbnailUrl = "https://cdn.modrinth.com/data/hSSqdyU1/e7229e03d0795915092cdab361ee4406e0b27153_96.webp"
+            thumbnailUrl = "https://cdn.modrinth.com/data/BHovO9FP/6beaca9c4801541c8346e5cca783116cb953649b.gif"
             color = "curseforge"
 
         }
