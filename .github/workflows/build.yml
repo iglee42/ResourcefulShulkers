@@ -18,6 +18,17 @@ on:
         default: true
         type: boolean
 
+env:
+  JAVA_VERSION: ${{
+    github.base_ref == '1.20.1' && '17' ||
+    github.base_ref == '1.21.1' && '21' ||
+    github.base_ref == '26.1' && '25' ||
+    github.ref_name == '1.20.1' && '17' ||
+    github.ref_name == '1.21.1' && '21' ||
+    github.ref_name == '26.1' && '25' ||
+    '21'
+    }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -29,7 +40,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: ${{ env.JAVA_VERSION }}
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
