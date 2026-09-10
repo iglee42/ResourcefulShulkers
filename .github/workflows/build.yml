@@ -27,7 +27,7 @@ env:
     github.ref_name == '1.21.1' && '21' ||
     github.ref_name == '26.1' && '25' ||
     '21'
-}}
+    }}
 
 jobs:
   build:
