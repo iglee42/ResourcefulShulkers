@@ -91,6 +91,7 @@ public class RSClientRenderers {
         ShulkersManager.forEachShulker(shulker->{
             boxes.add(shulker.generatingBox().get().asItem());
         });
+        if (boxes.isEmpty()) return;
         event.registerItem(
                 new GeneratingBoxItemExtension(),
                 boxes.toArray(new Item[0])
