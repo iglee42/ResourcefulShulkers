@@ -5,7 +5,6 @@ import fr.iglee42.resourcefulshulkers.jei.JEIPlugin;
 import fr.iglee42.resourcefulshulkers.jei.ingredient.JEIEntityIngredient;
 import fr.iglee42.resourcefulshulkers.jei.ingredient.JEIEntityRenderer;
 import fr.iglee42.resourcefulshulkers.jei.renderers.BigItemstackRenderer;
-import fr.iglee42.resourcefulshulkers.jei.utils.CycleTicker;
 import fr.iglee42.resourcefulshulkers.recipes.ItemInfusionRecipe;
 import fr.iglee42.resourcefulshulkers.registries.RSBlocks;
 import fr.iglee42.resourcefulshulkers.registries.RSItems;
@@ -41,8 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static fr.iglee42.resourcefulshulkers.jei.categories.EnvironmentInfusionRecipeCategory.renderEntity;
-
 public class ItemInfusionRecipeCategory implements IRecipeCategory<RecipeHolder<ItemInfusionRecipe>> {
 
     public final static ResourceLocation ARROW = ResourceLocation.fromNamespaceAndPath(RSIds.MODID, "textures/gui/arrow.png");
@@ -51,11 +48,9 @@ public class ItemInfusionRecipeCategory implements IRecipeCategory<RecipeHolder<
     public static final RecipeType<RecipeHolder<ItemInfusionRecipe>> RECIPE_TYPE = RecipeType.createRecipeHolderType(RSIds.id("item_infusion"));
     private final IDrawable background;
     private final IDrawable icon;
-    private final CycleTicker cycler;
 
     public ItemInfusionRecipeCategory(IGuiHelper helper) {
         this.background = helper.createBlankDrawable(176, 92);
-        this.cycler = CycleTicker.createWithRandomOffset();
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(RSBlocks.SHULKER_INFUSER.get()));
     }
 
@@ -86,22 +81,6 @@ public class ItemInfusionRecipeCategory implements IRecipeCategory<RecipeHolder<
         stack.blit(ARROW, 60, 15, 0, 0, 60, 15, 60, 15);
         Font font = Minecraft.getInstance().font;
         int y = 30;
-        float scale = 27.5f, yaw = -25.0f, pitch = -29.0f;
-        if (Minecraft.getInstance().player.tickCount % 10 == 0)
-            cycler.tick();
-        Optional<Holder<EntityType<?>>> baseEntityType = cycler.getCycled(recipe.baseEntity().stream().toList());
-        baseEntityType.map(Holder::value)
-                .ifPresent(type->{
-                    Entity baseEntity  = type.create(Minecraft.getInstance().level);
-                    if (!(baseEntity instanceof LivingEntity lv)) return;
-                    //renderEntity(stack,30, (int) (y +(lv.getBoundingBox().getYsize() * scale / 2 )), scale, yaw, pitch, lv);
-                });
-
-        if (recipe.resultEntity().create(Minecraft.getInstance().level) instanceof LivingEntity lv) {
-            lv.load(recipe.resultNbt());
-            //renderEntity(stack, 150, (int) (y +(lv.getBoundingBox().getYsize() * scale / 2)), scale, yaw, pitch, lv);
-        }
-
         String ingredientText = "Ingredients";
         stack.drawString(font, ChatFormatting.BLUE + "" + ChatFormatting.UNDERLINE + ingredientText, (getWidth() - font.width(ingredientText)) / 2, y + 15, 0,false);
 

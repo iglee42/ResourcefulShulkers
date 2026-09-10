@@ -9,7 +9,6 @@ import fr.iglee42.resourcefulshulkers.jei.JEIPlugin;
 import fr.iglee42.resourcefulshulkers.jei.ingredient.JEIEntityIngredient;
 import fr.iglee42.resourcefulshulkers.jei.ingredient.JEIEntityRenderer;
 import fr.iglee42.resourcefulshulkers.jei.renderers.BigItemstackRenderer;
-import fr.iglee42.resourcefulshulkers.jei.utils.CycleTicker;
 import fr.iglee42.resourcefulshulkers.registries.RSBlocks;
 import fr.iglee42.resourcefulshulkers.recipes.EnvironmentInfusionRecipe;
 import fr.iglee42.resourcefulshulkers.registries.RSItems;
@@ -55,47 +54,11 @@ public class EnvironmentInfusionRecipeCategory implements IRecipeCategory<Recipe
     public static final RecipeType<RecipeHolder<EnvironmentInfusionRecipe>> RECIPE_TYPE = RecipeType.createRecipeHolderType(RSIds.id("environment_infusion"));
     private final IDrawable background;
     private final IDrawable icon;
-    private final CycleTicker cycler;
 
 
     public EnvironmentInfusionRecipeCategory(IGuiHelper helper) {
         this.background = helper.createBlankDrawable(176, 92);
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(RSBlocks.SHULKER_INFUSER.get()));
-        this.cycler = CycleTicker.createWithRandomOffset();
-    }
-
-    public static void renderEntity(GuiGraphics graphics, int x, int y, double scale, double yaw, double pitch, Entity livingEntity) {
-
-        PoseStack modelViewStack = graphics.pose();
-        modelViewStack.pushPose();
-        modelViewStack.translate(x, y, 50.0F);
-        modelViewStack.scale((float) -scale, (float) scale, (float) scale);
-        modelViewStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
-
-        if (livingEntity instanceof  LivingEntity e){
-            modelViewStack.mulPose(Axis.XN.rotationDegrees(((float) Math.atan((pitch / 40.0F))) * 20.0F));
-            livingEntity.yo = (float) Math.atan(yaw / 40.0F) * 20.0F;
-            float yRot = (float) Math.atan(yaw / 40.0F) * 40.0F;
-            float xRot = -((float) Math.atan(pitch / 40.0F)) * 20.0F;
-            e.yBodyRot = (float) (180.0F + yaw * 20.0F);
-            livingEntity.setYRot(yRot);
-            livingEntity.setYRot(yRot);
-            livingEntity.setXRot(xRot);
-            e.yHeadRot = yRot;
-            e.yHeadRotO = yRot;
-        }
-
-        modelViewStack.translate(0.0F, livingEntity.getY(), 0.0F);
-        RenderSystem.applyModelViewMatrix();
-        EntityRenderDispatcher entityRenderDispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-        entityRenderDispatcher.setRenderShadow(false);
-        MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
-        RenderSystem.runAsFancy(() -> {
-            entityRenderDispatcher.render(livingEntity, 0.0D, 0.0D, 0.0D,0.0F,1F, modelViewStack, bufferSource, 15728880);
-        });
-        bufferSource.endBatch();
-        entityRenderDispatcher.setRenderShadow(true);
-        modelViewStack.popPose();
     }
 
     @Override
@@ -123,24 +86,7 @@ public class EnvironmentInfusionRecipeCategory implements IRecipeCategory<Recipe
         EnvironmentInfusionRecipe recipe = holder.value();
         guiGraphics.blit(ARROW,57,35,0,0,60,15,60,15);
         int y = 55;
-        if (Minecraft.getInstance().player.tickCount % 10 == 0)
-            cycler.tick();
         Font font = Minecraft.getInstance().font;
-        float scale = 22.5f, yaw = -25.0f, pitch = -29.0f;
-
-        Optional<Holder<EntityType<?>>> baseEntityType = cycler.getCycled(recipe.baseEntity().stream().toList());
-        baseEntityType.map(Holder::value)
-                .ifPresent(type->{
-                    Entity baseEntity  = type.create(Minecraft.getInstance().level);
-                    if (!(baseEntity instanceof LivingEntity lv)) return;
-                    //renderEntity(guiGraphics,30, (int) (y +(lv.getBoundingBox().getYsize() * scale / 2 )), scale, yaw, pitch, lv);
-                });
-
-
-        if (recipe.resultEntity().create(Minecraft.getInstance().level) instanceof LivingEntity lv) {
-            lv.load(recipe.resultNbt());
-            //renderEntity(guiGraphics, 150, (int) (y +(lv.getBoundingBox().getYsize() * scale / 2 )), scale, yaw, pitch, lv);
-        }
 
         String biomeText = "Allowed Biomes";
         int biomeWidth = font.width(biomeText);
